@@ -1,0 +1,6 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "search.exclude": { "**/dist": true, "**/.astro": true, "**/.wrangler": true }
+}
