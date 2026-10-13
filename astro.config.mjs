@@ -9,5 +9,5 @@ import cloudflare from "@astrojs/cloudflare";
 export default defineConfig({
   session: false,
   integrations: [svelte()],
-  adapter: cloudflare(),
+  adapter: cloudflare({ imageService: 'passthrough' }),
 });
