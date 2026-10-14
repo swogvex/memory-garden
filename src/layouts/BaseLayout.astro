@@ -1,0 +1,87 @@
+---
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/playfair-display/wght.css';
+import '@fontsource/caveat/500.css';
+import '@/styles/global.css';
+import MainNav from '@/components/ui/MainNav.astro';
+import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  locale?: Locale;
+  description?: string;
+  nav?: boolean;
+  current?: 'garden' | 'bouquets' | 'explore' | 'settings';
+}
+
+const { title, locale = DEFAULT_LOCALE, description, nav = false, current } = Astro.props;
+const fullTitle = `${title} · ${t(locale, 'app.name')}`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f8f6f1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">
+      {t(locale, 'a11y.skipToContent')}
+    </a>
+    <header class="site-header">
+      <a class="brand" href="/">
+        {t(locale, 'app.name')}
+      </a>
+      {nav && <MainNav locale={locale} current={current} />}
+    </header>
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>{t(locale, 'footer.note')}</p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+    padding: var(--space-3) var(--gutter);
+  }
+  .brand {
+    font-family: var(--font-title);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+  }
+  main {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: var(--space-6) var(--gutter);
+  }
+  main:focus {
+    outline: none;
+  }
+  .site-footer {
+    padding: var(--space-5) var(--gutter);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .site-footer p {
+    margin: 0;
+  }
+</style>

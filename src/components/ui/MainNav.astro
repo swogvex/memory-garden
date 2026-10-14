@@ -1,0 +1,53 @@
+---
+import { t, type Locale } from '@/lib/i18n';
+
+type NavKey = 'garden' | 'bouquets' | 'explore' | 'settings';
+interface Props {
+  locale: Locale;
+  current?: NavKey;
+}
+
+const { locale, current } = Astro.props;
+const items = [
+  { key: 'garden', href: '/jardin', label: t(locale, 'nav.garden') },
+  { key: 'bouquets', href: '/ramos', label: t(locale, 'nav.bouquets') },
+  { key: 'explore', href: '/explorar', label: t(locale, 'nav.explore') },
+  { key: 'settings', href: '/configuracion', label: t(locale, 'nav.settings') },
+] as const;
+---
+
+<nav aria-label={t(locale, 'nav.label')}>
+  <ul>
+    {items.map((item) => (
+      <li>
+        <a href={item.href} aria-current={item.key === current ? 'page' : undefined}>
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  a[aria-current='page'] {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+  }
+</style>
