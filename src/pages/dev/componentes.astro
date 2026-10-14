@@ -1,0 +1,162 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { DEFAULT_LOCALE, isLocale, t } from '@/lib/i18n';
+
+export const prerender = false;
+
+// Solo desarrollo: en la compilación esta ruta responde 404.
+if (!import.meta.env.DEV) {
+  return new Response(null, { status: 404 });
+}
+
+const requested = Astro.url.searchParams.get('lang');
+const locale = isLocale(requested) ? requested : DEFAULT_LOCALE;
+
+const colors = [
+  '--mg-marfil',
+  '--mg-lavanda',
+  '--mg-lila',
+  '--mg-salvia',
+  '--mg-rosa',
+  '--mg-ciruela',
+  '--color-primary',
+  '--color-primary-hover',
+  '--color-text-muted',
+  '--color-sage-text',
+  '--color-border-control',
+  '--color-error',
+];
+const spaces = [
+  '--space-1',
+  '--space-2',
+  '--space-3',
+  '--space-4',
+  '--space-5',
+  '--space-6',
+  '--space-7',
+  '--space-8',
+];
+const radii = ['--radius-sm', '--radius-md', '--radius-lg', '--radius-pill'];
+const shadows = ['--shadow-sm', '--shadow-md', '--shadow-lg'];
+---
+
+<BaseLayout title={t(locale, 'dev.title')} locale={locale} nav current="garden">
+  <h1>{t(locale, 'dev.heading')}</h1>
+  <p>{t(locale, 'dev.intro')}</p>
+
+  <h2>{t(locale, 'dev.language')}</h2>
+  <p>
+    <a href="?lang=es" lang="es">
+      {t('es', 'dev.langEs')}
+    </a>{' '}
+    ·
+    <a href="?lang=en" lang="en">
+      {t('en', 'dev.langEn')}
+    </a>
+  </p>
+  <p class="handwritten">{t(locale, 'dev.sample')}</p>
+  <p>{t(locale, 'dev.greeting', { name: 'Memory Garden' })}</p>
+
+  <h2>{t(locale, 'dev.section.colors')}</h2>
+  <ul class="grid">
+    {colors.map((name) => (
+      <li>
+        <span class="swatch" style={`background: var(${name})`} />
+        <code>{name}</code>
+      </li>
+    ))}
+  </ul>
+
+  <h2>{t(locale, 'dev.section.fonts')}</h2>
+  <p class="f-title">{t(locale, 'dev.fontTitle')}</p>
+  <p>{t(locale, 'dev.fontBody')}</p>
+  <p class="handwritten">{t(locale, 'dev.fontHand')}</p>
+
+  <h2>{t(locale, 'dev.section.spacing')}</h2>
+  <ul class="stack">
+    {spaces.map((name) => (
+      <li>
+        <span class="bar" style={`width: var(${name})`} />
+        <code>{name}</code>
+      </li>
+    ))}
+  </ul>
+
+  <h2>{t(locale, 'dev.section.radii')}</h2>
+  <ul class="grid">
+    {radii.map((name) => (
+      <li>
+        <span class="box" style={`border-radius: var(${name})`} />
+        <code>{name}</code>
+      </li>
+    ))}
+  </ul>
+
+  <h2>{t(locale, 'dev.section.shadows')}</h2>
+  <ul class="grid">
+    {shadows.map((name) => (
+      <li>
+        <span class="box" style={`box-shadow: var(${name})`} />
+        <code>{name}</code>
+      </li>
+    ))}
+  </ul>
+
+  <h2>{t(locale, 'dev.section.motion')}</h2>
+  <p>
+    <span class="pulse" /> {t(locale, 'dev.motionNote')}
+  </p>
+</BaseLayout>
+
+<style>
+  .grid,
+  .stack {
+    list-style: none;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-4);
+  }
+  .stack li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+  .swatch,
+  .box {
+    display: block;
+    height: 3.5rem;
+    margin-bottom: var(--space-2);
+    border: 1px solid var(--color-border-decor);
+    background: var(--color-bg);
+  }
+  .bar {
+    display: block;
+    height: 1rem;
+    background: var(--color-primary);
+  }
+  .f-title {
+    font-family: var(--font-title);
+    font-size: var(--text-xl);
+  }
+  .pulse {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+    animation: pulse var(--motion-slow) ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    from {
+      opacity: 0.35;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>

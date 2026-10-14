@@ -1,43 +1,44 @@
-# Astro Starter Kit: Minimal
+# Memory Garden
 
-```sh
-npm create astro@latest -- --template minimal
+Jardín digital privado para una sola persona: cada recuerdo es una flor y cada mes forma un ramo.
+Astro 7 + Svelte 5 + TypeScript sobre Cloudflare Workers. Estado: H1 (base del proyecto, sin funcionalidad).
+
+## Requisitos
+
+Node 24 (`.nvmrc`; se exige ≥ 22.12), npm, Git. Los comandos son para PowerShell.
+
+## Empezar
+
+```powershell
+npm install
+npx playwright install chromium   # una vez
+npm run dev                        # http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Página de tokens y tipografía, solo en desarrollo: <http://localhost:4321/dev/componentes> (`?lang=en` para inglés).
 
-## 🚀 Project Structure
+## Scripts
 
-Inside of your Astro project, you'll see the following folders and files:
+| Script | Qué hace |
+|---|---|
+| `npm run lint` | ESLint, incluidos los límites entre módulos |
+| `npm run format` / `format:check` | Prettier: escribe / solo comprueba |
+| `npm run check` | `astro check` (tipos) |
+| `npm test` | Vitest (unitarias) |
+| `npm run build` | Compilación de producción |
+| `npm run test:e2e` | Playwright + axe contra `astro preview` (hace falta compilar antes) |
+| `npm run validate` | Todo lo anterior encadenado; es lo que ejecuta GitHub Actions |
+| `npm run deploy` | Compila y despliega en Cloudflare |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Documentación
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- Decisiones: [docs/DECISIONES.md](docs/DECISIONES.md)
+- Límites entre módulos: [docs/arquitectura-modulos.md](docs/arquitectura-modulos.md)
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Fuentes
 
-Any static assets, like images, can be placed in the `public/` directory.
+Playfair Display, Inter y Caveat se sirven desde el propio sitio (paquetes Fontsource, licencia SIL OFL 1.1). Sin Google Fonts.
 
-## 🧞 Commands
+## Privacidad
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Sin analíticas, sin rastreadores y sin recursos de terceros.
