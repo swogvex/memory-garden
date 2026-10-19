@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Medición de PBKDF2 · Memory Garden (herramienta de desarrollo)</title>
+    <style>
+      body {
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+        margin: 1rem;
+        max-width: 40rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.6rem 1rem;
+      }
+      table {
+        border-collapse: collapse;
+        margin: 1rem 0;
+        width: 100%;
+      }
+      td,
+      th {
+        border: 1px solid #888;
+        padding: 0.3rem 0.5rem;
+        text-align: right;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      pre {
+        white-space: pre-wrap;
+        background: #eee;
+        padding: 0.5rem;
+      }
+      .warn {
+        color: #9b2c3f;
+        font-weight: 600;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Medición de PBKDF2 (D-081, PS-66)</h1>
+    <p>
+      Mide cuánto tarda <code>PBKDF2-HMAC-SHA256</code> (32 bytes) en
+      <strong>este navegador y este dispositivo</strong>. No envía nada a ninguna parte ni guarda
+      nada. Haz la medición con la pantalla encendida y la pestaña en primer plano.
+    </p>
+    <p id="env"></p>
+    <p>
+      <label for="margin">Margen por un dispositivo peor que este (×):</label>
+      <input
+        id="margin"
+        type="number"
+        min="1"
+        max="10"
+        step="0.5"
+        value="2"
+        style="width: 4rem; font: inherit"
+      />
+    </p>
+    <p class="note">
+      El margen es una <strong>suposición</strong>, no una medida. La ralentización de CPU de las
+      herramientas de desarrollo de Chrome <strong>no afecta a PBKDF2</strong> (comprobado en
+      Chromium 141: 130 ms sin ralentizar y 133 ms con ×6, mientras un bucle de JavaScript de
+      control pasaba de 24 a 93 ms), así que no sirve para simular un móvil lento: mide en el
+      dispositivo más lento real y aplica un margen.
+    </p>
+    <p><button id="go" type="button">Medir</button> <span id="status" role="status"></span></p>
+    <table id="out" hidden>
+      <thead>
+        <tr>
+          <th>Iteraciones</th>
+          <th>Mediana (ms)</th>
+          <th>Mínimo</th>
+          <th>Máximo</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p id="advice"></p>
+    <p>Texto para pegar en el chat:</p>
+    <pre id="report">(aún sin medir)</pre>
+    <script>
+      const RUNS = 5;
+      const LIST = [600000, 1000000, 1500000, 2000000];
+      const TARGET_MS = 1000; // objetivo de crypto-spec §4.4: 0,5–1 s
+      const CEILING_MS = 2000; // techo aceptado por el usuario
+      const $ = (id) => document.getElementById(id);
+      const median = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
+      $('env').textContent =
+        'Navegador: ' +
+        navigator.userAgent +
+        ' · hilos lógicos: ' +
+        (navigator.hardwareConcurrency || '?');
+      if (!window.isSecureContext || !crypto.subtle) {
+        $('status').className = 'warn';
+        $('status').textContent =
+          'Este contexto NO es seguro (crypto.subtle no existe). Hay que abrir la página por https:// o http://localhost. ' +
+          'En un iPhone, http://192.168.x.x NO sirve: necesita HTTPS.';
+        $('go').disabled = true;
+      }
+      $('go').addEventListener('click', async () => {
+        $('go').disabled = true;
+        const tbody = $('out').querySelector('tbody');
+        tbody.textContent = '';
+        $('out').hidden = false;
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+          'raw',
+          enc.encode('contraseña de prueba de la medición'),
+          'PBKDF2',
+          false,
+          ['deriveBits'],
+        );
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const derive = (iterations) =>
+          crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, key, 256);
+        await derive(10000); // calentamiento
+        const rows = [];
+        for (const iterations of LIST) {
+          const t = [];
+          for (let i = 0; i < RUNS; i++) {
+            $('status').textContent =
+              iterations + ' iteraciones, pasada ' + (i + 1) + ' de ' + RUNS + '…';
+            await new Promise((r) => setTimeout(r, 30));
+            const t0 = performance.now();
+            await derive(iterations);
+            t.push(performance.now() - t0);
+          }
+          rows.push({ iterations, med: median(t), min: Math.min(...t), max: Math.max(...t) });
+          const tr = document.createElement('tr');
+          for (const v of [
+            iterations,
+            rows.at(-1).med.toFixed(0),
+            rows.at(-1).min.toFixed(0),
+            rows.at(-1).max.toFixed(0),
+          ]) {
+            const td = document.createElement('td');
+            td.textContent = String(v);
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+        const base = rows.find((r) => r.iterations === 1000000) || rows[0];
+        const perIter = base.med / base.iterations;
+        const margin = Math.min(10, Math.max(1, Number($('margin').value) || 1));
+        const round = (n) => Math.min(10000000, Math.max(600000, Math.round(n / 50000) * 50000));
+        const forTarget = round(TARGET_MS / (perIter * margin));
+        const forCeiling = round(CEILING_MS / (perIter * margin));
+        const at1M = base.iterations === 1000000 ? (base.med * margin).toFixed(0) : '?';
+        $('advice').textContent =
+          'Extrapolación lineal (orientativa) con margen ×' +
+          margin +
+          ': con 1.000.000 iteraciones el peor dispositivo supuesto tardaría ≈ ' +
+          at1M +
+          ' ms. Para ≈ ' +
+          TARGET_MS +
+          ' ms en ese peor caso saldrían ≈ ' +
+          forTarget +
+          ' iteraciones; para el techo de ' +
+          CEILING_MS +
+          ' ms, ≈ ' +
+          forCeiling +
+          '. `iter` es ÚNICO para todos los dispositivos del espacio, así que manda el más lento; mínimo 600.000, máximo 10.000.000.';
+        $('report').textContent =
+          'PBKDF2-SHA256 · ' +
+          navigator.userAgent +
+          '\n' +
+          'margen supuesto ×' +
+          margin +
+          '\n' +
+          rows
+            .map(
+              (r) =>
+                r.iterations +
+                ' it: mediana ' +
+                r.med.toFixed(0) +
+                ' ms (mín ' +
+                r.min.toFixed(0) +
+                ', máx ' +
+                r.max.toFixed(0) +
+                ')',
+            )
+            .join('\n');
+        $('status').textContent = 'Hecho.';
+        $('go').disabled = false;
+      });
+    </script>
+  </body>
+</html>
