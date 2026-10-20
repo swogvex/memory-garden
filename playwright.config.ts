@@ -7,7 +7,11 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: 'http://127.0.0.1:4321', trace: 'retain-on-failure' },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // Cobertura parcial de Safari (D-121). No sustituye a las pruebas en el iPhone real.
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
   // Prueba contra la compilación real (requiere `npm run build` antes).
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1 --port 4321',
