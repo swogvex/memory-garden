@@ -12,9 +12,18 @@ interface Props {
   description?: string;
   nav?: boolean;
   current?: 'garden' | 'bouquets' | 'explore' | 'settings';
+  /** La isla de la aplicación aporta header, nav y main (H4). */
+  shell?: boolean;
 }
 
-const { title, locale = DEFAULT_LOCALE, description, nav = false, current } = Astro.props;
+const {
+  title,
+  locale = DEFAULT_LOCALE,
+  description,
+  nav = false,
+  current,
+  shell = false,
+} = Astro.props;
 const fullTitle = `${title} · ${t(locale, 'app.name')}`;
 ---
 
@@ -34,18 +43,24 @@ const fullTitle = `${title} · ${t(locale, 'app.name')}`;
     <a class="skip-link" href="#contenido">
       {t(locale, 'a11y.skipToContent')}
     </a>
-    <header class="site-header">
-      <a class="brand" href="/">
-        {t(locale, 'app.name')}
-      </a>
-      {nav && <MainNav locale={locale} current={current} />}
-    </header>
-    <main id="contenido" tabindex="-1">
+    {shell ? (
       <slot />
-    </main>
-    <footer class="site-footer">
-      <p>{t(locale, 'footer.note')}</p>
-    </footer>
+    ) : (
+      <Fragment>
+        <header class="site-header">
+          <a class="brand" href="/">
+            {t(locale, 'app.name')}
+          </a>
+          {nav && <MainNav locale={locale} current={current} />}
+        </header>
+        <main id="contenido" tabindex="-1">
+          <slot />
+        </main>
+        <footer class="site-footer">
+          <p>{t(locale, 'footer.note')}</p>
+        </footer>
+      </Fragment>
+    )}
   </body>
 </html>
 
