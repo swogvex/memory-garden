@@ -121,10 +121,10 @@ describe('separación de código de prueba y de producción', () => {
       .filter((f) => !rel(f).startsWith('src/lib/storage/dev-memory-adapter'))
       .filter((f) => /dev-memory-adapter/.test(code(f)))
       .map(rel);
-    for (const u of users)
-      expect(/^src\/(pages|features\/[^/]+)\/dev\//.test(u) || /^src\/pages\/dev\//.test(u)).toBe(
-        true,
-      );
+    for (const u of users) {
+      // D-049: solo código de desarrollo. `src/dev/` se carga únicamente tras `import.meta.env.DEV`.
+      expect(/^src\/dev\//.test(u) || /^src\/(pages|features\/[^/]+)\/dev\//.test(u), u).toBe(true);
+    }
     expect(users.length).toBeGreaterThanOrEqual(0);
   });
   it('fuera de lib/crypto nadie toca la política de KDF (solo pruebas pasan `policy`)', () => {
