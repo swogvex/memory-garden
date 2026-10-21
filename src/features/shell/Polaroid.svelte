@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { MemoryPayload } from '@/lib/validation';
-  import FlowerMark from './FlowerMark.svelte';
+  import FlowerMark from '@/components/ui/FlowerMark.svelte';
 
   let { flower }: { flower: MemoryPayload['flower'] } = $props();
 </script>

@@ -4,9 +4,31 @@ import type { MemoryPayload } from '@/lib/validation';
 /** Recuerdo ya descifrado y validado, listo para dibujar. */
 export type GardenMemory = MemoryPayload & { readonly id: string; readonly updatedAt: number };
 
+/** Campos de un recuerdo sin las fotos (las fotos se suben aparte). */
+export type MemoryFields = Omit<MemoryPayload, 'photos'>;
+
+/** Foto ya procesada en el cliente (JPEG sin metadatos), todavía sin cifrar. */
+export interface NewPhoto {
+  readonly photo: Uint8Array;
+  readonly thumb: Uint8Array;
+  readonly alt: string;
+}
+
+export interface CreateMemoryInput {
+  readonly fields: MemoryFields;
+  readonly photos: readonly NewPhoto[];
+}
+
+export interface CreateMemoryResult {
+  readonly memory: GardenMemory;
+  /** Posiciones (0 = primera) de las fotos que no se pudieron subir; el recuerdo se guardó sin ellas. */
+  readonly failedPhotos: readonly number[];
+}
+
 /** Puerto de datos del Jardín: lo implementa la capa de composición (adaptador de pruebas hoy, API en H7). */
 export interface GardenSource {
   list(): Promise<GardenMemory[]>;
+  create(input: CreateMemoryInput): Promise<CreateMemoryResult>;
   /** Suelta las claves en memoria. */
   lock(): void;
 }

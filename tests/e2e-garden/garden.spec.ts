@@ -132,9 +132,8 @@ test('escritorio: el día seleccionado se muestra en el panel lateral con «Aña
   for (const text of ['Desayuno', 'Museo', 'Atardecer en la playa']) {
     await expect(panel.getByText(text)).toBeVisible();
   }
-  const add = panel.getByRole('button', { name: t('es', 'garden.add') });
-  await expect(add).toHaveAttribute('aria-disabled', 'true');
-  await expect(panel.getByText(/Disponible pronto/)).toBeVisible();
+  await expect(panel.getByRole('button', { name: t('es', 'garden.add') })).toBeEnabled();
+  await expect(panel.getByText(/Disponible pronto/)).toHaveCount(0);
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expectNoA11yViolations(page);
 });
@@ -177,10 +176,7 @@ test.describe('móvil (390 px)', () => {
     await expect(sheet).toBeVisible();
     await expect(sheet.getByRole('heading', { level: 2 })).toHaveText(/12 de octubre de 2026/i);
     await expect(sheet.getByText('Museo')).toBeVisible();
-    await expect(sheet.getByRole('button', { name: t('es', 'garden.add') })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    await expect(sheet.getByRole('button', { name: t('es', 'garden.add') })).toBeEnabled();
     await expectNoA11yViolations(page);
     await page.keyboard.press('Escape');
     await expect(sheet).toBeHidden();

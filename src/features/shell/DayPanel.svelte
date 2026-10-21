@@ -1,16 +1,22 @@
 <script lang="ts">
   import type { GardenMemory } from '@/features/calendar';
+  import FlowerMark from '@/components/ui/FlowerMark.svelte';
   import { capitalize, formatLongDate, parseIso } from '@/lib/dates';
   import { t, type Locale } from '@/lib/i18n';
-  import FlowerMark from './FlowerMark.svelte';
 
   let {
     locale,
     iso,
     memories,
     headingId,
-  }: { locale: Locale; iso: string; memories: readonly GardenMemory[]; headingId: string } =
-    $props();
+    onAdd,
+  }: {
+    locale: Locale;
+    iso: string;
+    memories: readonly GardenMemory[];
+    headingId: string;
+    onAdd: (iso: string, trigger: HTMLElement) => void;
+  } = $props();
 
   const date = $derived(parseIso(iso));
   const heading = $derived(date ? capitalize(formatLongDate(date, locale)) : iso);
@@ -34,16 +40,9 @@
   </ul>
 {/if}
 
-<button
-  type="button"
-  class="add"
-  aria-disabled="true"
-  aria-describedby="{headingId}-soon"
-  onclick={(event) => event.preventDefault()}
->
+<button type="button" class="add" onclick={(event) => onAdd(iso, event.currentTarget)}>
   {t(locale, 'garden.add')}
 </button>
-<p id="{headingId}-soon" class="soon">{t(locale, 'garden.add.soon')}</p>
 
 <style>
   h2 {
@@ -82,16 +81,14 @@
   .add {
     min-height: var(--tap-min);
     padding: 0 var(--space-5);
-    border: 2px dashed var(--color-border-control);
+    border: 0;
     border-radius: var(--radius-pill);
-    background: transparent;
-    color: var(--color-text-muted);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
     font: inherit;
-    cursor: not-allowed;
+    cursor: pointer;
   }
-  .soon {
-    margin: var(--space-2) 0 0;
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
+  .add:hover {
+    background: var(--color-primary-hover);
   }
 </style>

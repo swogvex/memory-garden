@@ -7,8 +7,12 @@
     monthCounts,
     nextFocusDate,
     sortRecent,
+    type CreateMemoryInput,
+    type CreateMemoryResult,
     type GardenMemory,
+    type GardenSource,
   } from '@/features/calendar';
+  import { DEFAULT_CATEGORIES, MemoryDialog } from '@/features/memories';
   import {
     addMonths,
     capitalize,
@@ -24,7 +28,7 @@
     type CalendarDate,
     type YearMonth,
   } from '@/lib/dates';
-  import { t, type Locale } from '@/lib/i18n';
+  import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import AsidePanel from './AsidePanel.svelte';
   import DayPanel from './DayPanel.svelte';
   import { openGardenSource } from './garden-data';
@@ -51,6 +55,11 @@
   let gridEl = $state<HTMLTableElement>();
   let sheetEl = $state<HTMLDialogElement>();
   let chipsEl = $state<HTMLDivElement>();
+  let source: GardenSource | null = null;
+  let formOpen = $state(false);
+  let formDate = $state('');
+  let formOpener: HTMLElement | null = null;
+  let notice = $state<{ key: MessageKey; count: number } | null>(null);
 
   const todayIso = toIso(todayIn());
 
@@ -97,7 +106,7 @@
   async function start() {
     load = { status: 'loading' };
     try {
-      const source = await openGardenSource();
+      source = await openGardenSource();
       load = { status: 'ready', memories: await source.list() };
     } catch {
       load = { status: 'error' };
@@ -145,6 +154,40 @@
     selectDay(iso);
     await tick();
     if (wide) dayButton(iso)?.focus();
+  }
+
+  function openForm(iso: string, trigger: HTMLElement) {
+    formOpener = trigger;
+    formDate = iso;
+    notice = null;
+    formOpen = true;
+  }
+
+  function saveMemory(input: CreateMemoryInput): Promise<CreateMemoryResult> {
+    return source ? source.create(input) : Promise.reject(new Error('garden:unavailable'));
+  }
+
+  async function onFormClosed(result: CreateMemoryResult | null) {
+    formOpen = false;
+    if (result && load.status === 'ready') {
+      const failed = result.failedPhotos.length;
+      load = { status: 'ready', memories: [...load.memories, result.memory] };
+      notice = {
+        key:
+          failed === 0
+            ? 'memory.saved'
+            : failed === 1
+              ? 'memory.saved.partial.one'
+              : 'memory.saved.partial.many',
+        count: failed,
+      };
+      await goToDate(result.memory.date);
+    }
+    await tick();
+    const opener = formOpener;
+    formOpener = null;
+    if (opener?.isConnected) opener.focus();
+    else if (selectedIso) dayButton(selectedIso)?.focus();
   }
 
   function onGridKeydown(event: KeyboardEvent) {
@@ -248,6 +291,14 @@
   </div>
 {:else}
   <p class="visually-hidden" role="status">{monthSummary}</p>
+  {#if notice}
+    <div class="notice" role="status">
+      <p>{t(locale, notice.key, { count: notice.count })}</p>
+      <button type="button" class="notice-close" onclick={() => (notice = null)}>
+        {t(locale, 'memory.notice.dismiss')}
+      </button>
+    </div>
+  {/if}
   <div class="layout">
     <div class="main-col">
       <div class="toolbar">
@@ -398,6 +449,7 @@
             iso={selectedIso}
             memories={selectedMemories}
             headingId="day-heading"
+            onAdd={openForm}
           />
         </section>
       {/if}
@@ -421,10 +473,25 @@
             {t(locale, 'garden.sheet.close')}
           </button>
         </div>
-        <DayPanel {locale} iso={selectedIso} memories={selectedMemories} headingId="day-heading" />
+        <DayPanel
+          {locale}
+          iso={selectedIso}
+          memories={selectedMemories}
+          headingId="day-heading"
+          onAdd={openForm}
+        />
       {/if}
     </div>
   </dialog>
+  {#if formOpen}
+    <MemoryDialog
+      {locale}
+      date={formDate}
+      categories={DEFAULT_CATEGORIES}
+      onSave={saveMemory}
+      onClose={(result) => void onFormClosed(result)}
+    />
+  {/if}
 {/if}
 
 <style>
@@ -706,6 +773,31 @@
     margin: var(--space-4) 0 0;
     color: var(--color-text-muted);
     text-align: center;
+  }
+
+  .notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .notice p {
+    margin: 0;
+  }
+  .notice-close {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-pill);
+    background: #fff;
+    color: var(--color-primary);
+    font: inherit;
+    cursor: pointer;
   }
 
   .sheet {

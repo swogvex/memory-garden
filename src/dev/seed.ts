@@ -1,4 +1,9 @@
-import type { GardenMemory, GardenSource } from '@/features/calendar';
+import type {
+  CreateMemoryInput,
+  CreateMemoryResult,
+  GardenMemory,
+  GardenSource,
+} from '@/features/calendar';
 import {
   createVault,
   disposeMaterial,
@@ -7,7 +12,7 @@ import {
   unwrapWithPassword,
 } from '@/lib/crypto';
 import { createDevMemoryRepository } from '@/lib/storage/dev-memory-adapter';
-import { parseMemoryPayload } from '@/lib/validation';
+import { MAX_PHOTOS, parseMemoryPayload, type MemoryPayload } from '@/lib/validation';
 import { buildSeedPayloads } from './seed-data';
 
 /** Marcador que NO debe aparecer nunca en el bundle de producción (prueba tests/e2e/prod-bundle.spec.ts). */
@@ -57,6 +62,89 @@ export async function createDevGardenSource(): Promise<GardenSource> {
           updatedAt: r.updatedAt,
         })),
       );
+    },
+    async create(input: CreateMemoryInput): Promise<CreateMemoryResult> {
+      if (input.photos.length > MAX_PHOTOS) throw new Error('garden:too_many_photos');
+      const memoryId = newId();
+      const uploaded: MemoryPayload['photos'] = [];
+      const failed: number[] = [];
+      const staged: string[] = [];
+
+      const deleteAssets = async (ids: readonly string[]) => {
+        const errors: unknown[] = [];
+        for (const id of [...ids].reverse()) {
+          try {
+            await repo.assets.delete(id);
+          } catch (error) {
+            errors.push(error);
+          }
+        }
+        if (errors.length > 0) throw new AggregateError(errors, 'garden:asset_cleanup_failed');
+      };
+
+      try {
+        for (const [index, item] of input.photos.entries()) {
+          const assetId = newId();
+          const thumbId = newId();
+          const photoAssets: string[] = [];
+          try {
+            await repo.assets.put({
+              id: assetId,
+              kind: 'photo',
+              parentId: null,
+              mkVersion: keyring.mkVersion,
+              bytes: await keyring.sealAsset(assetId, 'photo', memoryId, item.photo),
+            });
+            photoAssets.push(assetId);
+            await repo.assets.put({
+              id: thumbId,
+              kind: 'thumb',
+              parentId: assetId,
+              mkVersion: keyring.mkVersion,
+              bytes: await keyring.sealAsset(thumbId, 'thumb', memoryId, item.thumb),
+            });
+            photoAssets.push(thumbId);
+            staged.push(...photoAssets);
+            uploaded.push({ assetId, thumbId, alt: item.alt });
+          } catch (error) {
+            try {
+              await deleteAssets(photoAssets);
+            } catch (cleanupError) {
+              throw new AggregateError(
+                [error, cleanupError],
+                'garden:photo_upload_cleanup_failed',
+                { cause: cleanupError },
+              );
+            }
+            failed.push(index);
+          }
+        }
+
+        const payload = parseMemoryPayload({ ...input.fields, photos: uploaded });
+        const record = await repo.memories.put(
+          {
+            id: memoryId,
+            payload: await keyring.sealMemory(memoryId, SCHEMA_VERSION, payload),
+            schemaVersion: SCHEMA_VERSION,
+            mkVersion: keyring.mkVersion,
+            assetIds: staged,
+          },
+          null,
+        );
+        return {
+          memory: { ...payload, id: memoryId, updatedAt: record.updatedAt },
+          failedPhotos: failed,
+        };
+      } catch (error) {
+        try {
+          await deleteAssets(staged);
+        } catch (cleanupError) {
+          throw new AggregateError([error, cleanupError], 'garden:create_cleanup_failed', {
+            cause: cleanupError,
+          });
+        }
+        throw error;
+      }
     },
     lock() {
       keyring.lock();
