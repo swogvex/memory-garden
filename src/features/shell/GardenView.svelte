@@ -702,14 +702,14 @@
   }
   .thumb {
     position: relative;
-    display: flex;
-    justify-content: center;
+    display: block; /* no flex: Safari iOS estiraba la Polaroid (aspect-ratio + SVG al 100 %) */
     width: 100%;
   }
   .pol {
     display: block;
     width: 100%;
     max-width: 1.9rem;
+    margin-inline: auto;
   }
   .plus {
     position: absolute;

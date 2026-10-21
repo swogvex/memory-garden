@@ -47,6 +47,22 @@ test('varios recuerdos en un día: foto de portada y contador +N', async ({ page
   await expect(day(page, '2026-10-06').locator('.polaroid')).toHaveCount(0);
 });
 
+test('las celdas con recuerdos mantienen una altura razonable y la miniatura es cuadrada', async ({
+  page,
+}) => {
+  await open(page);
+  for (const iso of ['2026-10-01', '2026-10-12']) {
+    const cell = await day(page, iso).boundingBox();
+    const pol = await day(page, iso).locator('.polaroid').boundingBox();
+    expect(cell!.height).toBeLessThan(cell!.width * 2.2);
+    expect(pol!.width).toBeGreaterThan(pol!.height * 0.6);
+    expect(pol!.height).toBeLessThan(pol!.width * 1.6);
+  }
+  const empty = await day(page, '2026-10-06').boundingBox();
+  const full = await day(page, '2026-10-12').boundingBox();
+  expect(full!.height).toBeLessThanOrEqual(empty!.height * 1.5);
+});
+
 test('31 de diciembre y 1 de enero caen en su día (2025/2026)', async ({ page }) => {
   await open(page);
   await chip(page, /^enero de 2026/i).click();
