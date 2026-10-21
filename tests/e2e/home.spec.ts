@@ -5,6 +5,7 @@ import { expectNoA11yViolations } from '../a11y/axe';
 test('la portada es privada, accesible y no llama a dominios externos', async ({
   page,
   baseURL,
+  browserName,
 }) => {
   const origin = new URL(baseURL!).origin;
   const external: string[] = [];
@@ -25,8 +26,15 @@ test('la portada es privada, accesible y no llama a dominios externos', async ({
 
   await expectNoA11yViolations(page);
 
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('link', { name: es['a11y.skipToContent'] })).toBeFocused();
+  const skip = page.getByRole('link', { name: es['a11y.skipToContent'] });
+  if (browserName === 'webkit') {
+    // Safari no incluye los enlaces en el orden de Tab por defecto (se usa Opción+Tab):
+    // se comprueba el enlace de salto con foco programático.
+    await skip.focus();
+  } else {
+    await page.keyboard.press('Tab');
+  }
+  await expect(skip).toBeFocused();
   await expectNoA11yViolations(page);
 
   expect(external).toEqual([]);

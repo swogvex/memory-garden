@@ -23,3 +23,7 @@ Thumbs.db
 
 playwright-report/
 test-results/
+
+# Copias y exportaciones (PS-35)
+*.mgx
+backup-*.sql

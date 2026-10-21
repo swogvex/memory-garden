@@ -1,0 +1,21 @@
+---
+import { AppShell, NAV_LABEL_KEY, VIEW_SLUGS, viewFromPath } from '@/features/shell';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { DEFAULT_LOCALE, t } from '@/lib/i18n';
+
+export function getStaticPaths() {
+  return VIEW_SLUGS.map((view) => ({ params: { view } }));
+}
+
+const locale = DEFAULT_LOCALE;
+const view = viewFromPath(`/${Astro.params.view}`) ?? 'garden';
+---
+
+<BaseLayout title={t(locale, NAV_LABEL_KEY[view])} locale={locale} shell>
+  <AppShell client:only="svelte">
+    <p slot="fallback" role="status">
+      {t(locale, 'shell.loading')}
+    </p>
+  </AppShell>
+  <noscript>{t(locale, 'shell.noscript')}</noscript>
+</BaseLayout>
