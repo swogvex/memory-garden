@@ -37,6 +37,14 @@ export const es = {
   'garden.empty': 'Este mes aún no tiene recuerdos.',
   'garden.add': 'Añadir recuerdo',
   'garden.add.soon': 'Disponible pronto: crear recuerdos llega en la siguiente fase.',
+  'photo.error.format':
+    'Este formato no se puede abrir en este navegador. Expórtala como JPEG o PNG.',
+  'photo.error.large':
+    'Esta foto es demasiado grande para procesarla aquí. Prueba con otra o reduce su tamaño.',
+  'photo.error.corrupt':
+    'No se pudo abrir esta foto. Puede estar dañada o ser demasiado grande para este dispositivo. Prueba con otra.',
+  'photo.error.prepare': 'No se pudo preparar esta foto. Inténtalo de nuevo o prueba con otra.',
+  'photo.error.cancelled': 'Se canceló la preparación de la foto.',
   'garden.sheet.close': 'Cerrar',
   'garden.day.empty': 'No hay recuerdos este día.',
   'garden.aside.featured': 'Recuerdo destacado',

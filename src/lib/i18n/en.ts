@@ -33,6 +33,13 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.empty': 'This month has no memories yet.',
   'garden.add': 'Add memory',
   'garden.add.soon': 'Coming soon: creating memories arrives in the next phase.',
+  'photo.error.format': 'This format cannot be opened in this browser. Export it as JPEG or PNG.',
+  'photo.error.large':
+    'This photo is too large to process here. Try another one or make it smaller.',
+  'photo.error.corrupt':
+    'This photo could not be opened. It may be damaged or too large for this device. Try another one.',
+  'photo.error.prepare': 'This photo could not be prepared. Try again or pick another one.',
+  'photo.error.cancelled': 'Photo preparation was cancelled.',
   'garden.sheet.close': 'Close',
   'garden.day.empty': 'No memories on this day.',
   'garden.aside.featured': 'Featured memory',
