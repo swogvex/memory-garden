@@ -1,7 +1,12 @@
 <script lang="ts">
   import { onDestroy, onMount, tick, untrack } from 'svelte';
   import FlowerMark from '@/components/ui/FlowerMark.svelte';
-  import type { CreateMemoryInput, CreateMemoryResult } from '@/features/calendar';
+  import type {
+    CreateMemoryResult,
+    GardenMemory,
+    PhotoSlot,
+    SaveMemoryInput,
+  } from '@/features/calendar';
   import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import {
     createBrowserCodec,
@@ -31,13 +36,18 @@
     type FormFields,
   } from './form-model';
 
-  interface PhotoItem {
+  type PhotoItem = {
     key: number;
-    photo: Uint8Array;
-    thumb: Uint8Array;
     alt: string;
+    /** `''` = aún sin miniatura (o no disponible). */
     url: string;
-  }
+    /** `true` si la URL la creó este diálogo y debe revocarla (las de la fuente no). */
+    owned: boolean;
+  } & (
+    | { kind: 'kept'; assetId: string; thumbId: string }
+    | { kind: 'new'; photo: Uint8Array; thumb: Uint8Array }
+  );
+
   interface PhotoProblem {
     id: number;
     name: string;
@@ -48,26 +58,54 @@
     locale,
     date,
     categories,
+    memory = null,
+    loadThumb,
     onSave,
     onClose,
   }: {
     locale: Locale;
     date: string;
     categories: readonly CategoryOption[];
-    onSave: (input: CreateMemoryInput) => Promise<CreateMemoryResult>;
+    memory?: GardenMemory | null;
+    loadThumb?: (memory: GardenMemory, index: number) => Promise<string | null>;
+    onSave: (input: SaveMemoryInput) => Promise<CreateMemoryResult>;
     onClose: (result: CreateMemoryResult | null) => void;
   } = $props();
 
   const uid = $props.id();
   const id = (name: string) => `${uid}-${name}`;
-  const initial = untrack(() => initialFields(date, categories));
+  let nextKey = 0;
+  const initial: FormFields = untrack(() =>
+    memory
+      ? {
+          title: memory.title,
+          date: memory.date,
+          category: memory.category,
+          text: memory.text,
+          link: memory.link ?? '',
+          flower: memory.flower,
+          season: memory.season,
+        }
+      : initialFields(date, categories),
+  );
+  const initialKept = untrack(() => memory?.photos ?? []).map((p, index) => ({ p, index }));
   const codec: ImageCodec = createBrowserCodec();
   const controller = new AbortController();
 
   let fields = $state<FormFields>({ ...initial });
-  let flowerTouched = $state(false);
-  let seasonTouched = $state(false);
-  let photos = $state<PhotoItem[]>([]);
+  let flowerTouched = $state(untrack(() => memory !== null));
+  let seasonTouched = $state(untrack(() => memory !== null));
+  let photos = $state<PhotoItem[]>(
+    initialKept.map(({ p }) => ({
+      key: nextKey++,
+      kind: 'kept' as const,
+      assetId: p.assetId,
+      thumbId: p.thumbId,
+      alt: p.alt,
+      url: '',
+      owned: false,
+    })),
+  );
   let errors = $state<FieldErrors>({});
   let problems = $state<PhotoProblem[]>([]);
   let limitHit = $state(false);
@@ -83,11 +121,19 @@
   let addEl = $state<HTMLButtonElement>();
   let keepEl = $state<HTMLButtonElement>();
   let saveErrEl = $state<HTMLParagraphElement>();
-  let nextKey = 0;
   let closed = false;
   let lastFocus: HTMLElement | null = null;
 
-  const dirty = $derived(isDirty(initial, fields, photos.length));
+  const signature = (list: readonly PhotoItem[]) =>
+    list.map((p) => (p.kind === 'kept' ? `k:${p.assetId}:${p.alt}` : `n:${p.key}`)).join('|');
+  const initialSignature = untrack(() => signature(photos));
+  const photosChanged = $derived(signature(photos) !== initialSignature);
+  const dirty = $derived(isDirty(initial, fields, photosChanged ? 1 : 0));
+  const categoryOptions = $derived(
+    memory && !categories.some((c) => c.name === memory.category)
+      ? [...categories, { name: memory.category, flower: memory.flower }]
+      : categories,
+  );
   const full = $derived(photos.length >= MAX_PHOTOS);
   const busy = $derived(saving || processing);
 
@@ -139,6 +185,18 @@
     sync();
     vv?.addEventListener('resize', sync);
     vv?.addEventListener('scroll', sync);
+
+    if (memory && loadThumb) {
+      const source = memory;
+      void (async () => {
+        for (const { index, p } of initialKept) {
+          const url = await loadThumb(source, index);
+          if (closed || controller.signal.aborted) return;
+          const item = photos.find((x) => x.kind === 'kept' && x.assetId === p.assetId);
+          if (item && url) item.url = url;
+        }
+      })();
+    }
     return () => {
       el.removeEventListener('keydown', onKey);
       el.removeEventListener('cancel', onCancel);
@@ -150,7 +208,7 @@
 
   onDestroy(() => {
     controller.abort();
-    for (const p of photos) URL.revokeObjectURL(p.url);
+    for (const p of photos) if (p.owned) URL.revokeObjectURL(p.url);
   });
 
   $effect(() => {
@@ -202,7 +260,15 @@
           );
           photos = [
             ...photos,
-            { key: nextKey++, photo: done.photo.bytes, thumb: done.thumb.bytes, alt: '', url },
+            {
+              key: nextKey++,
+              kind: 'new',
+              photo: done.photo.bytes,
+              thumb: done.thumb.bytes,
+              alt: '',
+              url,
+              owned: true,
+            },
           ];
         } catch (error) {
           const code = error instanceof PhotoError ? error.code : 'decode_failed';
@@ -241,7 +307,7 @@
   async function removePhoto(index: number) {
     const item = photos[index];
     if (!item) return;
-    URL.revokeObjectURL(item.url);
+    if (item.owned) URL.revokeObjectURL(item.url);
     photos = removeAt(photos, index);
     clearAltErrors();
     limitHit = false;
@@ -280,10 +346,12 @@
     saving = true; // síncrono: un segundo envío en el mismo instante ya no entra
     saveError = false;
     try {
-      const outcome = await onSave({
-        fields: result.fields,
-        photos: photos.map((p) => ({ photo: p.photo, thumb: p.thumb, alt: p.alt.trim() })),
-      });
+      const slots: PhotoSlot[] = photos.map((p) =>
+        p.kind === 'kept'
+          ? { kind: 'kept', assetId: p.assetId, thumbId: p.thumbId, alt: p.alt.trim() }
+          : { kind: 'new', photo: p.photo, thumb: p.thumb, alt: p.alt.trim() },
+      );
+      const outcome = await onSave({ fields: result.fields, photos: slots });
       close(outcome);
     } catch {
       saving = false;
@@ -297,7 +365,7 @@
 <dialog class="dlg" bind:this={dialogEl} aria-labelledby={id('heading')}>
   <form class="form" novalidate onsubmit={submit}>
     <div class="head">
-      <h2 id={id('heading')}>{t(locale, 'memory.new')}</h2>
+      <h2 id={id('heading')}>{memory ? t(locale, 'memory.edit') : t(locale, 'memory.new')}</h2>
       <button
         type="button"
         class="x"
@@ -334,12 +402,16 @@
             {#each photos as item, i (item.key)}
               <li class="photo">
                 <span class="frame">
-                  <img
-                    src={item.url}
-                    alt={t(locale, 'memory.photos.preview', { n: i + 1 })}
-                    width="96"
-                    height="96"
-                  />
+                  {#if item.url}
+                    <img
+                      src={item.url}
+                      alt={t(locale, 'memory.photos.preview', { n: i + 1 })}
+                      width="96"
+                      height="96"
+                    />
+                  {:else}
+                    <span class="nothumb">{t(locale, 'memory.photo.unavailable')}</span>
+                  {/if}
                   {#if i === 0}<span class="badge">{t(locale, 'memory.photos.cover')}</span>{/if}
                 </span>
                 <div class="photo-fields">
@@ -491,7 +563,7 @@
           aria-describedby={errors.category ? id('category-err') : undefined}
           onchange={(e) => setCategory(e.currentTarget.value)}
         >
-          {#each categories as c (c.name)}
+          {#each categoryOptions as c (c.name)}
             <option value={c.name}>{c.name}</option>
           {/each}
         </select>
@@ -770,6 +842,16 @@
     width: 6rem;
     height: 6rem;
     object-fit: cover;
+  }
+  .nothumb {
+    display: grid;
+    place-items: center;
+    width: 6rem;
+    height: 6rem;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-align: center;
   }
   .badge {
     position: absolute;

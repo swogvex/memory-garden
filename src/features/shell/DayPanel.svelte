@@ -10,12 +10,14 @@
     memories,
     headingId,
     onAdd,
+    onOpen,
   }: {
     locale: Locale;
     iso: string;
     memories: readonly GardenMemory[];
     headingId: string;
     onAdd: (iso: string, trigger: HTMLElement) => void;
+    onOpen: (memory: GardenMemory, trigger: HTMLElement) => void;
   } = $props();
 
   const date = $derived(parseIso(iso));
@@ -30,11 +32,13 @@
   <ul class="list">
     {#each memories as memory (memory.id)}
       <li>
-        <span class="fm"><FlowerMark flower={memory.flower} /></span>
-        <span class="text">
-          <span class="title">{memory.title}</span>
-          <span class="cat">{memory.category}</span>
-        </span>
+        <button type="button" class="row" onclick={(event) => onOpen(memory, event.currentTarget)}>
+          <span class="fm"><FlowerMark flower={memory.flower} /></span>
+          <span class="text">
+            <span class="title">{memory.title}</span>
+            <span class="cat">{memory.category}</span>
+          </span>
+        </button>
       </li>
     {/each}
   </ul>
@@ -55,11 +59,25 @@
     list-style: none;
   }
   li {
+    border-bottom: 1px solid var(--color-border-decor);
+  }
+  .row {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-2) 0;
-    border-bottom: 1px solid var(--color-border-decor);
+    width: 100%;
+    min-height: var(--tap-min);
+    padding: var(--space-2);
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .row:hover {
+    background: var(--color-surface);
   }
   .fm {
     flex: none;

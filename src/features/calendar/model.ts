@@ -25,11 +25,30 @@ export interface CreateMemoryResult {
   readonly failedPhotos: readonly number[];
 }
 
+/** Un hueco de foto en edición: una ya guardada o una recién procesada. El orden fija la portada. */
+export type PhotoSlot =
+  | {
+      readonly kind: 'kept';
+      readonly assetId: string;
+      readonly thumbId: string;
+      readonly alt: string;
+    }
+  | ({ readonly kind: 'new' } & NewPhoto);
+export interface SaveMemoryInput {
+  readonly fields: MemoryFields;
+  readonly photos: readonly PhotoSlot[];
+}
+
 /** Puerto de datos del Jardín: lo implementa la capa de composición (adaptador de pruebas hoy, API en H7). */
 export interface GardenSource {
   list(): Promise<GardenMemory[]>;
   create(input: CreateMemoryInput): Promise<CreateMemoryResult>;
-  /** Suelta las claves en memoria. */
+  update(id: string, input: SaveMemoryInput): Promise<CreateMemoryResult>;
+  /** Papelera de 30 días (D-058). */
+  trash(id: string): Promise<void>;
+  /** URL `blob:` de la miniatura o de la foto `index` del recuerdo; `null` si no está disponible. La URL es de la fuente: no se revoca fuera. */
+  imageUrl(memory: GardenMemory, index: number, size: 'thumb' | 'photo'): Promise<string | null>;
+  /** Suelta las claves y las imágenes descifradas. */
   lock(): void;
 }
 
