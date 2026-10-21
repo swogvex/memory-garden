@@ -13,9 +13,11 @@ test('el jardín de desarrollo carga los recuerdos de prueba del mes actual', as
   const count = SEED_EXPECTED_COUNTS['2026-10']!;
   await expect(page.getByText(t('es', 'garden.count.many', { count }))).toBeVisible();
 
-  // Un título con marcado se muestra como texto, sin crear elementos.
-  await expect(page.getByText(SEED_MARKUP_TITLE)).toBeVisible();
-  expect(await page.locator('main script').count()).toBe(0);
+  // Un título con marcado se muestra como texto, sin crear elementos (el panel del día lo lista).
+  await page.locator('button[data-iso="2026-10-19"]').click();
+  const panel = page.getByRole('region', { name: /19 de octubre de 2026/i });
+  await expect(panel.getByText(SEED_MARKUP_TITLE)).toBeVisible();
+  expect(await panel.locator('script').count()).toBe(0);
 
   await expectNoA11yViolations(page);
 });
