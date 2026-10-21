@@ -65,7 +65,7 @@ describe('stripJpegMetadata (PS-39, parte de estructura)', () => {
     expect(Array.from(stripJpegMetadata(once))).toEqual(Array.from(once));
   });
   it('lanza encode_failed si no es un JPEG', () => {
-    expect(() => stripJpegMetadata(Uint8Array.of(1, 2, 3))).toThrowError('photo:encode_failed');
+    expect(() => stripJpegMetadata(Uint8Array.of(1, 2, 3))).toThrow('photo:encode_failed');
     expect(() => stripJpegMetadata(Uint8Array.of(1, 2, 3))).toThrow(PhotoError);
   });
   it('un JPEG con datos añadidos tras EOI no cuenta como limpio', () => {
