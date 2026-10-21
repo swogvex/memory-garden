@@ -56,3 +56,8 @@ export function sortChronologically(memories: readonly GardenMemory[]): GardenMe
 export function sortRecent(memories: readonly GardenMemory[]): GardenMemory[] {
   return [...memories].sort((a, b) => cmp(b.date, a.date) || byCreation(b, a));
 }
+
+/** Número de días distintos con algún recuerdo. */
+export function daysWithMemories(memories: readonly GardenMemory[]): number {
+  return new Set(memories.map((m) => m.date)).size;
+}

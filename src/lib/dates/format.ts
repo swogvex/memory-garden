@@ -46,3 +46,13 @@ export function weekdayLabels(locale: string): { short: string; long: string }[]
     return { short: short.format(u), long: long.format(u) };
   });
 }
+
+/** «20 oct 2026». */
+export function formatShortDate(date: CalendarDate, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(utcDate(date.year, date.month, date.day));
+}
