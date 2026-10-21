@@ -139,7 +139,7 @@
 
     <main id="contenido" tabindex="-1">
       {#if view === 'garden'}
-        <GardenView {locale} />
+        <GardenView {locale} onNavigate={(next) => void show(next, true)} />
       {:else if view === 'bouquets'}
         <PlaceholderView {locale} messageKey="view.soon.bouquets" />
       {:else if view === 'explore'}
@@ -166,7 +166,10 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
-    padding: var(--space-3) var(--gutter);
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: var(--space-4) var(--gutter) var(--space-3);
   }
   h1 {
     min-width: 0;
@@ -178,7 +181,9 @@
     outline: none;
   }
   main {
-    max-width: 72rem;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
     padding: var(--space-3) var(--gutter) var(--space-6);
   }
   main:focus {
@@ -298,6 +303,10 @@
     }
     .label {
       font-size: var(--text-base);
+    }
+    .topbar,
+    main {
+      padding-inline: var(--space-6);
     }
   }
 </style>
