@@ -197,6 +197,7 @@ test.describe('móvil (390 px)', () => {
   test('pantalla completa, botones visibles, sin desbordamiento y guardado desde la hoja', async ({
     page,
   }) => {
+    test.setTimeout(120_000);
     await open(page);
     await day(page, '2026-10-06').click();
     await page
@@ -215,6 +216,16 @@ test.describe('móvil (390 px)', () => {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     expect(overflow).toBeLessThanOrEqual(0);
+
+    // Con fotos, el cuerpo del formulario no se desborda en horizontal (antes de guardar: después el diálogo ya no existe).
+    const files = await jpegFiles(page, 2);
+    await dialog.locator('input[type="file"]').setInputFiles(files);
+    await expect(dialog.locator('p.count')).toHaveText(
+      tt('memory.photos.count', { count: 2, max: 5 }),
+      { timeout: 60_000 },
+    );
+    const spill = await dialog.locator('.body').evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(spill).toBeLessThanOrEqual(0);
 
     await field(dialog, 'memory.field.title').fill('Paseo móvil');
     await save(dialog).click();

@@ -686,6 +686,7 @@
     background: var(--color-bg);
     color: var(--color-text);
     box-shadow: var(--shadow-lg);
+    touch-action: pan-y;
   }
   .dlg::backdrop {
     background: rgb(55 49 63 / 45%);
@@ -727,10 +728,14 @@
     flex: 1 1 auto;
     min-height: 0;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-content: start;
     gap: var(--space-4);
     padding: var(--space-4) var(--space-5);
+    overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
   }
   .actions {
     flex: none;
@@ -745,6 +750,7 @@
   }
   .field {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1);
     min-width: 0;
   }
@@ -793,7 +799,9 @@
   }
   .photos {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
+    min-width: 0;
   }
   .photos-head {
     display: flex;
@@ -808,10 +816,14 @@
   .photo-list,
   .problems {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+  .photo-list {
+    min-width: 0;
   }
   .problems {
     color: var(--color-error);
@@ -823,6 +835,7 @@
   .photo {
     display: flex;
     gap: var(--space-3);
+    min-width: 0;
     padding: var(--space-3);
     border: 1px solid var(--color-border-decor);
     border-radius: var(--radius-md);
@@ -867,6 +880,9 @@
     flex: 1 1 auto;
     display: grid;
     gap: var(--space-2);
+    min-width: 0;
+  }
+  .photo-fields input {
     min-width: 0;
   }
   .photo-actions {

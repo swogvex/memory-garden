@@ -234,6 +234,7 @@
     background: var(--color-bg);
     color: var(--color-text);
     box-shadow: var(--shadow-lg);
+    touch-action: pan-y;
   }
   .dlg::backdrop {
     background: rgb(55 49 63 / 45%);
@@ -273,10 +274,14 @@
     flex: 1 1 auto;
     min-height: 0;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-content: start;
     gap: var(--space-4);
     padding: var(--space-4) var(--space-5);
+    overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
   }
   .when {
     margin: 0;
@@ -287,6 +292,7 @@
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     gap: var(--space-3);
     margin: 0;
+    min-width: 0;
   }
   dt {
     color: var(--color-text-muted);
@@ -310,6 +316,7 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    min-width: 0;
   }
   .gallery img {
     display: block;
