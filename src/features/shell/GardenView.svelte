@@ -7,8 +7,12 @@
     monthCounts,
     nextFocusDate,
     sortRecent,
+    type CreateMemoryResult,
     type GardenMemory,
+    type GardenSource,
+    type SaveMemoryInput,
   } from '@/features/calendar';
+  import { DEFAULT_CATEGORIES, MemoryDialog, MemoryView } from '@/features/memories';
   import {
     addMonths,
     capitalize,
@@ -24,7 +28,7 @@
     type CalendarDate,
     type YearMonth,
   } from '@/lib/dates';
-  import { t, type Locale } from '@/lib/i18n';
+  import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import AsidePanel from './AsidePanel.svelte';
   import DayPanel from './DayPanel.svelte';
   import { openGardenSource } from './garden-data';
@@ -51,6 +55,15 @@
   let gridEl = $state<HTMLTableElement>();
   let sheetEl = $state<HTMLDialogElement>();
   let chipsEl = $state<HTMLDivElement>();
+  let source: GardenSource | null = null;
+  let formOpen = $state(false);
+  let formDate = $state('');
+  let formOpener: HTMLElement | null = null;
+  let notice = $state<{ key: MessageKey; count: number } | null>(null);
+  let viewing = $state<GardenMemory | null>(null);
+  let editing = $state<GardenMemory | null>(null);
+  let viewOpener: HTMLElement | null = null;
+  let covers = $state<{ month: string; urls: Record<string, string> }>({ month: '', urls: {} });
 
   const todayIso = toIso(todayIn());
 
@@ -97,7 +110,7 @@
   async function start() {
     load = { status: 'loading' };
     try {
-      const source = await openGardenSource();
+      source = await openGardenSource();
       load = { status: 'ready', memories: await source.list() };
     } catch {
       load = { status: 'error' };
@@ -145,6 +158,93 @@
     selectDay(iso);
     await tick();
     if (wide) dayButton(iso)?.focus();
+  }
+
+  function openForm(iso: string, trigger: HTMLElement) {
+    formOpener = trigger;
+    formDate = iso;
+    notice = null;
+    editing = null;
+    formOpen = true;
+  }
+
+  const loadImage = (memory: GardenMemory, index: number, size: 'thumb' | 'photo') =>
+    source ? source.imageUrl(memory, index, size) : Promise.resolve(null);
+
+  function openMemory(memory: GardenMemory, trigger: HTMLElement) {
+    viewOpener = trigger;
+    notice = null;
+    viewing = memory;
+  }
+
+  function trashMemory(memory: GardenMemory): Promise<void> {
+    return source ? source.trash(memory.id) : Promise.reject(new Error('garden:unavailable'));
+  }
+
+  async function onViewClosed(outcome: 'closed' | 'edit' | 'trashed') {
+    const memory = viewing;
+    viewing = null;
+    if (!memory) return;
+    if (outcome === 'edit') {
+      editing = memory;
+      formDate = memory.date;
+      formOpener = viewOpener;
+      viewOpener = null;
+      formOpen = true;
+      return;
+    }
+    if (outcome === 'trashed' && load.status === 'ready') {
+      load = { status: 'ready', memories: load.memories.filter((m) => m.id !== memory.id) };
+      delete covers.urls[memory.id];
+      notice = { key: 'memory.trashed', count: 0 };
+    }
+    await tick();
+    const opener = viewOpener;
+    viewOpener = null;
+    if (outcome === 'closed' && opener?.isConnected) opener.focus();
+    else if (selectedIso) dayButton(selectedIso)?.focus();
+  }
+
+  function saveMemory(input: SaveMemoryInput): Promise<CreateMemoryResult> {
+    if (!source) return Promise.reject(new Error('garden:unavailable'));
+    if (editing) return source.update(editing.id, input);
+    return source.create({
+      fields: input.fields,
+      photos: input.photos.flatMap((p) =>
+        p.kind === 'new' ? [{ photo: p.photo, thumb: p.thumb, alt: p.alt }] : [],
+      ),
+    });
+  }
+
+  async function onFormClosed(result: CreateMemoryResult | null) {
+    const wasEditing = editing;
+    formOpen = false;
+    editing = null;
+    if (result && load.status === 'ready') {
+      const failed = result.failedPhotos.length;
+      const list = wasEditing
+        ? load.memories.map((m) => (m.id === result.memory.id ? result.memory : m))
+        : [...load.memories, result.memory];
+      if (wasEditing) delete covers.urls[result.memory.id];
+      load = { status: 'ready', memories: list };
+      notice = {
+        key:
+          failed === 0
+            ? wasEditing
+              ? 'memory.updated'
+              : 'memory.saved'
+            : failed === 1
+              ? 'memory.saved.partial.one'
+              : 'memory.saved.partial.many',
+        count: failed,
+      };
+      await goToDate(result.memory.date);
+    }
+    await tick();
+    const opener = formOpener;
+    formOpener = null;
+    if (opener?.isConnected) opener.focus();
+    else if (selectedIso) dayButton(selectedIso)?.focus();
   }
 
   function onGridKeydown(event: KeyboardEvent) {
@@ -227,6 +327,33 @@
       ?.scrollIntoView({ block: 'nearest', inline: 'center' });
   });
 
+  // Portadas reales: miniatura descifrada de la primera foto, una a una (D-142).
+  $effect(() => {
+    if (load.status !== 'ready') return;
+    const src = source;
+    if (!src) return;
+    if (covers.month !== monthKey) {
+      covers = { month: monthKey, urls: {} };
+      return;
+    }
+    const pending = monthMemories.filter(
+      (m) => m.photos.length > 0 && covers.urls[m.id] === undefined,
+    );
+    if (pending.length === 0) return;
+    let cancelled = false;
+    void (async () => {
+      for (const m of pending) {
+        if (cancelled) return;
+        const url = await src.imageUrl(m, 0, 'thumb');
+        if (cancelled) return;
+        covers.urls[m.id] = url ?? ''; // '' = sin portada: se queda la flor y no se reintenta
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  });
+
   onMount(() => {
     const mq = window.matchMedia('(min-width: 64rem)');
     const onChange = (e: MediaQueryListEvent) => {
@@ -248,6 +375,14 @@
   </div>
 {:else}
   <p class="visually-hidden" role="status">{monthSummary}</p>
+  {#if notice}
+    <div class="notice" role="status">
+      <p>{t(locale, notice.key, { count: notice.count })}</p>
+      <button type="button" class="notice-close" onclick={() => (notice = null)}>
+        {t(locale, 'memory.notice.dismiss')}
+      </button>
+    </div>
+  {/if}
   <div class="layout">
     <div class="main-col">
       <div class="toolbar">
@@ -366,7 +501,12 @@
                           <span class="num" aria-hidden="true">{cell.date.day}</span>
                           {#if first}
                             <span class="thumb" aria-hidden="true">
-                              <span class="pol"><Polaroid flower={first.flower} /></span>
+                              <span class="pol"
+                                ><Polaroid
+                                  flower={first.flower}
+                                  src={covers.urls[first.id] || null}
+                                /></span
+                              >
                               {#if list.length > 1}<span class="plus">+{list.length - 1}</span>{/if}
                             </span>
                           {/if}
@@ -398,6 +538,8 @@
             iso={selectedIso}
             memories={selectedMemories}
             headingId="day-heading"
+            onAdd={openForm}
+            onOpen={openMemory}
           />
         </section>
       {/if}
@@ -421,10 +563,38 @@
             {t(locale, 'garden.sheet.close')}
           </button>
         </div>
-        <DayPanel {locale} iso={selectedIso} memories={selectedMemories} headingId="day-heading" />
+        <DayPanel
+          {locale}
+          iso={selectedIso}
+          memories={selectedMemories}
+          headingId="day-heading"
+          onAdd={openForm}
+          onOpen={openMemory}
+        />
       {/if}
     </div>
   </dialog>
+  {#if viewing}
+    {@const current = viewing}
+    <MemoryView
+      {locale}
+      memory={current}
+      loadImage={(index) => loadImage(current, index, 'photo')}
+      onTrash={() => trashMemory(current)}
+      onClose={(outcome) => void onViewClosed(outcome)}
+    />
+  {/if}
+  {#if formOpen}
+    <MemoryDialog
+      {locale}
+      date={formDate}
+      categories={DEFAULT_CATEGORIES}
+      memory={editing}
+      loadThumb={(m, index) => loadImage(m, index, 'thumb')}
+      onSave={saveMemory}
+      onClose={(result) => void onFormClosed(result)}
+    />
+  {/if}
 {/if}
 
 <style>
@@ -635,14 +805,14 @@
   }
   .thumb {
     position: relative;
-    display: flex;
-    justify-content: center;
+    display: block; /* no flex: Safari iOS estiraba la Polaroid (aspect-ratio + SVG al 100 %) */
     width: 100%;
   }
   .pol {
     display: block;
     width: 100%;
     max-width: 1.9rem;
+    margin-inline: auto;
   }
   .plus {
     position: absolute;
@@ -706,6 +876,31 @@
     margin: var(--space-4) 0 0;
     color: var(--color-text-muted);
     text-align: center;
+  }
+
+  .notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .notice p {
+    margin: 0;
+  }
+  .notice-close {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-pill);
+    background: #fff;
+    color: var(--color-primary);
+    font: inherit;
+    cursor: pointer;
   }
 
   .sheet {

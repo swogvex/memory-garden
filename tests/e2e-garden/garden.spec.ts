@@ -47,6 +47,22 @@ test('varios recuerdos en un día: foto de portada y contador +N', async ({ page
   await expect(day(page, '2026-10-06').locator('.polaroid')).toHaveCount(0);
 });
 
+test('las celdas con recuerdos mantienen una altura razonable y la miniatura es cuadrada', async ({
+  page,
+}) => {
+  await open(page);
+  for (const iso of ['2026-10-01', '2026-10-12']) {
+    const cell = await day(page, iso).boundingBox();
+    const pol = await day(page, iso).locator('.polaroid').boundingBox();
+    expect(cell!.height).toBeLessThan(cell!.width * 2.2);
+    expect(pol!.width).toBeGreaterThan(pol!.height * 0.6);
+    expect(pol!.height).toBeLessThan(pol!.width * 1.6);
+  }
+  const empty = await day(page, '2026-10-06').boundingBox();
+  const full = await day(page, '2026-10-12').boundingBox();
+  expect(full!.height).toBeLessThanOrEqual(empty!.height * 1.5);
+});
+
 test('31 de diciembre y 1 de enero caen en su día (2025/2026)', async ({ page }) => {
   await open(page);
   await chip(page, /^enero de 2026/i).click();
@@ -132,9 +148,8 @@ test('escritorio: el día seleccionado se muestra en el panel lateral con «Aña
   for (const text of ['Desayuno', 'Museo', 'Atardecer en la playa']) {
     await expect(panel.getByText(text)).toBeVisible();
   }
-  const add = panel.getByRole('button', { name: t('es', 'garden.add') });
-  await expect(add).toHaveAttribute('aria-disabled', 'true');
-  await expect(panel.getByText(/Disponible pronto/)).toBeVisible();
+  await expect(panel.getByRole('button', { name: t('es', 'garden.add') })).toBeEnabled();
+  await expect(panel.getByText(/Disponible pronto/)).toHaveCount(0);
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expectNoA11yViolations(page);
 });
@@ -177,10 +192,7 @@ test.describe('móvil (390 px)', () => {
     await expect(sheet).toBeVisible();
     await expect(sheet.getByRole('heading', { level: 2 })).toHaveText(/12 de octubre de 2026/i);
     await expect(sheet.getByText('Museo')).toBeVisible();
-    await expect(sheet.getByRole('button', { name: t('es', 'garden.add') })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    await expect(sheet.getByRole('button', { name: t('es', 'garden.add') })).toBeEnabled();
     await expectNoA11yViolations(page);
     await page.keyboard.press('Escape');
     await expect(sheet).toBeHidden();

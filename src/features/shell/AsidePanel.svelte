@@ -2,7 +2,7 @@
   import type { GardenMemory } from '@/features/calendar';
   import { capitalize, formatLongDate, formatShortDate, parseIso } from '@/lib/dates';
   import { t, type Locale } from '@/lib/i18n';
-  import FlowerMark from './FlowerMark.svelte';
+  import FlowerMark from '@/components/ui/FlowerMark.svelte';
   import Polaroid from './Polaroid.svelte';
 
   let {

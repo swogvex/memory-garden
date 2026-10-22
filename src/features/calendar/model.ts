@@ -4,10 +4,51 @@ import type { MemoryPayload } from '@/lib/validation';
 /** Recuerdo ya descifrado y validado, listo para dibujar. */
 export type GardenMemory = MemoryPayload & { readonly id: string; readonly updatedAt: number };
 
+/** Campos de un recuerdo sin las fotos (las fotos se suben aparte). */
+export type MemoryFields = Omit<MemoryPayload, 'photos'>;
+
+/** Foto ya procesada en el cliente (JPEG sin metadatos), todavía sin cifrar. */
+export interface NewPhoto {
+  readonly photo: Uint8Array;
+  readonly thumb: Uint8Array;
+  readonly alt: string;
+}
+
+export interface CreateMemoryInput {
+  readonly fields: MemoryFields;
+  readonly photos: readonly NewPhoto[];
+}
+
+export interface CreateMemoryResult {
+  readonly memory: GardenMemory;
+  /** Posiciones (0 = primera) de las fotos que no se pudieron subir; el recuerdo se guardó sin ellas. */
+  readonly failedPhotos: readonly number[];
+}
+
+/** Un hueco de foto en edición: una ya guardada o una recién procesada. El orden fija la portada. */
+export type PhotoSlot =
+  | {
+      readonly kind: 'kept';
+      readonly assetId: string;
+      readonly thumbId: string;
+      readonly alt: string;
+    }
+  | ({ readonly kind: 'new' } & NewPhoto);
+export interface SaveMemoryInput {
+  readonly fields: MemoryFields;
+  readonly photos: readonly PhotoSlot[];
+}
+
 /** Puerto de datos del Jardín: lo implementa la capa de composición (adaptador de pruebas hoy, API en H7). */
 export interface GardenSource {
   list(): Promise<GardenMemory[]>;
-  /** Suelta las claves en memoria. */
+  create(input: CreateMemoryInput): Promise<CreateMemoryResult>;
+  update(id: string, input: SaveMemoryInput): Promise<CreateMemoryResult>;
+  /** Papelera de 30 días (D-058). */
+  trash(id: string): Promise<void>;
+  /** URL `blob:` de la miniatura o de la foto `index` del recuerdo; `null` si no está disponible. La URL es de la fuente: no se revoca fuera. */
+  imageUrl(memory: GardenMemory, index: number, size: 'thumb' | 'photo'): Promise<string | null>;
+  /** Suelta las claves y las imágenes descifradas. */
   lock(): void;
 }
 
