@@ -41,4 +41,3 @@ jobs:
         run: npx playwright install-deps chromium webkit
 
       - run: npm run validate
-      
