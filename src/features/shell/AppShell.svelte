@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
+  import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
   import { capitalize, formatMonthYear } from '@/lib/dates';
   import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n';
+  import BouquetsView from './BouquetsView.svelte';
   import { lockGarden } from './garden-data';
   import GardenView from './GardenView.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
@@ -88,6 +90,7 @@
   </svg>
 {/snippet}
 
+<FlowerSprite />
 <div class="shell">
   <nav class="nav" aria-label={t(locale, 'nav.label')}>
     <a class="brand" href={PATHS.garden} onclick={(e) => onNavClick(e, 'garden')}>
@@ -141,7 +144,7 @@
       {#if view === 'garden'}
         <GardenView {locale} onNavigate={(next) => void show(next, true)} />
       {:else if view === 'bouquets'}
-        <PlaceholderView {locale} messageKey="view.soon.bouquets" />
+        <BouquetsView {locale} onNavigate={(next) => void show(next, true)} />
       {:else if view === 'explore'}
         <PlaceholderView {locale} messageKey="view.soon.explore" />
       {:else}

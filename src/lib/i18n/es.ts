@@ -182,6 +182,34 @@ export const es = {
   'catalog.flower.camelia.meaning': 'Ternura',
   'catalog.flower.camelia.alt':
     'Camelia de pétalos redondeados en capas, con estambres dorados en el centro.',
+  'bouquets.intro': 'Cada mes se reúne en un ramo: una flor por recuerdo.',
+  'bouquets.year.prev': 'Año anterior',
+  'bouquets.year.next': 'Año siguiente',
+  'bouquets.month.none': '{month}, sin recuerdos',
+  'bouquets.month.one': '{month}, 1 recuerdo',
+  'bouquets.month.many': '{month}, {count} recuerdos',
+  'bouquets.back': 'Todos los meses',
+  'bouquets.detail.count.none': 'Este mes todavía no tiene flores.',
+  'bouquets.detail.count.one': '1 flor en este ramo',
+  'bouquets.detail.count.many': '{count} flores en este ramo',
+  'bouquets.detail.empty': 'Cuando guardes un recuerdo de este mes, brotará aquí.',
+  'bouquets.detail.garden': 'Ir al Jardín',
+  'bouquets.detail.overflow':
+    'El ramo dibuja {shown} flores; los otros {count} recuerdos están en la lista.',
+  'bouquets.list.title': 'Recuerdos de este ramo',
+  'bouquets.list.hint': 'Pulsa una flor o un recuerdo para abrirlo.',
+  'bouquets.art.root': 'Ramo de {month}',
+  'bouquets.art.flower': '{flower}: {title}, {date}',
+  'bouquets.art.more': 'Y {count} recuerdos más; están en la lista',
+  'bouquets.art.moreText': '+{count} más',
+  'bouquets.export.button': 'Descargar imagen (PNG)',
+  'bouquets.export.working': 'Preparando la imagen…',
+  'bouquets.export.done': 'Imagen creada: {file}',
+  'bouquets.export.error': 'No se pudo crear la imagen. Inténtalo de nuevo.',
+  'bouquets.export.note':
+    'La imagen se guarda sin cifrar en tu dispositivo e incluye las fotos que se ven en el ramo.',
+  'bouquets.export.caption.one': '{month} · 1 recuerdo',
+  'bouquets.export.caption.many': '{month} · {count} recuerdos',
 } as const;
 
 export type MessageKey = keyof typeof es;
