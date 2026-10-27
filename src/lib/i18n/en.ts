@@ -133,7 +133,8 @@ export const en: Partial<Record<MessageKey, string>> = {
   // Flower catalogue (H6.1). Paste inside the `en` object, before the closing brace.
   'catalog.flower.lavanda.name': 'Lavender',
   'catalog.flower.lavanda.meaning': 'Peace and calm',
-  'catalog.flower.lavanda.alt': 'Lavender spike with many small florets packed in pairs along a slender stem.',
+  'catalog.flower.lavanda.alt':
+    'Lavender spike with many small florets packed in pairs along a slender stem.',
   'catalog.flower.hortensia.name': 'Hydrangea',
   'catalog.flower.hortensia.meaning': 'Gratitude',
   'catalog.flower.hortensia.alt': 'Hydrangea: a round ball made of many four-petalled florets.',
@@ -145,14 +146,18 @@ export const en: Partial<Record<MessageKey, string>> = {
   'catalog.flower.rosa.alt': 'Rose with overlapping petals spiralling towards the centre.',
   'catalog.flower.tulipan.name': 'Tulip',
   'catalog.flower.tulipan.meaning': 'New beginnings',
-  'catalog.flower.tulipan.alt': 'Cup-shaped tulip with three visible petals and a long stem with strap-like leaves.',
+  'catalog.flower.tulipan.alt':
+    'Cup-shaped tulip with three visible petals and a long stem with strap-like leaves.',
   'catalog.flower.girasol.name': 'Sunflower',
   'catalog.flower.girasol.meaning': 'Joy',
-  'catalog.flower.girasol.alt': 'Sunflower with pointed yellow petals around a large brown centre of seeds.',
+  'catalog.flower.girasol.alt':
+    'Sunflower with pointed yellow petals around a large brown centre of seeds.',
   'catalog.flower.dalia.name': 'Dahlia',
   'catalog.flower.dalia.meaning': 'Fullness',
-  'catalog.flower.dalia.alt': 'Dahlia with many layers of pointed petals arranged in concentric circles.',
+  'catalog.flower.dalia.alt':
+    'Dahlia with many layers of pointed petals arranged in concentric circles.',
   'catalog.flower.camelia.name': 'Camellia',
   'catalog.flower.camelia.meaning': 'Tenderness',
-  'catalog.flower.camelia.alt': 'Camellia with rounded, layered petals and golden stamens at the centre.',
+  'catalog.flower.camelia.alt':
+    'Camellia with rounded, layered petals and golden stamens at the centre.',
 };
