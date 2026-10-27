@@ -150,6 +150,66 @@ export const es = {
   'dev.fontBody': 'Inter: texto y formularios',
   'dev.fontHand': 'Caveat: frases decorativas',
   'dev.motionNote': 'Se desactiva con prefers-reduced-motion.',
+  // Catálogo de flores (H6.1). Pegar dentro del objeto `es`, antes de la llave de cierre.
+  'catalog.flower.lavanda.name': 'Lavanda',
+  'catalog.flower.lavanda.meaning': 'Paz y calma',
+  'catalog.flower.lavanda.alt':
+    'Espiga de lavanda con muchas florecillas pequeñas apretadas en pares a lo largo de un tallo fino.',
+  'catalog.flower.hortensia.name': 'Hortensia',
+  'catalog.flower.hortensia.meaning': 'Gratitud',
+  'catalog.flower.hortensia.alt':
+    'Hortensia: una bola redonda formada por muchas florecillas de cuatro pétalos.',
+  'catalog.flower.margarita.name': 'Margarita',
+  'catalog.flower.margarita.meaning': 'Sencillez',
+  'catalog.flower.margarita.alt':
+    'Margarita de pétalos largos y estrechos alrededor de un centro amarillo.',
+  'catalog.flower.rosa.name': 'Rosa',
+  'catalog.flower.rosa.meaning': 'Amor',
+  'catalog.flower.rosa.alt': 'Rosa de pétalos superpuestos que forman una espiral hacia el centro.',
+  'catalog.flower.tulipan.name': 'Tulipán',
+  'catalog.flower.tulipan.meaning': 'Comienzos',
+  'catalog.flower.tulipan.alt':
+    'Tulipán en forma de copa, con tres pétalos visibles y un tallo largo con hojas alargadas.',
+  'catalog.flower.girasol.name': 'Girasol',
+  'catalog.flower.girasol.meaning': 'Alegría',
+  'catalog.flower.girasol.alt':
+    'Girasol de pétalos amarillos y puntiagudos alrededor de un gran centro marrón de semillas.',
+  'catalog.flower.dalia.name': 'Dalia',
+  'catalog.flower.dalia.meaning': 'Plenitud',
+  'catalog.flower.dalia.alt':
+    'Dalia de muchas capas de pétalos puntiagudos dispuestos en círculos concéntricos.',
+  'catalog.flower.camelia.name': 'Camelia',
+  'catalog.flower.camelia.meaning': 'Ternura',
+  'catalog.flower.camelia.alt':
+    'Camelia de pétalos redondeados en capas, con estambres dorados en el centro.',
+  'bouquets.intro': 'Cada mes se reúne en un ramo: una flor por recuerdo.',
+  'bouquets.year.prev': 'Año anterior',
+  'bouquets.year.next': 'Año siguiente',
+  'bouquets.month.none': '{month}, sin recuerdos',
+  'bouquets.month.one': '{month}, 1 recuerdo',
+  'bouquets.month.many': '{month}, {count} recuerdos',
+  'bouquets.back': 'Todos los meses',
+  'bouquets.detail.count.none': 'Este mes todavía no tiene flores.',
+  'bouquets.detail.count.one': '1 flor en este ramo',
+  'bouquets.detail.count.many': '{count} flores en este ramo',
+  'bouquets.detail.empty': 'Cuando guardes un recuerdo de este mes, brotará aquí.',
+  'bouquets.detail.garden': 'Ir al Jardín',
+  'bouquets.detail.overflow':
+    'El ramo dibuja {shown} flores; los otros {count} recuerdos están en la lista.',
+  'bouquets.list.title': 'Recuerdos de este ramo',
+  'bouquets.list.hint': 'Pulsa una flor o un recuerdo para abrirlo.',
+  'bouquets.art.root': 'Ramo de {month}',
+  'bouquets.art.flower': '{flower}: {title}, {date}',
+  'bouquets.art.more': 'Y {count} recuerdos más; están en la lista',
+  'bouquets.art.moreText': '+{count} más',
+  'bouquets.export.button': 'Descargar imagen (PNG)',
+  'bouquets.export.working': 'Preparando la imagen…',
+  'bouquets.export.done': 'Imagen creada: {file}',
+  'bouquets.export.error': 'No se pudo crear la imagen. Inténtalo de nuevo.',
+  'bouquets.export.note':
+    'La imagen se guarda sin cifrar en tu dispositivo e incluye las fotos que se ven en el ramo.',
+  'bouquets.export.caption.one': '{month} · 1 recuerdo',
+  'bouquets.export.caption.many': '{month} · {count} recuerdos',
 } as const;
 
 export type MessageKey = keyof typeof es;

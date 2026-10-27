@@ -550,7 +550,10 @@
         {dayCount}
         {recent}
         onSelectDate={(iso) => void goToDate(iso)}
-        onOpenBouquets={() => onNavigate('bouquets')}
+        onOpenBouquets={() => {
+          viewState.bouquetMonth = monthKey;
+          onNavigate('bouquets');
+        }}
       />
     </div>
   </div>

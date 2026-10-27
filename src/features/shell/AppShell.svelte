@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
+  import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
   import { capitalize, formatMonthYear } from '@/lib/dates';
   import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n';
+  import BouquetsView from './BouquetsView.svelte';
   import { lockGarden } from './garden-data';
   import GardenView from './GardenView.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
@@ -88,6 +90,7 @@
   </svg>
 {/snippet}
 
+<FlowerSprite />
 <div class="shell">
   <nav class="nav" aria-label={t(locale, 'nav.label')}>
     <a class="brand" href={PATHS.garden} onclick={(e) => onNavClick(e, 'garden')}>
@@ -141,7 +144,7 @@
       {#if view === 'garden'}
         <GardenView {locale} onNavigate={(next) => void show(next, true)} />
       {:else if view === 'bouquets'}
-        <PlaceholderView {locale} messageKey="view.soon.bouquets" />
+        <BouquetsView {locale} onNavigate={(next) => void show(next, true)} />
       {:else if view === 'explore'}
         <PlaceholderView {locale} messageKey="view.soon.explore" />
       {:else}
@@ -252,7 +255,43 @@
       font-size: 0.625rem;
     }
   }
-
+  /* iOS, móvil (D-150): el documento no se desplaza; solo lo hace .content.
+     Así Safari iOS 26 no dibuja contenido bajo su barra flotante. */
+  @supports (-webkit-touch-callout: none) {
+    @media (max-width: 47.99rem) {
+      :global(html),
+      :global(body) {
+        height: 100%;
+        overflow: hidden;
+      }
+      .shell {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .nav {
+        position: static;
+        order: 2;
+        flex: none;
+      }
+      .content {
+        order: 1;
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-bottom: 0;
+      }
+      /* El enlace de salto cae bajo el contenedor fijo: se fija para que se vea al enfocarlo. */
+      :global(.skip-link:focus) {
+        position: fixed;
+        top: var(--space-2);
+        z-index: 100;
+        margin: 0;
+      }
+    }
+  }
   /* Escritorio y tableta: menú lateral */
   @media (min-width: 48rem) {
     .shell {
