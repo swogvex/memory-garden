@@ -8,6 +8,17 @@
     "directory": "./dist",
     "binding": "ASSETS",
   },
+  // H7.1: base de datos D1. En local (`--local`) el id no se usa.
+  // El id de abajo es un MARCADOR: `npm run deploy` se niega a desplegar mientras siga así (scripts/guard-deploy.mjs).
+  // En H7.3 se crea la base real (jurisdicción UE) y se sustituye por su id.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "memory-garden-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
   "observability": {
     "enabled": false,
   },

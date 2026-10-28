@@ -1,0 +1,9 @@
+# Copia este archivo a `.dev.vars` (que Git ignora) y rellénalo con `npm run gen-secrets -- --dev`.
+# Valores SOLO para desarrollo local, desechables. Los de producción son otros y se suben con `wrangler secret put`.
+MG_ENV=local
+# 32 bytes aleatorios en base64url (43 caracteres).
+PEPPER=
+# Código de un solo uso para el primer acceso (formato XXXXX-XXXXX-XXXXX-XXXXX-XXXXX).
+SETUP_CODE=
+# Opcional, solo con MG_ENV=local: orígenes extra (p. ej. un túnel HTTPS para probar en el iPhone), separados por comas.
+# EXTRA_ORIGINS=https://xxxx.devtunnels.ms

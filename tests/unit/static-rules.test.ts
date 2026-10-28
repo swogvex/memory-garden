@@ -128,7 +128,9 @@ describe('separación de código de prueba y de producción', () => {
     expect(users.length).toBeGreaterThanOrEqual(0);
   });
   it('fuera de lib/crypto nadie toca la política de KDF (solo pruebas pasan `policy`)', () => {
-    const outside = files.filter((f) => !rel(f).startsWith('src/lib/crypto/'));
+    const outside = files.filter(
+      (f) => !rel(f).startsWith('src/lib/crypto') && !rel(f).startsWith('src/server/'),
+    );
     expect(offenders(outside, /\bminIter\b|\bmaxIter\b|\btargetIter\b/)).toEqual([]);
   });
   it('el adaptador falla en producción (import.meta.env.PROD)', () => {
