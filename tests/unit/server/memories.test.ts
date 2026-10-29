@@ -463,3 +463,53 @@ describe('otra cuenta (PS-04)', () => {
     expect(h.r2.store.size).toBe(1);
   });
 });
+
+describe('trash/restore con revisión esperada (contrato del repositorio)', () => {
+  it('con expected_revision: revisión distinta o ya en ese estado → 409 con la versión actual; correcta → se aplica', async () => {
+    const { h, cookie } = await ready();
+    const id = newId();
+    await putMemoryCall(h, cookie, id);
+    const bad = await h.call('POST', `/api/memories/${id}/trash`, {
+      cookie,
+      body: { expected_revision: 7 },
+    });
+    expect(bad.status).toBe(409);
+    expect((bad.json?.current as { revision: number }).revision).toBe(1);
+    expect(
+      (
+        await h.call('POST', `/api/memories/${id}/restore`, {
+          cookie,
+          body: { expected_revision: 1 },
+        })
+      ).status,
+    ).toBe(409); // ya visible
+    const ok = await h.call('POST', `/api/memories/${id}/trash`, {
+      cookie,
+      body: { expected_revision: 1 },
+    });
+    expect(ok.json).toMatchObject({ revision: 2 });
+    expect(
+      (
+        await h.call('POST', `/api/memories/${id}/trash`, {
+          cookie,
+          body: { expected_revision: 2 },
+        })
+      ).status,
+    ).toBe(409); // ya en papelera
+    for (const expected_revision of [0, 'x', 1.5])
+      expect(
+        (await h.call('POST', `/api/memories/${id}/trash`, { cookie, body: { expected_revision } }))
+          .status,
+      ).toBe(400);
+  });
+
+  it('el listado incluye created_at de cada recurso', async () => {
+    const { h, cookie } = await ready();
+    const photo = newId();
+    await putAssetCall(h, cookie, photo, 'photo', 800);
+    const id = newId();
+    await putMemoryCall(h, cookie, id, { asset_ids: [photo] });
+    const got = await h.call('GET', `/api/memories/${id}`, { cookie });
+    expect((got.json?.assets as { created_at: number }[])[0]?.created_at).toBe(T0);
+  });
+});

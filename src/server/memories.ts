@@ -34,6 +34,7 @@ interface MemoryRow {
 
 interface AssetMeta {
   id: string;
+  created_at: number;
   kind: string;
   parent_id: string | null;
   size_bytes: number;
@@ -60,7 +61,7 @@ async function assetsOf(
   if (ids.length === 0) return out;
   const { results } = await db
     .prepare(
-      "SELECT memory_id, id, kind, parent_id, size_bytes, mk_version FROM asset WHERE vault_id = ?1 AND state = 'ready' AND memory_id IN (SELECT value FROM json_each(?2)) ORDER BY created_at, id",
+      "SELECT memory_id, id, kind, parent_id, size_bytes, mk_version, created_at FROM asset WHERE vault_id = ?1 AND state = 'ready' AND memory_id IN (SELECT value FROM json_each(?2)) ORDER BY created_at, id",
     )
     .bind(vaultId, JSON.stringify(ids))
     .all<AssetMeta & { memory_id: string }>();
@@ -278,31 +279,46 @@ async function currentView(
   return view(row, assets.get(row.id) ?? []);
 }
 
+/**
+ * trash / restore. Con `expected_revision` en el cuerpo (lo envía el cliente remoto) exigen la revisión exacta y que el
+ * recuerdo no esté ya en el estado pedido (409, igual que el contrato del repositorio); sin él son idempotentes.
+ */
 async function move(ctx: Ctx, toTrash: boolean): Promise<ApiResult> {
   const id = ctx.params.id;
   const vault = await vaultOf(ctx.db, ctx.session!.accountId);
   if (!isId(id) || !vault) return problem('not_found');
+  const given = ctx.body.expected_revision;
+  const expected = given === undefined ? undefined : intInRange(given, 1, 2_147_483_647);
+  if (given !== undefined && expected === null) return problem('bad_request');
   const row = await loadMemory(ctx, vault.id, id);
   if (!row) return problem('not_found');
-  if ((row.deleted_at !== null) === toTrash)
+  if (expected !== undefined && row.revision !== expected)
+    return problem('conflict', { body: { current: await currentView(ctx, vault.id, row) } });
+  if ((row.deleted_at !== null) === toTrash) {
+    if (expected !== undefined)
+      return problem('conflict', { body: { current: await currentView(ctx, vault.id, row) } });
     return ok({
       id,
       revision: row.revision,
+      created_at: row.created_at,
       updated_at: row.updated_at,
       deleted_at: row.deleted_at,
     }); // ya estaba así
+  }
   await ctx.db
     .prepare(
-      'UPDATE memory SET deleted_at = ?3, revision = revision + 1, updated_at = ?4 WHERE id = ?1 AND vault_id = ?2 AND (deleted_at IS NOT NULL) = ?5',
+      'UPDATE memory SET deleted_at = ?3, revision = revision + 1, updated_at = ?4 WHERE id = ?1 AND vault_id = ?2 AND revision = ?5 AND (deleted_at IS NOT NULL) = ?6',
     )
-    .bind(id, vault.id, toTrash ? ctx.now : null, ctx.now, toTrash ? 0 : 1)
+    .bind(id, vault.id, toTrash ? ctx.now : null, ctx.now, row.revision, toTrash ? 0 : 1)
     .run();
   const saved = await loadMemory(ctx, vault.id, id);
+  if (!saved || saved.revision !== row.revision + 1) return problem('conflict'); // otra petición se adelantó
   return ok({
     id,
-    revision: saved?.revision,
-    updated_at: saved?.updated_at,
-    deleted_at: saved?.deleted_at ?? null,
+    revision: saved.revision,
+    created_at: saved.created_at,
+    updated_at: saved.updated_at,
+    deleted_at: saved.deleted_at,
   });
 }
 
