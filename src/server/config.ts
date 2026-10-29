@@ -53,3 +53,34 @@ export const BUCKET = {
   setup: 'acct:setup',
   global: 'global:auth',
 } as const;
+
+/**
+ * Límites de recuerdos y fotos (data-model.md §3, photos-and-storage.md §6; D-075, D-094, D-098).
+ * Duplican a propósito los de `src/lib/storage/limits.ts` (el servidor no importa código de cliente);
+ * una prueba comprueba que coinciden.
+ */
+export const MAX_PAYLOAD_CHARS = 65536;
+/** Cuerpo JSON de `PUT /api/memories/:id`: carga ≤ 64 KiB + sobre JSON. */
+export const MAX_MEMORY_BODY_BYTES = 72 * 1024;
+export const MAX_MEMORIES = 20_000;
+export const MAX_PHOTOS_PER_MEMORY = 5;
+export const MAX_ASSETS_PER_MEMORY = 10; // fotos + miniaturas
+export const MIN_ASSET_BYTES = 32;
+export const MAX_ASSET_BYTES = {
+  photo: 2 * 1024 * 1024,
+  thumb: 256 * 1024,
+  avatar: 128 * 1024,
+} as const;
+export const MAX_PENDING_ASSETS = 12;
+export const MAX_PENDING_BYTES = 48 * 1024 * 1024;
+export const DAILY_UPLOAD_BYTES = 200 * 1024 * 1024;
+export const TOTAL_QUOTA_BYTES = 5 * 1024 ** 3;
+/** Una subida sin ligar a un recuerdo se descarta pasada 1 h (data-model.md §7.6). */
+export const PENDING_TTL = 3600;
+/** Papelera: 30 días (D-058). */
+export const TRASH_TTL = 30 * 24 * 3600;
+/** Recuerdos por página de `GET /api/memories` (cada carga puede pesar hasta ~44 KiB). */
+export const LIST_PAGE = 100;
+/** Trabajo de limpieza que se permite en una sola petición (limpieza perezosa). */
+export const SWEEP_BATCH = 20;
+export const LAZY_PURGE_BATCH = 3;

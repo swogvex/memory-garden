@@ -57,3 +57,29 @@ export function wrappedKey(value: unknown, purpose: 'pw' | 'rec'): string | null
     ? value
     : null;
 }
+
+/**
+ * Carga cifrada de un recuerdo en D1: base64url canónico de un sobre con cabecera [0x01, 0x01, 0x01 (datos), mk_version].
+ * Mínimo: 16 B de cabecera+nonce, 4 B de longitud y 16 B de etiqueta. Máximo: el `CHECK` de la tabla (64 KiB de texto).
+ * El servidor no puede (ni debe) mirar dentro: solo forma y versión.
+ */
+export function memoryPayload(value: unknown, mkVersion: number, maxChars: number): string | null {
+  if (typeof value !== 'string' || value.length < 48 || value.length > maxChars) return null;
+  const bytes = fromB64Url(value);
+  if (!bytes || bytes.length < 36) return null;
+  return bytes[0] === 0x01 && bytes[1] === 0x01 && bytes[2] === 0x01 && bytes[3] === mkVersion
+    ? value
+    : null;
+}
+
+/** Sobre de un recurso (foto, miniatura, avatar): cabecera [0x01, 0x01, 0x02 (recursos), mk_version 1..255]. Devuelve `mk_version`. */
+export function assetEnvelopeVersion(bytes: Uint8Array): number | null {
+  if (bytes.length < 32 || bytes[0] !== 0x01 || bytes[1] !== 0x01 || bytes[2] !== 0x02) return null;
+  const mk = bytes[3] ?? 0;
+  return mk >= 1 ? mk : null;
+}
+
+/** Identificador generado por el cliente (128 bits aleatorios, 22 caracteres base64url canónicos). */
+export function isId(value: unknown): value is string {
+  return typeof value === 'string' && value.length === 22 && fromB64Url(value)?.length === 16;
+}

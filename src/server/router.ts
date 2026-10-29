@@ -11,7 +11,17 @@ import {
   type Ctx,
   type Handler,
 } from './auth';
+import { deleteAsset, getAsset, putAsset } from './assets';
 import { MAX_BODY_BYTES } from './config';
+import {
+  getMemory,
+  listMemories,
+  purgeMemoryRoute,
+  putMemory,
+  restoreMemory,
+  trashMemory,
+  MEMORY_BODY_LIMIT,
+} from './memories';
 import { loadConfig, type ApiEnv, type Config } from './env';
 import { problem, readBodyLimited, toResponse, type ApiResult } from './http';
 import { cookieSpec, findSession, readCookie, type Session } from './sessions';
@@ -30,6 +40,10 @@ export interface Route {
   path: string;
   auth: RouteAuth;
   handler: Handler;
+  /** `json` (por defecto): el router lee y analiza el cuerpo. `binary`: el manejador lee el cuerpo (fotos). `none`: sin cuerpo. */
+  body?: 'json' | 'binary' | 'none';
+  /** Tope de bytes del cuerpo JSON (por defecto `MAX_BODY_BYTES`). */
+  maxBody?: number;
 }
 
 export const API_ROUTES: readonly Route[] = [
@@ -42,7 +56,45 @@ export const API_ROUTES: readonly Route[] = [
   { method: 'PUT', path: '/api/vault/recovery-key', auth: 'full', handler: regenerateRecoveryKey },
   { method: 'PUT', path: '/api/vault/kdf', auth: 'full', handler: upgradeKdf },
   { method: 'PUT', path: '/api/vault/recovery-reset', auth: 'recovery', handler: recoveryReset },
+  { method: 'GET', path: '/api/memories', auth: 'full', handler: listMemories, body: 'none' },
+  { method: 'GET', path: '/api/memories/:id', auth: 'full', handler: getMemory, body: 'none' },
+  {
+    method: 'PUT',
+    path: '/api/memories/:id',
+    auth: 'full',
+    handler: putMemory,
+    maxBody: MEMORY_BODY_LIMIT,
+  },
+  { method: 'POST', path: '/api/memories/:id/trash', auth: 'full', handler: trashMemory },
+  { method: 'POST', path: '/api/memories/:id/restore', auth: 'full', handler: restoreMemory },
+  {
+    method: 'DELETE',
+    path: '/api/memories/:id',
+    auth: 'full',
+    handler: purgeMemoryRoute,
+    body: 'none',
+  },
+  { method: 'PUT', path: '/api/assets/:id', auth: 'full', handler: putAsset, body: 'binary' },
+  { method: 'GET', path: '/api/assets/:id', auth: 'full', handler: getAsset, body: 'none' },
+  { method: 'DELETE', path: '/api/assets/:id', auth: 'full', handler: deleteAsset, body: 'none' },
 ];
+
+/** Casa `/api/memories/:id` con `/api/memories/abc`; devuelve los segmentos `:nombre` o `null`. */
+export function matchPath(pattern: string, path: string): Record<string, string> | null {
+  const a = pattern.split('/');
+  const b = path.split('/');
+  if (a.length !== b.length) return null;
+  const out: Record<string, string> = {};
+  for (let i = 0; i < a.length; i++) {
+    const seg = a[i] as string;
+    const val = b[i] as string;
+    if (seg.startsWith(':')) {
+      if (val === '' || val.length > 64) return null;
+      out[seg.slice(1)] = val;
+    } else if (seg !== val) return null;
+  }
+  return out;
+}
 
 export interface Deps {
   /** Segundos Unix. Inyectable para simular el reloj en las pruebas (caducidad, ventanas). */
@@ -66,18 +118,26 @@ async function dispatch(request: Request, env: ApiEnv, deps: Deps): Promise<ApiR
 
   const url = new URL(request.url);
   const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : url.pathname;
-  const samePath = API_ROUTES.filter((r) => r.path === path);
-  if (samePath.length === 0) return problem('not_found');
-  const route = samePath.find((r) => r.method === request.method);
-  if (!route)
+  const matches = API_ROUTES.flatMap((r) => {
+    const params = matchPath(r.path, path);
+    return params ? [{ route: r, params }] : [];
+  });
+  if (matches.length === 0) return problem('not_found');
+  const hit = matches.find((m) => m.route.method === request.method);
+  if (!hit)
     return problem('method_not_allowed', {
-      headers: { Allow: samePath.map((r) => r.method).join(', ') },
+      headers: { Allow: matches.map((m) => m.route.method).join(', ') },
     });
+  const { route, params: pathParams } = hit;
+  const bodyKind = route.body ?? 'json';
 
   if (route.method !== 'GET') {
     if (!originAllowed(request, url, cfg)) return problem('forbidden');
-    const type = (request.headers.get('Content-Type') ?? '').split(';')[0]?.trim().toLowerCase();
-    if (type !== 'application/json') return problem('unsupported_media_type');
+    if (bodyKind !== 'none') {
+      const type = (request.headers.get('Content-Type') ?? '').split(';')[0]?.trim().toLowerCase();
+      if (type !== (bodyKind === 'binary' ? 'application/octet-stream' : 'application/json'))
+        return problem('unsupported_media_type');
+    }
   }
 
   const now = (deps.now ?? (() => Math.floor(Date.now() / 1000)))();
@@ -92,8 +152,8 @@ async function dispatch(request: Request, env: ApiEnv, deps: Deps): Promise<ApiR
   }
 
   let body: Record<string, unknown> = {};
-  if (route.method !== 'GET') {
-    const text = await readBodyLimited(request, MAX_BODY_BYTES);
+  if (bodyKind === 'json' && route.method !== 'GET') {
+    const text = await readBodyLimited(request, route.maxBody ?? MAX_BODY_BYTES);
     if (text === null) return problem('payload_too_large');
     if (text.trim() !== '') {
       let parsed: unknown;
@@ -107,7 +167,19 @@ async function dispatch(request: Request, env: ApiEnv, deps: Deps): Promise<ApiR
     }
   }
 
-  const ctx: Ctx = { db: env.DB, cfg, now, request, body, token, session, cookie };
+  const ctx: Ctx = {
+    db: env.DB,
+    cfg,
+    now,
+    request,
+    body,
+    token,
+    session,
+    cookie,
+    params: pathParams,
+    url,
+    r2: env.PHOTOS ?? null,
+  };
   return route.handler(ctx);
 }
 

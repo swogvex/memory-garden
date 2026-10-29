@@ -143,8 +143,9 @@ describe('PS-42 · errores internos y registros', () => {
         .filter((l) => /console\./.test(l))
         .map((l) => `${f}: ${l.trim()}`),
     );
-    expect(hits).toHaveLength(1);
-    expect(hits[0]).toContain("console.error('mg:error'");
+    expect(hits).toHaveLength(2); // el error del router y el aviso de la limpieza perezosa: ambos solo con el nombre del error
+    expect(hits.filter((h) => h.includes("console.error('mg:error'"))).toHaveLength(1);
+    expect(hits.filter((h) => h.includes("console.error('mg:cleanup'"))).toHaveLength(1);
   });
 });
 
@@ -233,7 +234,11 @@ describe('PS-01 · inyección SQL', () => {
         const single = /^(['"])(?:\\.|(?!\1)[^\\])*\1$/.test(arg);
         const joined = /^(?:'(?:[^'\\]|\\.)*'\s*\+?\s*)+$/.test(arg); // literales partidos en líneas, solo con `+` entre literales
         const constant = /^[A-Z][A-Z0-9_]*$/.test(arg);
-        expect(single || joined || constant, `${f}: .prepare(${arg.slice(0, 70)})`).toBe(true);
+        const template = /^`[^`$]*`$/.test(arg); // plantilla sin `${}`: solo para sentencias largas en varias líneas
+        expect(
+          single || joined || constant || template,
+          `${f}: .prepare(${arg.slice(0, 70)})`,
+        ).toBe(true);
         expect(arg.includes('${'), `${f}: ${arg.slice(0, 70)}`).toBe(false);
       }
     }

@@ -52,3 +52,13 @@ export function isSingletonConflict(err: unknown): boolean {
     m.includes('UNIQUE constraint failed: account.id')
   );
 }
+
+/** Una clave primaria o restricción de unicidad de `table` ya existe. */
+export function isUniqueConflict(err: unknown, table: string): boolean {
+  return message(err).includes(`UNIQUE constraint failed: ${table}.`);
+}
+
+/** Una guarda `CASE … ELSE NULL` sobre `table.column` (NOT NULL) ha abortado la transacción. */
+export function isGuardAbort(err: unknown, column: string): boolean {
+  return message(err).includes(`NOT NULL constraint failed: ${column}`);
+}

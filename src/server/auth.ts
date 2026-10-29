@@ -1,5 +1,6 @@
 import { constantTimeEqual, fromB64Url, randomId, utf8 } from './bytes';
 import type { D1Like } from './d1';
+import type { R2Like } from './r2';
 import { normalizeCode, type Config } from './env';
 import {
   eventStatement,
@@ -45,6 +46,11 @@ export interface Ctx {
   /** Sesión ya validada por el router, o `null` en rutas públicas. */
   session: Session | null;
   cookie: CookieSpec;
+  /** Segmentos `:nombre` de la ruta (ya extraídos; sin validar). */
+  params: Record<string, string>;
+  url: URL;
+  /** Bucket de R2 de las fotos, o `null` si el binding falta (las rutas de fotos responden 500). */
+  r2: R2Like | null;
 }
 
 export type Handler = (ctx: Ctx) => Promise<ApiResult>;

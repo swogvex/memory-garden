@@ -19,6 +19,15 @@
       "migrations_dir": "migrations",
     },
   ],
+  // H7.2: fotos cifradas. Sin acceso público ni dominio personalizado: solo este Worker lee y escribe (binding PHOTOS).
+  // En local, wrangler/miniflare lo simula en disco. El bucket real (jurisdicción UE) se crea en H7.3.
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "memory-garden-assets",
+      "jurisdiction": "eu",
+    },
+  ],
   "observability": {
     "enabled": false,
   },

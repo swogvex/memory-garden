@@ -1,5 +1,6 @@
 import { fromB64Url, type Bytes } from './bytes';
 import type { D1Like } from './d1';
+import type { R2Like } from './r2';
 
 /**
  * Entorno que necesita el servidor. `PEPPER` y `SETUP_CODE` son secretos del Worker (`wrangler secret put` en
@@ -7,6 +8,8 @@ import type { D1Like } from './d1';
  */
 export interface ApiEnv {
   DB: D1Like;
+  /** Bucket de R2 con las fotos cifradas (binding `PHOTOS`). Sin acceso público: solo este Worker lo toca. */
+  PHOTOS?: R2Like;
   PEPPER?: string;
   SETUP_CODE?: string;
   MG_ENV?: string;

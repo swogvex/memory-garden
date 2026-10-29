@@ -38,5 +38,9 @@ export function securityHeaders(kind: HeaderKind): Record<string, string> {
 }
 
 export function applySecurityHeaders(headers: Headers, kind: HeaderKind): void {
-  for (const [name, value] of Object.entries(securityHeaders(kind))) headers.set(name, value);
+  for (const [name, value] of Object.entries(securityHeaders(kind))) {
+    // Una ruta puede endurecer Cache-Control (p. ej. `private, no-store` en las fotos); nunca se afloja a otra cosa.
+    if (name === 'Cache-Control' && /no-store/i.test(headers.get('Cache-Control') ?? '')) continue;
+    headers.set(name, value);
+  }
 }

@@ -23,11 +23,13 @@ const protectedRoutes = API_ROUTES.filter((r) => r.auth !== 'none');
 
 async function hit(
   h: Harness,
-  r: { method: string; path: string },
+  r: { method: string; path: string; body?: string },
   cookie?: string | null,
   body: unknown = {},
 ): Promise<Reply> {
-  return h.call(r.method, r.path, { body, ...(cookie ? { cookie } : {}) });
+  const binary =
+    r.body === 'binary' ? { headers: { 'Content-Type': 'application/octet-stream' } } : {};
+  return h.call(r.method, r.path, { body, ...binary, ...(cookie ? { cookie } : {}) });
 }
 
 describe('tabla de rutas', () => {
@@ -96,7 +98,7 @@ describe('acceso sin sesión a cada endpoint protegido (PS-02)', () => {
     }
   });
 
-  it('con sesión válida del ámbito correcto SÍ llegan al manejador (400 por cuerpo vacío, no 401)', async () => {
+  it('con sesión válida del ámbito correcto SÍ llegan al manejador (responde el manejador, no la puerta)', async () => {
     const h = makeHarness();
     const { secrets, cookie: full } = await doSetup(h);
     const rec = cookieOf(
@@ -107,7 +109,7 @@ describe('acceso sin sesión a cada endpoint protegido (PS-02)', () => {
     );
     for (const r of protectedRoutes.filter((x) => x.path !== '/api/auth/logout')) {
       const reply = await hit(h, r, r.auth === 'recovery' ? rec : full);
-      expect(reply.status).toBe(400);
+      expect([401, 403, 415, 500]).not.toContain(reply.status); // pasó la puerta: el manejador responde (400/404/411/200…)
     }
   });
 });
@@ -118,7 +120,9 @@ describe('rutas y métodos', () => {
     const { cookie } = await doSetup(h);
     for (const path of [
       '/api/nada',
-      '/api/memories',
+      '/api/memoriess',
+      '/api/memories/a/b',
+      '/api/assets',
       '/api/',
       '/api/auth',
       '/api/auth/login/extra',
@@ -137,7 +141,9 @@ describe('rutas y métodos', () => {
   it('método incorrecto: 405 con Allow; OPTIONS y HEAD también (sin CORS)', async () => {
     const h = makeHarness();
     for (const r of API_ROUTES) {
-      for (const method of ['OPTIONS', 'HEAD', 'PATCH', r.method === 'GET' ? 'POST' : 'GET']) {
+      const allowed = API_ROUTES.filter((x) => x.path === r.path).map((x) => x.method as string);
+      const other = ['GET', 'POST', 'PUT', 'DELETE'].find((m) => !allowed.includes(m)) as string;
+      for (const method of ['OPTIONS', 'HEAD', 'PATCH', other]) {
         const reply = await h.call(method, r.path, { body: {} });
         expect(reply.status).toBe(405);
         expect(reply.headers.get('Allow')).toContain(r.method);
@@ -155,6 +161,7 @@ describe('rutas y métodos', () => {
 
 describe('CSRF y orígenes (PS-25, PS-31)', () => {
   const stateChanging = API_ROUTES.filter((r) => r.method !== 'GET');
+  const withBody = stateChanging.filter((r) => r.body !== 'none');
 
   it('Origin ajeno, «null» o ausente sin Sec-Fetch-Site same-origin: 403 en toda ruta que cambia estado', async () => {
     const h = makeHarness();
@@ -203,7 +210,7 @@ describe('CSRF y orígenes (PS-25, PS-31)', () => {
 
   it('Content-Type distinto de application/json: 415 (texto, formulario, multipart, ausente)', async () => {
     const h = makeHarness();
-    for (const r of stateChanging) {
+    for (const r of withBody) {
       for (const ct of [
         'text/plain',
         'application/x-www-form-urlencoded',
