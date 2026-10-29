@@ -1,10 +1,13 @@
 /**
- * Cabeceras de seguridad, definidas UNA vez (D-083, headers-and-csp.md §2 y §8).
- * H7.1 solo cablea el perfil `api` (todas las respuestas de /api/*, errores incluidos).
- * El perfil de HTML, la CSP completa y la paridad con `public/_headers` llegan en H7.3.
- * No hay `Access-Control-*`: sin CORS (PS-31). HSTS lo emite el ajuste de zona de Cloudflare, no este código.
+ * Cabeceras de seguridad, definidas UNA vez (D-083, headers-and-csp.md §2 y §8) y aplicadas por dos caminos:
+ *  - respuestas del Worker (`/api/*`): `applySecurityHeaders` (todas, errores incluidos);
+ *  - assets (HTML prerrenderizado, `/_astro/*`): `public/_headers`, que se GENERA a partir de este módulo
+ *    (`renderHeadersFile()`) y cuya igualdad con el archivo guardado vigila `tests/unit/server/headers.test.ts` (PS-59).
+ * La CSP de HTML va en DOS partes (D-085): la `<meta>` de Astro (hashes de `script-src`/`style-src`, se añade en la compilación)
+ * y esta cabecera con todo lo demás, SIN `script-src`, `style-src` ni `default-src` (se cumplirían a la vez y bloquearían los hashes).
+ * No hay `Access-Control-*`: sin CORS (PS-31). HSTS lo emite el ajuste de zona de Cloudflare, no este código (§10.6).
  */
-export type HeaderKind = 'api';
+export type HeaderKind = 'api' | 'html';
 
 const PERMISSIONS_POLICY = [
   'camera=()',
@@ -28,13 +31,37 @@ const COMMON: Record<string, string> = {
   'X-Robots-Tag': 'noindex, nofollow, noarchive',
 };
 
-const API_ONLY: Record<string, string> = {
-  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'",
-  'Cache-Control': 'no-store',
-};
+/** CSP de las respuestas que no son HTML (JSON de la API, binarios cifrados). */
+export const API_CSP = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+
+/**
+ * CSP de cabecera para HTML (headers-and-csp.md §3.2). Las fotos se descifran en el navegador y se muestran con `blob:`; sin `data:`.
+ * Sin `upgrade-insecure-requests`: WebKit sube a https los recursos incluso en `http://127.0.0.1` y el preview de las pruebas
+ * (http) deja de cargar el CSS y el JS. En producción no hace falta: Cloudflare solo sirve por HTTPS, HSTS lo emite la zona
+ * y todas las URLs de la aplicación son relativas y del mismo origen.
+ */
+export const HTML_CSP = [
+  "base-uri 'none'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "frame-src 'none'",
+  "img-src 'self' blob:",
+  "media-src 'self' blob:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "manifest-src 'self'",
+  "worker-src 'self'",
+].join('; ');
+
+/** Rutas de HTML prerrenderizado (una por vista de la isla, `VIEW_SLUGS`): se revalidan siempre (D-054, §6). */
+export const HTML_PATHS = ['/', '/jardin*', '/ramos*', '/explorar*', '/configuracion*'] as const;
 
 export function securityHeaders(kind: HeaderKind): Record<string, string> {
-  return kind === 'api' ? { ...COMMON, ...API_ONLY } : { ...COMMON };
+  if (kind === 'api')
+    return { ...COMMON, 'Content-Security-Policy': API_CSP, 'Cache-Control': 'no-store' };
+  // El `Cache-Control` del HTML se pone por ruta en `_headers` (no en `/*`: pisaría el inmutable de `/_astro/*`).
+  return { ...COMMON, 'Content-Security-Policy': HTML_CSP };
 }
 
 export function applySecurityHeaders(headers: Headers, kind: HeaderKind): void {
@@ -43,4 +70,19 @@ export function applySecurityHeaders(headers: Headers, kind: HeaderKind): void {
     if (name === 'Cache-Control' && /no-store/i.test(headers.get('Cache-Control') ?? '')) continue;
     headers.set(name, value);
   }
+}
+
+/**
+ * Contenido EXACTO de `public/_headers` (formato de Workers static assets: regla de ruta y cabeceras con sangría de 2 espacios).
+ * El adaptador de Cloudflare añade al final su propia regla `/_astro/*` (Cache-Control inmutable): no se duplica aquí.
+ */
+export function renderHeadersFile(): string {
+  const lines = [
+    '# GENERADO desde src/server/security-headers.ts (renderHeadersFile). No editar a mano: lo vigila tests/unit/server/headers.test.ts.',
+    '# Solo para assets; las respuestas del Worker (/api/*) llevan las suyas por código (D-083).',
+    '/*',
+    ...Object.entries(securityHeaders('html')).map(([k, v]) => `  ${k}: ${v}`),
+  ];
+  for (const path of HTML_PATHS) lines.push(path, '  Cache-Control: no-cache');
+  return lines.join('\n') + '\n';
 }
