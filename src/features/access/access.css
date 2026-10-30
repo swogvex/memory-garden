@@ -1,0 +1,195 @@
+/* Pantallas de acceso (H7.3b). Solo clases y variables de tokens.css: sin estilos en línea (CSP, DISENO §2c). */
+.ac {
+  display: grid;
+  place-items: start center;
+  padding-block: var(--space-4);
+}
+.ac-card {
+  width: 100%;
+  max-width: 34rem;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+.ac-brand {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  text-align: center;
+}
+.ac-tagline {
+  margin: 0 0 var(--space-4);
+  text-align: center;
+}
+.ac-form {
+  display: grid;
+  gap: var(--space-4);
+}
+.ac-form h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.ac-form h2:focus {
+  outline: none;
+}
+.ac-form p {
+  margin: 0;
+}
+.ac-step {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.ac-field {
+  display: grid;
+  gap: var(--space-2);
+}
+.ac-label {
+  font-weight: 600;
+}
+.ac-input {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+}
+.ac-input[aria-invalid='true'] {
+  border-color: var(--color-error);
+  border-width: 2px;
+}
+.ac-input-key {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ac-hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.ac-error {
+  color: var(--color-error);
+  font-weight: 600;
+}
+.ac-ok {
+  color: var(--color-sage-text);
+  font-weight: 600;
+}
+.ac-errors {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-error);
+  font-weight: 600;
+}
+.ac-notice {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.ac-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  cursor: pointer;
+}
+.ac-check input {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--color-primary);
+}
+.ac-privacy {
+  display: grid;
+  gap: var(--space-3);
+  max-height: 22rem;
+  padding: var(--space-3) var(--space-4);
+  overflow-y: auto;
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+.ac-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+}
+.ac-meter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.ac-segs {
+  display: inline-flex;
+  gap: 4px;
+}
+.ac-seg {
+  width: 2rem;
+  height: 0.5rem;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-pill);
+  background: #fff;
+}
+.ac-seg.on {
+  background: var(--color-primary);
+}
+.ac-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-4);
+  border: 2px dashed var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  user-select: all;
+}
+.ac-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.ac-actions-row {
+  justify-content: space-between;
+}
+.ac-btn {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  cursor: pointer;
+}
+.ac-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ac-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.ac-btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+.ac-btn-secondary {
+  border-color: var(--color-border-control);
+  background: #fff;
+  color: var(--color-primary);
+}
+.ac-btn-link {
+  padding: 0 var(--space-2);
+  background: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+}

@@ -14,6 +14,12 @@ const navLink = (page: Page, name: string) => nav(page).getByRole('link', { name
 const spaFlag = (page: Page) =>
   page.evaluate(() => (window as unknown as Record<string, unknown>).__mgSpa);
 
+/** Sin servidor de acceso (como en la compilación sin Worker): `/jardin` muestra «No se pudo conectar». */
+const serverDown = (page: Page) =>
+  page.route('**/api/auth/params', (route) =>
+    route.fulfill({ status: 500, contentType: 'application/json', body: '{}' }),
+  );
+
 for (const { slug, label } of ROUTES) {
   test(`/${slug}: carga directa con título, enlace activo, sin errores ni dominios externos`, async ({
     page,
@@ -78,12 +84,13 @@ test('el avatar abre Configuración', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: es['nav.settings'] })).toBeFocused();
 });
 
-test('en la compilación de producción el Jardín muestra su estado de error (sin datos de prueba)', async ({
+test('en la compilación de producción, sin servidor, el acceso muestra su estado de error (sin datos de prueba)', async ({
   page,
 }) => {
+  await serverDown(page);
   await page.goto('/jardin');
-  await expect(page.getByRole('alert')).toContainText(es['garden.error.title']);
-  await expect(page.getByRole('button', { name: es['garden.error.retry'] })).toBeEnabled();
+  await expect(page.getByRole('alert')).toContainText(es['access.unavailable.title']);
+  await expect(page.getByRole('button', { name: es['access.retry'] })).toBeEnabled();
   await expectNoA11yViolations(page);
 });
 
@@ -141,8 +148,9 @@ test('orden de tabulación: enlace de salto, menú, perfil y contenido', async (
 }) => {
   test.skip(browserName === 'webkit', 'El WebKit de Playwright no incluye enlaces en Tab (D-121).');
   await page.setViewportSize({ width: 1280, height: 800 });
+  await serverDown(page);
   await page.goto('/jardin');
-  await expect(page.getByRole('button', { name: es['garden.error.retry'] })).toBeVisible();
+  await expect(page.getByRole('button', { name: es['access.retry'] })).toBeVisible();
 
   const order: string[] = [];
   for (let i = 0; i < 8; i++) {
@@ -165,6 +173,6 @@ test('orden de tabulación: enlace de salto, menú, perfil y contenido', async (
     es['nav.explore'],
     es['nav.settings'],
     es['shell.avatar'],
-    es['garden.error.retry'],
+    es['access.retry'],
   ]);
 });

@@ -1,3 +1,4 @@
+import { currentSource, lockSession } from '@/features/access';
 import { GardenUnavailableError, type GardenSource } from '@/features/calendar';
 
 let pending: Promise<GardenSource> | null = null;
@@ -8,11 +9,16 @@ async function load(): Promise<GardenSource> {
     const { createDevGardenSource } = await import('../../dev/seed');
     return createDevGardenSource();
   }
-  // H7: aquí irán el adaptador remoto y el desbloqueo con contraseña.
   throw new GardenUnavailableError();
 }
 
+/**
+ * La fuente real aparece cuando el acceso desbloquea (H7.3): es la de `features/access`, con las claves en memoria.
+ * Se consulta en cada llamada para no devolver nunca una fuente ya bloqueada tras volver a entrar.
+ */
 export function openGardenSource(): Promise<GardenSource> {
+  const unlocked = currentSource();
+  if (unlocked) return Promise.resolve(unlocked);
   pending ??= load().catch((error: unknown) => {
     pending = null;
     throw error;
@@ -24,6 +30,7 @@ export function openGardenSource(): Promise<GardenSource> {
 export function lockGarden(): void {
   const current = pending;
   pending = null;
+  lockSession();
   void current?.then(
     (source) => source.lock(),
     () => undefined,

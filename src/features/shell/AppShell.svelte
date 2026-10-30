@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
+  import { AccessGate, SignOut } from '@/features/access';
   import { capitalize, formatMonthYear } from '@/lib/dates';
   import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n';
   import BouquetsView from './BouquetsView.svelte';
@@ -11,6 +12,10 @@
   import { viewState } from './view-state.svelte';
 
   const locale: Locale = DEFAULT_LOCALE;
+  // Desarrollo: el jardín abre con datos de prueba sin pedir contraseña. Con `?acceso` se prueba el acceso real contra la API local.
+  // En producción `import.meta.env.DEV` es `false` y siempre se pide el acceso.
+  const bypassAccess =
+    import.meta.env.DEV && !new URLSearchParams(window.location.search).has('acceso');
   // Solo se monta en el navegador (client:only): `window` existe.
   let view = $state<View>(viewFromPath(window.location.pathname) ?? 'garden');
   let headingEl: HTMLHeadingElement | undefined;
@@ -141,15 +146,20 @@
     </header>
 
     <main id="contenido" tabindex="-1">
-      {#if view === 'garden'}
-        <GardenView {locale} onNavigate={(next) => void show(next, true)} />
-      {:else if view === 'bouquets'}
-        <BouquetsView {locale} onNavigate={(next) => void show(next, true)} />
-      {:else if view === 'explore'}
-        <PlaceholderView {locale} messageKey="view.soon.explore" />
-      {:else}
-        <PlaceholderView {locale} messageKey="view.soon.settings" />
-      {/if}
+      <AccessGate {locale} bypass={bypassAccess}>
+        {#if view === 'garden'}
+          <GardenView {locale} onNavigate={(next) => void show(next, true)} />
+        {:else if view === 'bouquets'}
+          <BouquetsView {locale} onNavigate={(next) => void show(next, true)} />
+        {:else if view === 'explore'}
+          <PlaceholderView {locale} messageKey="view.soon.explore" />
+        {:else}
+          <PlaceholderView {locale} messageKey="view.soon.settings" />
+          {#if !bypassAccess}
+            <div class="signout"><SignOut {locale} /></div>
+          {/if}
+        {/if}
+      </AccessGate>
     </main>
   </div>
 </div>
@@ -191,6 +201,9 @@
   }
   main:focus {
     outline: none;
+  }
+  .signout {
+    margin-top: var(--space-5);
   }
   .avatar {
     flex: none;
