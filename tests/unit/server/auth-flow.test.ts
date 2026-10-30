@@ -404,7 +404,11 @@ describe('cambio de contraseña (PS-18)', () => {
         body: keyChange({ current_auth_pw: secrets.authPw }),
       }),
     ]);
-    expect([x.status, y.status].sort()).toEqual([200, 409]);
+    // Gana uno. El otro recibe 409 (revisión obsoleta) o 401 si, al llegar, el ganador ya había
+    // rotado la sesión que comparten. Las dos respuestas son correctas y ninguna cambia nada.
+    const [winner, loser] = [x.status, y.status].sort();
+    expect(winner).toBe(200);
+    expect([401, 409]).toContain(loser);
     expect(
       rows<{ key_revision: number }>(h.raw, 'SELECT key_revision FROM vault')[0]?.key_revision,
     ).toBe(2);

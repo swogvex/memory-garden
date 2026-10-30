@@ -9,9 +9,6 @@ export const es = {
   'nav.explore': 'Explorar',
   'nav.settings': 'Configuración',
   'footer.note': 'Un jardín privado, sin rastreadores.',
-  'home.title': 'Inicio',
-  'home.heading': 'Memory Garden',
-  'home.intro': 'La base del proyecto está lista. Las pantallas llegan en los próximos hitos.',
   'shell.loading': 'Cargando tu jardín…',
   'shell.avatar': 'Perfil y configuración',
   'shell.eyebrow': 'Tu jardín · {year}',
@@ -264,7 +261,7 @@ export const es = {
   'recover.back': 'Volver a entrar',
   'shell.signout': 'Cerrar sesión',
   'shell.signout.working': 'Cerrando sesión…',
-  // Catálogo de flores (H6.1). Pegar dentro del objeto `es`, antes de la llave de cierre.
+  // Catálogo de flores (H6.1).
   'catalog.flower.lavanda.name': 'Lavanda',
   'catalog.flower.lavanda.meaning': 'Paz y calma',
   'catalog.flower.lavanda.alt':

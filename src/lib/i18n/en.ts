@@ -1,7 +1,9 @@
 import type { MessageKey } from './es';
 
-// Parcial a propósito: se completa en H8. Lo que falte cae al español.
+// Completo desde H7.5: mismas claves que `es`. `Partial` se mantiene para que una clave nueva sin
+// traducir caiga al español en lugar de romper la compilación; la prueba de i18n avisa si falta alguna.
 export const en: Partial<Record<MessageKey, string>> = {
+  'app.name': 'Memory Garden',
   'app.tagline': 'Small moments, big flowers.',
   'a11y.skipToContent': 'Skip to content',
   'nav.label': 'Main navigation',
@@ -9,8 +11,10 @@ export const en: Partial<Record<MessageKey, string>> = {
   'nav.bouquets': 'Bouquets',
   'nav.explore': 'Explore',
   'nav.settings': 'Settings',
+  'footer.note': 'A private garden, with no trackers.',
   'shell.loading': 'Loading your garden…',
   'shell.avatar': 'Profile and settings',
+  'shell.eyebrow': 'Your garden · {year}',
   'shell.noscript': 'Memory Garden needs JavaScript to work.',
   'view.soon.bouquets': 'Your monthly bouquets will appear here.',
   'view.soon.explore': 'You will be able to search your memories here.',
@@ -23,6 +27,7 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.count.none': 'No memories this month',
   'garden.count.one': '1 memory this month',
   'garden.count.many': '{count} memories this month',
+  'garden.provisional': 'Provisional view of the month: the calendar arrives in the next delivery.',
   'garden.nav.prev': 'Previous month',
   'garden.nav.next': 'Next month',
   'garden.months.label': 'Months of {year}',
@@ -128,9 +133,135 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.aside.bouquet': "See this month's bouquet",
   'dev.title': 'Components',
   'dev.heading': 'Tokens and typography',
+  'dev.intro': 'Development-only page: it does not exist in production.',
   'dev.sample': 'Every memory is a flower.',
   'dev.greeting': 'Hello, {name}.',
-  // Flower catalogue (H6.1). Paste inside the `en` object, before the closing brace.
+  'dev.language': 'Test language',
+  'dev.langEs': 'Español',
+  'dev.langEn': 'English',
+  'dev.section.colors': 'Colours',
+  'dev.section.fonts': 'Fonts',
+  'dev.section.spacing': 'Spacing',
+  'dev.section.radii': 'Radii',
+  'dev.section.shadows': 'Shadows',
+  'dev.section.motion': 'Motion',
+  'dev.fontTitle': 'Playfair Display: headings',
+  'dev.fontBody': 'Inter: text and forms',
+  'dev.fontHand': 'Caveat: decorative phrases',
+  'dev.motionNote': 'Turned off with prefers-reduced-motion.',
+  // Access: first access, sign-in and recovery (H7.3b).
+  'access.checking': 'Checking your space…',
+  'access.unavailable.title': 'Could not connect',
+  'access.unavailable.body':
+    'Your space could not be checked. Check your connection and try again.',
+  'access.retry': 'Try again',
+  'access.back': 'Back',
+  'access.continue': 'Continue',
+  'access.cancel': 'Cancel',
+  'access.step': 'Step {current} of {total}',
+  'access.error.invalid': 'Could not sign in. Check your details and try again.',
+  'access.error.wait': 'Too many attempts. Wait a moment and try again.',
+  'access.error.network': 'Could not connect. Try again.',
+  'access.error.unsafe':
+    'This space uses security settings this version does not accept. Nothing has been sent.',
+  'access.error.open': 'Your space could not be opened with these details. Try again.',
+  'access.error.conflict': 'Your space changed while you were signing in. Try again.',
+  'access.error.expired':
+    'The session expired. If you already changed your password, sign in with the new one; otherwise, start again.',
+  'access.error.policy': 'That password does not meet the requirements.',
+  'login.title': 'Sign in',
+  'login.password': 'Password',
+  'login.show': 'Show password',
+  'login.submit': 'Sign in',
+  'login.working': 'Signing in…',
+  'login.wait': 'Try again in {seconds} s',
+  'login.forgot': 'I forgot my password',
+  'login.notice.expired': 'Your session has expired. Please sign in again.',
+  'login.notice.idle': 'For your security, your garden was locked after 30 minutes of inactivity.',
+  'password.label': 'Password',
+  'password.repeat': 'Repeat the password',
+  'password.show': 'Show passwords',
+  'password.suggest': 'Suggest a passphrase',
+  'password.suggested':
+    'A phrase of 6 randomly chosen words. Write it down somewhere safe: it is your password.',
+  'password.hint':
+    'At least {min} characters. A long phrase is easier to remember and safer than a word with symbols.',
+  'password.error.short': 'Use at least {min} characters.',
+  'password.error.common': 'This password is too common.',
+  'password.error.variety': 'Use more different characters.',
+  'password.error.mismatch': 'The two passwords do not match.',
+  'password.meter.label': 'Length: {level}',
+  'password.meter.0': 'does not meet the requirements',
+  'password.meter.1': 'fair',
+  'password.meter.2': 'good',
+  'password.meter.3': 'very good',
+  'password.meter.note':
+    'It only measures length and variety: it cannot tell whether the password has been leaked. Do not reuse a password from another site.',
+  'key.label': 'Recovery key',
+  'key.copy': 'Copy',
+  'key.copied': 'Key copied.',
+  'key.download': 'Download as a text file',
+  'key.input.hint':
+    'It has 28 characters in 7 groups of 4. Upper case, lower case and hyphens are all fine.',
+  'key.error.format': 'The key must have 28 characters: letters and numbers.',
+  'key.error.checksum': 'There is a typo; check the characters.',
+  'key.error.mismatch': 'This key does not match the one you were shown. Check it.',
+  'key.ok': 'The key is correct.',
+  'setup.title': 'Welcome to your garden',
+  'setup.privacy.title': 'How Memory Garden looks after your memories',
+  'setup.privacy.p1':
+    'What you write and your photos are encrypted on your device before they leave it. Whoever stores the data (the app developer and the hosting provider, Cloudflare) only receives encrypted text that cannot be read without your password or your recovery key.',
+  'setup.privacy.p2':
+    'What they can see: how many memories you have, when you create, change or delete them, the approximate size of each one, how many photos each memory has and when you open the app.',
+  'setup.privacy.p3':
+    'What we do not do: we use no analytics, no ads, no tracking cookies, and we load nothing from other sites. The app uses a single essential cookie to keep your session open (it is deleted when you sign out or after 12 hours) and stores the language you choose in your browser.',
+  'setup.privacy.p4':
+    'If you lose your password and your recovery key, nobody can recover your memories, not even us.',
+  'setup.privacy.p5':
+    'Something you should know: the app code is delivered by the server every time you open the page. So your security depends on the developer and their accounts not being compromised. We do our best to prevent it (two-step verification, manual deployments), but we cannot prove it from your browser.',
+  'setup.privacy.p6':
+    'Deleting: you can move a memory to the trash; it is permanently deleted after 30 days. The provider’s technical backups may keep encrypted data for up to 7 days, and technical logs for up to 3 days.',
+  'setup.privacy.read': 'I have read the privacy notice',
+  'setup.password.title': 'Create your password',
+  'setup.password.working': 'Setting up encryption on your device…',
+  'setup.key.title': 'Your recovery key',
+  'setup.key.intro':
+    'If you forget your password, this key is the only way back in. It is shown only once.',
+  'setup.key.warn1': 'Keep it on paper and in a second safe place, apart from your password.',
+  'setup.key.warn2': 'Whoever has this key has full access to your memories.',
+  'setup.key.warn3':
+    'It is better not to store it in a password manager or leave it on the clipboard: copying it may leave traces on the device.',
+  'setup.verify.title': 'Check that you have saved it',
+  'setup.verify.body':
+    'Type your recovery key exactly as you saved it. That way you will know you can use it when you need it.',
+  'setup.verify.saved': 'I have saved my recovery key in a safe place',
+  'setup.finish.title': 'One last notice',
+  'setup.finish.body':
+    'If you lose your password and your recovery key, nobody will be able to recover your memories, not even us. There is no other way.',
+  'setup.finish.understood': 'I understand that without a password or a key there is no recovery',
+  'setup.code.label': 'Setup code',
+  'setup.code.hint': 'The code given to you by whoever prepared the app.',
+  'setup.finish.submit': 'Create my garden',
+  'setup.finish.working': 'Creating your garden…',
+  'setup.error.code':
+    'The space could not be created. Check the setup code; if a space already exists, sign in with your password.',
+  'recover.title': 'Recover access',
+  'recover.intro': 'Enter your recovery key to choose a new password.',
+  'recover.error.invalid': 'The key could not be checked. Check the characters and try again.',
+  'recover.checking': 'Checking the key…',
+  'recover.password.title': 'Choose a new password',
+  'recover.password.submit': 'Continue',
+  'recover.newkey.title': 'Your new recovery key',
+  'recover.newkey.intro':
+    'Your previous key can no longer be used. Keep this new one just as carefully.',
+  'recover.verify.submit': 'Change password',
+  'recover.done.title': 'All done!',
+  'recover.done.body': 'Your password and your recovery key have been changed.',
+  'recover.done.enter': 'Enter my garden',
+  'recover.back': 'Back to sign in',
+  'shell.signout': 'Sign out',
+  'shell.signout.working': 'Signing out…',
+  // Flower catalogue (H6.1).
   'catalog.flower.lavanda.name': 'Lavender',
   'catalog.flower.lavanda.meaning': 'Peace and calm',
   'catalog.flower.lavanda.alt':
