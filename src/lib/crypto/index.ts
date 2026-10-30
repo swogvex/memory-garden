@@ -43,5 +43,4 @@ export type {
   Options as VaultOptions,
 } from './vault';
 export type { Passphrase } from './password-policy';
-export { generateSpanishPassphrase, PASSPHRASE_WORDS_ES } from './passphrase-es';
 export { WORDLIST_ES } from './wordlist-es';

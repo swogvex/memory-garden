@@ -7,7 +7,29 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
+    "html_handling": "drop-trailing-slash",
   },
+  // Solo se sirve por el dominio propio: ni *.workers.dev ni URLs de vista previa.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "memorygarden.date", "custom_domain": true }],
+  // D1 en la UE (la jurisdicción no se puede cambiar). Binding DB: lo usa src/server.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "memory-garden-db",
+      "database_id": "eee88cdc-2abe-4ab9-bc4c-130e80770bec",
+      "migrations_dir": "migrations",
+    },
+  ],
+  // Fotos cifradas: sin acceso público; solo este Worker lee y escribe (binding PHOTOS). Bucket en la UE.
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "memory-garden-assets",
+      "jurisdiction": "eu",
+    },
+  ],
   "observability": {
     "enabled": false,
   },

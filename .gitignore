@@ -1,3 +1,4 @@
+
 dist/
 .astro/
 .wrangler/
@@ -14,15 +15,13 @@ npm-debug.log*
 !.env.example
 .dev.vars
 .dev.vars.*
+!.dev.vars.example
 *.pem
 *.key
 
 .DS_Store
 Thumbs.db
 .idea/
-
-playwright-report/
-test-results/
 
 # Copias y exportaciones (PS-35)
 *.mgx
