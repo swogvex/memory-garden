@@ -1,12 +1,18 @@
 ---
+import { AppShell, NAV_LABEL_KEY } from '@/features/shell';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { DEFAULT_LOCALE, t } from '@/lib/i18n';
 
+// La portada es la propia app (H7.5): sin sesión muestra el acceso y, tras entrar, el Jardín
+// (`AppShell` trata `/` como `garden`). Así basta con escribir memorygarden.date.
 const locale = DEFAULT_LOCALE;
 ---
 
-<BaseLayout title={t(locale, 'home.title')} locale={locale}>
-  <h1>{t(locale, 'home.heading')}</h1>
-  <p class="handwritten">{t(locale, 'app.tagline')}</p>
-  <p>{t(locale, 'home.intro')}</p>
+<BaseLayout title={t(locale, NAV_LABEL_KEY.garden)} locale={locale} shell>
+  <AppShell client:only="svelte">
+    <p slot="fallback" role="status">
+      {t(locale, 'shell.loading')}
+    </p>
+  </AppShell>
+  <noscript>{t(locale, 'shell.noscript')}</noscript>
 </BaseLayout>
