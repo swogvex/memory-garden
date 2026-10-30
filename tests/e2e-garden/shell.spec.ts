@@ -160,3 +160,27 @@ test('orden de tabulación: enlace de salto, menú y perfil', async ({ page, bro
     es['shell.avatar'],
   ]);
 });
+
+test('el avatar y el título no se mueven al cambiar de sección (móvil y escritorio)', async ({
+  page,
+}) => {
+  const avatar = page.getByRole('link', { name: es['shell.avatar'] });
+  const title = page.getByRole('heading', { level: 1 });
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/jardin');
+    await expect(avatar).toBeVisible();
+    const refAvatar = (await avatar.boundingBox())!;
+    const refTitle = (await title.boundingBox())!;
+    for (const { slug, label } of ROUTES.slice(1)) {
+      // Con teclado: a 390 px la barra de herramientas de Astro (solo en `dev`) tapa la barra inferior.
+      await navLink(page, label).press('Enter');
+      await expect(page).toHaveURL(new RegExp(`/${slug}/?$`));
+      await expect(title).toHaveText(label);
+      const a = (await avatar.boundingBox())!;
+      const h = (await title.boundingBox())!;
+      expect(Math.abs(a.y - refAvatar.y), `avatar en /${slug} a ${width}px`).toBeLessThanOrEqual(1);
+      expect(Math.abs(h.y - refTitle.y), `título en /${slug} a ${width}px`).toBeLessThanOrEqual(1);
+    }
+  }
+});

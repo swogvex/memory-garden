@@ -184,27 +184,38 @@
     padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
   }
   .topbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    /* La fila del antetítulo se reserva aunque esté vacía: el título y el avatar quedan a la misma
+       altura en todas las secciones y no saltan al cambiar (el antetítulo solo lo tiene el Jardín). */
+    grid-template-rows: minmax(calc(0.75rem * var(--leading-body)), auto) auto auto;
+    grid-template-areas:
+      'eyebrow .'
+      'title avatar'
+      'subtitle .';
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
+    column-gap: var(--space-3);
+    row-gap: 0.125rem;
     width: 100%;
     max-width: 80rem;
     margin-inline: auto;
     padding: var(--space-4) var(--gutter) var(--space-3);
   }
   .titles {
-    display: grid;
-    gap: 0.125rem;
-    min-width: 0;
+    display: contents;
+  }
+  .eyebrow {
+    grid-area: eyebrow;
   }
   h1 {
+    grid-area: title;
     min-width: 0;
     margin: 0;
     font-size: clamp(1.75rem, 5vw, 2.4rem);
     overflow-wrap: anywhere;
   }
   .subtitle {
+    grid-area: subtitle;
     margin: 0;
     font-family: var(--font-title);
     font-style: italic;
@@ -226,6 +237,7 @@
     margin-top: var(--space-5);
   }
   .avatar {
+    grid-area: avatar;
     flex: none;
     display: grid;
     place-items: center;
