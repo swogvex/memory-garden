@@ -8,19 +8,20 @@
     "directory": "./dist",
     "binding": "ASSETS",
   },
-  // H7.1: base de datos D1. En local (`--local`) el id no se usa.
-  // El id de abajo es un MARCADOR: `npm run deploy` se niega a desplegar mientras siga así (scripts/guard-deploy.mjs).
-  // En H7.3 se crea la base real (jurisdicción UE) y se sustituye por su id.
+  // Solo se sirve por el dominio propio: ni *.workers.dev ni URLs de vista previa.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "memorygarden.date", "custom_domain": true }],
+  // D1 en la UE (la jurisdicción no se puede cambiar). Binding DB: lo usa src/server.
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "memory-garden-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "eee88cdc-2abe-4ab9-bc4c-130e80770bec",
       "migrations_dir": "migrations",
     },
   ],
-  // H7.2: fotos cifradas. Sin acceso público ni dominio personalizado: solo este Worker lee y escribe (binding PHOTOS).
-  // En local, wrangler/miniflare lo simula en disco. El bucket real (jurisdicción UE) se crea en H7.3.
+  // Fotos cifradas: sin acceso público; solo este Worker lee y escribe (binding PHOTOS). Bucket en la UE.
   "r2_buckets": [
     {
       "binding": "PHOTOS",
