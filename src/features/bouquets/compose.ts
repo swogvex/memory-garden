@@ -3,26 +3,29 @@ import type {
   BouquetInput,
   BouquetLayout,
   BouquetMemory,
+  FillerKind,
+  PlacedFiller,
   PlacedFlower,
   PlacedLeaf,
   PlacedPolaroid,
+  StemCurve,
 } from './model';
+import { headingDeg, stemPoint, stemTangent } from './stem-geometry';
 
 export const CANVAS_WIDTH = 600;
-export const HEIGHT_FLOWERS = 640;
-export const HEIGHT_PHOTOS = 790;
+/** Alto fijo del lienzo: las Polaroids van entre las flores, ya no cuelgan debajo. */
+export const CANVAS_HEIGHT = 700;
 export const MAX_FLOWERS = 21;
 export const MAX_POLAROIDS = 5;
 
-const CENTER_X = 300;
-const CENTER_Y = 262;
-const BASE = { x: 300, y: 568 } as const;
+/** Centro del lazo: todos los tallos pasan por aquí. */
+const BOW = { x: 300, y: 530 } as const;
+/** Altura media del corte de los tallos, bajo el lazo. */
+const STEM_END = 650;
 const RX_MAX = 205;
-const ASPECT = 1.1;
+const ASPECT = 1.2;
 const COVERAGE = 1.3;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
-/** Con pocas flores se bajan para acortar el tallo. */
-const LOWER: Readonly<Record<number, number | undefined>> = { 1: 60, 2: 40, 3: 22 };
 const RANK = { focal: 0, mid: 1, spike: 2 } as const;
 const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 
@@ -30,11 +33,22 @@ const round1 = (v: number) => Math.round(v * 10) / 10;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const hex = (n: number) => n.toString(16).padStart(8, '0');
+const rad = (deg: number) => (deg * Math.PI) / 180;
+type Rng = () => number;
+
+interface Dome {
+  x: number;
+  y: number;
+  rx: number;
+  ry: number;
+  r: number;
+}
 
 /**
  * Compone el ramo de un mes. Es una función pura y determinista: la misma entrada da siempre
  * el mismo resultado, sin azar real, sin reloj y sin depender del orden de la lista.
- * Algoritmo documentado en `docs/ramos-algoritmo.md`.
+ * Algoritmo (H7.5): copa en abanico sobre el lazo, tallos que convergen en él, hojas sobre los
+ * tallos, relleno decorativo alrededor de la copa y Polaroids prendidas en el borde.
  */
 export function composeBouquet(input: BouquetInput): BouquetLayout {
   if (!MONTH.test(input.month)) throw new RangeError('bouquet:invalid-month');
@@ -55,22 +69,27 @@ export function composeBouquet(input: BouquetInput): BouquetLayout {
   const total = sorted.length;
   const visible = pickVisible(sorted);
   const m = visible.length;
+  const dome = domeFor(m);
 
-  const flowers = placeFlowers(input.month, visible, sub);
-  const leaves = placeLeaves(flowers, m, sub('leaves'));
-  const polaroids = placePolaroids(sorted, sub('polaroids'));
+  const flowers = placeFlowers(input.month, visible, dome, sub);
+  const filler = placeFiller(input.month, flowers, dome, m, sub('filler'));
+  const leaves = placeLeaves(flowers, filler, m, sub('leaves'));
+  const polaroids = placePolaroids(sorted, flowers, dome, sub('polaroids'));
 
   return {
     month: input.month,
     seed: hex(seed),
     width: CANVAS_WIDTH,
-    height: polaroids.length > 0 ? HEIGHT_PHOTOS : HEIGHT_FLOWERS,
+    height: CANVAS_HEIGHT,
     total,
     flowers,
+    filler,
     leaves,
-    base: BASE,
+    base: BOW,
+    bowScale: m <= 3 ? 1 : round1((1 + 0.28 * Math.min(1, dome.rx / RX_MAX)) * 100) / 100,
+    dome: { x: round1(dome.x), y: round1(dome.y), rx: round1(dome.rx), ry: round1(dome.ry) },
     polaroids,
-    overflow: total > m ? { count: total - m, x: 512, y: 526 } : null,
+    overflow: total > m ? { count: total - m, x: BOW.x - 132, y: BOW.y + 50 } : null,
   };
 }
 
@@ -86,9 +105,45 @@ function pickVisible(sorted: readonly BouquetMemory[]): readonly BouquetMemory[]
 
 /** Radio base de una cabeza según cuántas hay: pocas flores, más grandes. */
 function baseRadius(m: number): number {
-  if (m >= 6) return 50;
-  return [0, 88, 74, 64, 58, 54][m] as number;
+  if (m >= 6) return Math.max(43, 52 - (m - 6) * 0.6);
+  return [0, 84, 70, 62, 57, 54][m] as number;
 }
+
+/** Copa del ramo: una elipse más ancha que alta, apoyada sobre el lazo. */
+function domeFor(m: number): Dome {
+  const r = baseRadius(Math.max(1, m));
+  const area = (Math.max(1, m) * Math.PI * r * r) / COVERAGE;
+  const rx = m <= 1 ? 0 : Math.min(RX_MAX, Math.sqrt((area * ASPECT) / Math.PI));
+  const ry = rx / ASPECT;
+  const y = Math.min(330, BOW.y - 120 - ry * 0.9);
+  return { x: BOW.x, y, rx, ry, r };
+}
+
+/** Tallo de un elemento con su cabeza en (x, y), girada `rot` grados. */
+function stemFor(x: number, y: number, rot: number, width: number, rng: Rng): StemCurve {
+  const th = rad(rot);
+  const downX = -Math.sin(th);
+  const downY = Math.cos(th);
+  const x1 = BOW.x + clamp((x - BOW.x) * 0.07, -13, 13);
+  const len = Math.hypot(x1 - x, BOW.y - y);
+  return {
+    x0: round1(x),
+    y0: round1(y),
+    c1x: round1(x + downX * len * 0.35),
+    c1y: round1(y + downY * len * 0.35),
+    c2x: round1(x1 + (x - x1) * 0.1),
+    c2y: round1(BOW.y - len * 0.3),
+    x1: round1(x1),
+    y1: BOW.y,
+    ex: round1(x1 + (x1 - BOW.x) * 2.6 + jitter(rng, 4)),
+    ey: round1(STEM_END + jitter(rng, 9)),
+    width: round1(width),
+    tone: Math.floor(rng() * 3),
+  };
+}
+
+/** Giro de un elemento según su posición respecto al lazo: lo de los lados se abre hacia fuera. */
+const leanFromBow = (x: number, y: number) => headingDeg({ x: x - BOW.x, y: y - BOW.y });
 
 interface Slot {
   x: number;
@@ -99,29 +154,23 @@ interface Slot {
 function placeFlowers(
   month: string,
   visible: readonly BouquetMemory[],
-  sub: (label: string) => () => number,
+  dome: Dome,
+  sub: (label: string) => Rng,
 ): PlacedFlower[] {
   const m = visible.length;
   if (m === 0) return [];
-  const rBase = baseRadius(m);
-  const area = (m * Math.PI * rBase * rBase) / COVERAGE;
-  const rx = Math.min(RX_MAX, Math.sqrt((area * ASPECT) / Math.PI));
-  const ry = rx / ASPECT;
+  const rBase = dome.r;
 
-  // 3. Posiciones: espiral de Vogel dentro de una elipse. Las primeras quedan en el centro.
+  // 3. Posiciones: espiral de Vogel dentro de la copa. Las primeras quedan en el centro.
   const phase = sub('phase')() * Math.PI * 2;
   const slots: Slot[] = [];
   for (let i = 0; i < m; i++) {
     const d = m === 1 ? 0 : Math.sqrt((i + 0.5) / m);
     const a = phase + i * GOLDEN_ANGLE;
-    slots.push({
-      x: CENTER_X + rx * d * Math.cos(a),
-      y: CENTER_Y + (LOWER[m] ?? 0) + ry * d * Math.sin(a),
-      d,
-    });
+    slots.push({ x: dome.x + dome.rx * d * Math.cos(a), y: dome.y + dome.ry * d * Math.sin(a), d });
   }
 
-  // 4. Reparto: las flores grandes al centro, las medianas después y las espigas en el borde.
+  // 4. Reparto: las grandes al centro, las medianas después y las espigas en el borde.
   const shuffle = sub('order');
   const order = visible
     .map((mem) => ({ mem, key: shuffle() }))
@@ -138,23 +187,45 @@ function placeFlowers(
     y: number;
     r: number;
     hit: number;
-    scale: number;
+    spike: boolean;
   }
-  const work: Work[] = order.map(({ mem }, i) => {
-    const slot = slots[i] as Slot;
+  // Las espigas se quedan los huecos exteriores más altos; el resto, del centro hacia fuera.
+  const spikes = order.filter(({ mem }) => FLOWER_INFO[mem.flower].role === 'spike').length;
+  const byDepth = slots.map((s, i) => ({ s, i })).sort((a, b) => a.s.d - b.s.d || a.i - b.i);
+  const outer = byDepth.slice(Math.floor(m / 2));
+  const reserved = new Set(
+    [...outer]
+      .sort((a, b) => a.s.y - b.s.y || a.i - b.i)
+      .slice(0, spikes)
+      .map((e) => e.i),
+  );
+  const spikeSlots = byDepth.filter((e) => reserved.has(e.i)).map((e) => e.s);
+  const otherSlots = byDepth.filter((e) => !reserved.has(e.i)).map((e) => e.s);
+  let si = 0;
+  let oi = 0;
+  const work: Work[] = order.map(({ mem }) => {
+    const isSpike = FLOWER_INFO[mem.flower].role === 'spike';
+    const slot = (
+      isSpike && si < spikeSlots.length ? spikeSlots[si++] : (otherSlots[oi++] ?? spikeSlots[si++])
+    ) as Slot;
     const info = FLOWER_INFO[mem.flower];
-    const r = rBase * info.size * (1 - 0.16 * slot.d);
-    return {
-      mem,
-      x: slot.x,
-      y: slot.y,
-      r,
-      hit: info.role === 'spike' ? r * 0.6 : r,
-      scale: r / info.radius,
-    };
+    const spike = info.role === 'spike';
+    const r = rBase * info.size * (1 - 0.14 * slot.d);
+    let { x, y } = slot;
+    // Alturas variadas: las espigas sobresalen siempre y algunas medianas, a veces; se alejan del
+    // lazo en la dirección de su tallo.
+    const lift = spike ? 0.75 : info.role === 'mid' && slot.d > 0.5 && shuffle() < 0.5 ? 0.35 : 0;
+    if (lift > 0 && m > 1) {
+      const dx = x - BOW.x;
+      const dy = y - BOW.y;
+      const len = Math.hypot(dx, dy) || 1;
+      x += (dx / len) * r * lift;
+      y += (dy / len) * r * lift;
+    }
+    return { mem, x, y, r, hit: spike ? r * 0.55 : r, spike };
   });
 
-  // 5. Equilibrio: separar solapes excesivos, mantener dentro de la elipse y centrar la masa.
+  // 5. Equilibrio: separar solapes excesivos, mantener dentro de la copa y centrar la masa.
   if (m > 1) {
     for (let iter = 0; iter < 40; iter++) {
       for (let i = 0; i < m; i++) {
@@ -164,7 +235,7 @@ function placeFlowers(
           let dx = b.x - a.x;
           let dy = b.y - a.y;
           let dist = Math.hypot(dx, dy);
-          const min = (a.hit + b.hit) * 0.72;
+          const min = (a.hit + b.hit) * 0.68;
           if (dist >= min) continue;
           if (dist < 0.001) {
             dx = Math.cos(i * 2.4);
@@ -179,13 +250,14 @@ function placeFlowers(
         }
       }
       for (const w of work) {
-        const u = (w.x - CENTER_X) / (rx * 1.12);
-        const v = (w.y - CENTER_Y) / (ry * 1.12);
+        const k0 = w.spike ? 1.4 : 1.12;
+        const u = (w.x - dome.x) / (dome.rx * k0);
+        const v = (w.y - dome.y) / (dome.ry * k0);
         const q = u * u + v * v;
         if (q > 1) {
           const k = 1 / Math.sqrt(q);
-          w.x = CENTER_X + (w.x - CENTER_X) * k;
-          w.y = CENTER_Y + (w.y - CENTER_Y) * k;
+          w.x = dome.x + (w.x - dome.x) * k;
+          w.y = dome.y + (w.y - dome.y) * k;
         }
       }
     }
@@ -195,109 +267,367 @@ function placeFlowers(
       wsum += w.r * w.r;
       cx += w.x * w.r * w.r;
     }
-    const shift = clamp(CENTER_X - cx / wsum, -40, 40);
+    const shift = clamp(dome.x - cx / wsum, -40, 40);
     for (const w of work) w.x += shift;
   }
-  const top = Math.min(...work.map((w) => w.y - w.r * 1.15));
-  if (top < 14) for (const w of work) w.y += 14 - top;
+  const top = Math.min(...work.map((w) => w.y - w.r * (w.spike ? 1.35 : 1.15)));
+  if (top < 12) for (const w of work) w.y += 12 - top;
+  const bottom = Math.max(...work.map((w) => w.y + w.r));
+  if (bottom > BOW.y - 30) for (const w of work) w.y -= bottom - (BOW.y - 30);
   const left = Math.min(...work.map((w) => w.x - w.r * 1.05));
   const right = Math.max(...work.map((w) => w.x + w.r * 1.05));
   if (left < 8) for (const w of work) w.x += 8 - left;
   else if (right > CANVAS_WIDTH - 8) for (const w of work) w.x -= right - (CANVAS_WIDTH - 8);
 
-  // 6. Giro hacia fuera, tono propio y orden de dibujo (las más altas, al fondo).
+  // 6. Giro hacia fuera siguiendo el tallo, tono propio y orden de dibujo (las más altas, al fondo).
   const placed = work.map((w): PlacedFlower => {
     const info = FLOWER_INFO[w.mem.flower];
     const rng = mulberry32(fnv1a(`${month}|${w.mem.id}|pose`));
-    const lean = info.role === 'spike' ? 1.5 : 1;
-    const rot = clamp(((w.x - CENTER_X) / rx) * 24 * lean, -40, 40) + jitter(rng, 5);
+    const lean = leanFromBow(w.x, w.y) * (w.spike ? 1 : 0.7);
+    const rot = round1(clamp(lean + jitter(rng, 4), -55, 55));
+    const tone = Math.floor(rng() * 3);
+    const stem = stemFor(w.x, w.y, rot, (1.9 + 0.032 * w.r) * info.stem, rng);
     return {
       id: w.mem.id,
       flower: w.mem.flower,
       date: w.mem.date,
       x: round1(w.x),
       y: round1(w.y),
-      rot: round1(rot),
-      scale: round1(w.scale * 100) / 100,
+      rot,
+      scale: round1((w.r / info.radius) * 100) / 100,
       radius: round1(w.r),
-      tone: Math.floor(rng() * 3),
+      tone,
       seed: `${month}|${w.mem.id}`,
-      stemX: round1(clamp(BASE.x + (w.x - CENTER_X) * 0.09, BASE.x - 26, BASE.x + 26)),
+      stemX: stem.x1,
+      stem,
     };
   });
   return placed.sort((a, b) => a.y - b.y || a.x - b.x || cmp(a.id, b.id));
 }
 
-function placeLeaves(flowers: readonly PlacedFlower[], m: number, rng: () => number): PlacedLeaf[] {
-  const out: PlacedLeaf[] = [];
-  const kinds = [...new Set(flowers.map((f) => FLOWER_INFO[f.flower].leaf))].sort();
-  const kindAt = (): PlacedLeaf['kind'] =>
-    (kinds.length === 0 ? 'lance' : kinds[Math.floor(rng() * kinds.length)]) as PlacedLeaf['kind'];
+/** Cuánto relleno lleva un ramo según sus flores visibles. */
+function fillerCount(m: number): number {
+  if (m <= 0) return 0;
+  if (m <= 3) return 5 + m;
+  if (m <= 8) return 12;
+  if (m <= 13) return 15;
+  return 18;
+}
 
-  if (m === 0) {
-    // Mes vacío: un brote de tres hojas.
-    for (const [rot, length] of [
-      [-24, 150],
-      [0, 176],
-      [24, 150],
-    ] as const) {
-      out.push({ x: BASE.x, y: BASE.y - 6, rot, length, kind: 'lance', tone: 0 });
-    }
-    return out;
-  }
+const FILLER_CYCLE: readonly FillerKind[] = [
+  'sprig',
+  'greens',
+  'gyps',
+  'sprig',
+  'sprig',
+  'greens',
+  'gyps',
+];
 
-  const rBase = baseRadius(m);
-  const area = (m * Math.PI * rBase * rBase) / COVERAGE;
-  const rx = Math.min(RX_MAX, Math.sqrt((area * ASPECT) / Math.PI));
-  const ry = rx / ASPECT;
-  const count = clamp(Math.round(m * 0.55) + 3, 3, 14);
+function placeFiller(
+  month: string,
+  flowers: readonly PlacedFlower[],
+  dome: Dome,
+  m: number,
+  rng: Rng,
+): PlacedFiller[] {
+  if (m === 0) return emptyMonthFiller(month, rng);
+  const out: PlacedFiller[] = [];
+  const count = fillerCount(m);
+  // Contorno real de la copa (flores ya colocadas), para que el relleno asome por el borde.
+  const cx = flowers.reduce((s, fl) => s + fl.x, 0) / flowers.length;
+  const cy = flowers.reduce((s, fl) => s + fl.y, 0) / flowers.length;
+  const spread = m === 1 ? 120 : 140;
+  const offset = Math.floor(rng() * FILLER_CYCLE.length);
   for (let k = 0; k < count; k++) {
-    const phi = ((-205 + ((k + 0.5) / count) * 230 + jitter(rng, 6)) * Math.PI) / 180;
-    const radial = Math.hypot(rx * Math.cos(phi), ry * Math.sin(phi));
-    out.push({
-      x: round1(CENTER_X + rx * 0.45 * Math.cos(phi)),
-      y: round1(CENTER_Y + ry * 0.45 * Math.sin(phi)),
-      rot: round1((phi * 180) / Math.PI + 90),
-      length: round1(clamp(radial * 0.55 + 38 + between(rng, 0, 30), 60, 150)),
-      kind: kindAt(),
-      tone: Math.floor(rng() * 3),
-    });
-  }
-  // Hojas del tallo, a los lados del lazo.
-  const side = m <= 3 ? 1 : 2;
-  for (let k = 0; k < side; k++) {
-    for (const dir of [-1, 1] as const) {
-      out.push({
-        x: BASE.x + dir * 5,
-        y: BASE.y - 16 - k * 14,
-        rot: round1(dir * (52 + k * 14 + between(rng, 0, 12))),
-        length: round1(between(rng, 112, 146)),
-        kind: kindAt(),
-        tone: Math.floor(rng() * 3),
-      });
+    const kind = FILLER_CYCLE[(k + offset) % FILLER_CYCLE.length] as FillerKind;
+    const psi = rad(-spread + ((k + 0.5) / count) * spread * 2 + jitter(rng, 6));
+    // Distancia al centro: hasta el borde de la flor más alejada en esa dirección, y algo más.
+    let reach = dome.r * 0.6;
+    for (const fl of flowers) {
+      const along = (fl.x - cx) * Math.sin(psi) - (fl.y - cy) * Math.cos(psi);
+      if (along > 0) reach = Math.max(reach, along + fl.radius * 0.25);
     }
+    const out1 = kind === 'gyps' ? 0.05 : 0.15;
+    let x = cx + Math.sin(psi) * (reach + dome.r * out1);
+    let y = cy - Math.cos(psi) * (reach + dome.r * out1);
+    x = clamp(x, 40, CANVAS_WIDTH - 40);
+    y = clamp(y, 110, BOW.y - 70);
+    const rot = round1(clamp(leanFromBow(x, y) + jitter(rng, 8), -80, 80));
+    let length = round1(
+      (kind === 'sprig'
+        ? between(rng, 88, 128)
+        : kind === 'greens'
+          ? between(rng, 84, 120)
+          : between(rng, 46, 62)) * (m === 1 ? 0.8 : 1),
+    );
+    // La punta no sale del lienzo: si haría falta, la rama es más corta.
+    const up = Math.cos(rad(rot));
+    const side = Math.sin(rad(rot));
+    if (up > 0 && y - up * length < 10) length = round1(Math.max(30, (y - 10) / up));
+    if (side > 0 && x + side * length > CANVAS_WIDTH - 10)
+      length = round1(Math.max(30, (CANVAS_WIDTH - 10 - x) / side));
+    if (side < 0 && x + side * length < 10) length = round1(Math.max(30, (x - 10) / -side));
+    out.push({
+      kind,
+      x: round1(x),
+      y: round1(y),
+      rot,
+      length,
+      tone: Math.floor(rng() * 3),
+      seed: `${month}|filler|${k}`,
+      stem: stemFor(x, y, rot, kind === 'greens' ? 1.9 : 1.4, rng),
+    });
   }
   return out;
 }
 
-const POLAROID = { w: 108, h: 132, photo: { x: -46, y: -58, w: 92, h: 92 } } as const;
-const TILT = [-8, 5, -3, 7, -6] as const;
+/** Mes vacío: capullos todavía cerrados, un par de ramas verdes y el lazo con su etiqueta. */
+function emptyMonthFiller(month: string, rng: Rng): PlacedFiller[] {
+  const items: readonly (readonly [FillerKind, number, number, number])[] = [
+    ['greens', -38, 214, 118],
+    ['greens', 40, 206, 112],
+    ['sprig', -24, 250, 96],
+    ['sprig', 28, 244, 90],
+    ['gyps', -12, 226, 52],
+    ['gyps', 16, 232, 50],
+    ['bud', -10, 250, 46],
+    ['bud', 4, 282, 52],
+    ['bud', 17, 244, 44],
+  ];
+  return items.map(([kind, angle, dist, length], k) => {
+    const a = rad(angle + jitter(rng, 3));
+    const x = BOW.x + Math.sin(a) * dist;
+    const y = BOW.y - Math.cos(a) * dist;
+    const rot = round1(angle * 0.9);
+    return {
+      kind,
+      x: round1(x),
+      y: round1(y),
+      rot,
+      length: round1(length),
+      tone: Math.floor(rng() * 3),
+      seed: `${month}|empty|${k}`,
+      stem: stemFor(x, y, rot, kind === 'bud' ? 2.2 : 1.7, rng),
+    };
+  });
+}
 
-function placePolaroids(sorted: readonly BouquetMemory[], rng: () => number): PlacedPolaroid[] {
-  // Los 5 recuerdos con foto más recientes, de izquierda a derecha en orden cronológico.
+/** Busca en la curva el parámetro cuya altura es la más cercana a `y` (dentro de [lo, hi]). */
+function tAtY(stem: StemCurve, y: number, lo: number, hi: number): number {
+  let best = lo;
+  let bestDist = Infinity;
+  for (let i = 0; i <= 24; i++) {
+    const t = lo + ((hi - lo) * i) / 24;
+    const dist = Math.abs(stemPoint(stem, t).y - y);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = t;
+    }
+  }
+  return best;
+}
+
+function leafOn(
+  stem: StemCurve,
+  t: number,
+  side: -1 | 1,
+  length: number,
+  kind: PlacedLeaf['kind'],
+  owner: PlacedLeaf['owner'],
+  rng: Rng,
+): PlacedLeaf {
+  const p = stemPoint(stem, t);
+  const tan = stemTangent(stem, t);
+  // La tangente va hacia el lazo; la hoja crece hacia arriba y se abre a un lado.
+  const up = headingDeg({ x: -tan.x, y: -tan.y });
+  return {
+    x: round1(p.x),
+    y: round1(p.y),
+    rot: round1(up + side * between(rng, 38, 58)),
+    length: round1(length),
+    kind,
+    tone: Math.floor(rng() * 3),
+    owner,
+    t: round1(t * 1000) / 1000,
+  };
+}
+
+function placeLeaves(
+  flowers: readonly PlacedFlower[],
+  filler: readonly PlacedFiller[],
+  m: number,
+  rng: Rng,
+): PlacedLeaf[] {
+  const out: PlacedLeaf[] = [];
+  if (m === 0) {
+    // Mes vacío: una hoja a cada lado de dos capullos.
+    filler.forEach((fl, index) => {
+      if (fl.kind !== 'bud' || out.length >= 4) return;
+      const t = tAtY(fl.stem, BOW.y - 70, 0.3, 0.85);
+      out.push(leafOn(fl.stem, t, index % 2 ? 1 : -1, 46, 'lance', { kind: 'filler', index }, rng));
+      out.push(
+        leafOn(
+          fl.stem,
+          Math.min(0.9, t + 0.12),
+          index % 2 ? -1 : 1,
+          40,
+          'lance',
+          { kind: 'filler', index },
+          rng,
+        ),
+      );
+    });
+    return out;
+  }
+  // Las hojas van en el tramo visible del tallo: entre el borde inferior de la copa y el lazo.
+  const lowest = Math.max(...flowers.map((fl) => fl.y + fl.radius * 0.7));
+  const yTop = Math.min(lowest + 8, BOW.y - 46);
+  const perFlower = m <= 3 ? 2 : 1;
+  const cap = m <= 3 ? 6 : m <= 8 ? 9 : 12;
+  const scale = m === 1 ? 1.6 : m <= 3 ? 1.3 : 1.05;
+  const ranked = flowers
+    .map((fl, index) => ({ fl, index, key: rng() }))
+    .filter(({ fl }) => FLOWER_INFO[fl.flower].role !== 'spike' || m <= 3)
+    .sort((a, b) => Math.abs(a.fl.x - BOW.x) - Math.abs(b.fl.x - BOW.x) || a.key - b.key);
+  for (const { fl, index } of ranked) {
+    if (out.length >= cap) break;
+    const info = FLOWER_INFO[fl.flower];
+    const kind = info.leaf;
+    const base = (kind === 'strap' ? 58 : 44) * scale;
+    const outward: -1 | 1 = fl.x < BOW.x ? -1 : fl.x > BOW.x ? 1 : index % 2 ? 1 : -1;
+    for (let k = 0; k < perFlower && out.length < cap; k++) {
+      const yy =
+        yTop + (BOW.y - 30 - yTop) * (k === 0 ? between(rng, 0.15, 0.45) : between(rng, 0.55, 0.8));
+      const t = tAtY(fl.stem, yy, 0.25, 0.92);
+      const side: -1 | 1 = k === 0 ? outward : (-outward as -1 | 1);
+      out.push(
+        leafOn(
+          fl.stem,
+          t,
+          side,
+          base * between(rng, 0.85, 1.1),
+          kind,
+          { kind: 'flower', index },
+          rng,
+        ),
+      );
+    }
+  }
+  // Ramos grandes: unas pocas hojas más en los tallos del relleno verde, a la altura del lazo.
+  if (m > 3) {
+    filler.forEach((fi, index) => {
+      if (fi.kind !== 'greens' || out.length >= cap + 3) return;
+      const t = tAtY(fi.stem, BOW.y - 52, 0.3, 0.9);
+      const side: -1 | 1 = fi.x < BOW.x ? -1 : 1;
+      out.push(
+        leafOn(fi.stem, t, side, between(rng, 40, 52), 'lance', { kind: 'filler', index }, rng),
+      );
+    });
+  }
+  return out;
+}
+
+const POLAROID = { w: 92, h: 110, photo: { x: -39, y: -47, w: 78, h: 78 } } as const;
+const TILTS = [-7, 6, -4, 8, -5] as const;
+/** Sectores (grados desde arriba) para cada foto: derecha arriba, izquierda abajo, izquierda arriba, derecha abajo, abajo. */
+const SECTORS: readonly (readonly [number, number])[] = [
+  [40, 90],
+  [-140, -95],
+  [-90, -40],
+  [95, 140],
+  [-150, 150],
+];
+
+/** Cuánto taparía una Polaroid centrada en (x, y) los centros de las flores (0 = nada). */
+function coverage(x: number, y: number, flowers: readonly PlacedFlower[]): number {
+  let sum = 0;
+  for (const fl of flowers) {
+    const core = fl.radius * 0.62;
+    const ox = POLAROID.w / 2 + core - Math.abs(fl.x - x);
+    const oy = POLAROID.h / 2 + core - Math.abs(fl.y - y);
+    if (ox > 0 && oy > 0)
+      sum += (Math.min(ox, 2 * core) * Math.min(oy, 2 * core)) / (4 * core * core);
+  }
+  return sum;
+}
+
+function placePolaroids(
+  sorted: readonly BouquetMemory[],
+  flowers: readonly PlacedFlower[],
+  dome: Dome,
+  rng: Rng,
+): PlacedPolaroid[] {
+  // Los 5 recuerdos con foto más recientes; de izquierda a derecha en orden cronológico.
   const chosen = sorted.filter((mem) => mem.hasPhoto).slice(-MAX_POLAROIDS);
   const n = chosen.length;
-  const gap = n > 1 ? Math.min(112, 440 / (n - 1)) : 0;
-  return chosen.map((mem, k): PlacedPolaroid => ({
-    id: mem.id,
-    flower: mem.flower,
-    x: round1(CANVAS_WIDTH / 2 + (k - (n - 1) / 2) * gap),
-    y: round1(700 + (k % 2 === 0 ? -6 : 6)),
-    rot: round1((TILT[k] as number) + jitter(rng, 1.5)),
-    w: POLAROID.w,
-    h: POLAROID.h,
-    photo: POLAROID.photo,
-  }));
+  if (n === 0) return [];
+  const halfW = POLAROID.w / 2 + 4;
+  const halfH = POLAROID.h / 2 + 8;
+  const ex = Math.max(dome.rx + dome.r * 0.55, 150);
+  const ey = Math.max(dome.ry + dome.r * 0.45, 130);
+
+  // Candidatos alrededor de la copa (cada 10°, sin la zona del lazo) a varias distancias.
+  interface Spot {
+    x: number;
+    y: number;
+    angle: number;
+    score: number;
+    /** Dejaría el centro de alguna flor debajo de la foto. */
+    hides: boolean;
+  }
+  const spots: Spot[] = [];
+  for (let angle = -150; angle <= 150; angle += 10) {
+    for (const k of [0.8, 0.9, 1, 1.1, 1.2, 1.35, 1.5]) {
+      const a = rad(angle);
+      const x = clamp(dome.x + Math.sin(a) * ex * k, halfW, CANVAS_WIDTH - halfW);
+      const y = clamp(dome.y - Math.cos(a) * ey * k, halfH, CANVAS_HEIGHT - halfH);
+      if (Math.abs(x - BOW.x) < 64 + halfW && y + halfH > BOW.y - 46) continue; // ni sobre el lazo
+      // Tapa poco, queda cerca del borde de la copa y prefiere los lados a la parte de arriba.
+      const hides = flowers.some((fl) => Math.abs(fl.x - x) < halfW && Math.abs(fl.y - y) < halfH);
+      const score = coverage(x, y, flowers) * 4 + Math.abs(k - 0.95) + (hides ? 50 : 0);
+      spots.push({ x, y, angle, score, hides });
+    }
+  }
+  // Un sector por foto, alternando lados para que el ramo quede equilibrado.
+  const picked: Spot[] = [];
+  const free = (s: Spot) =>
+    picked.every(
+      (p) => Math.abs(p.x - s.x) > POLAROID.w * 0.9 || Math.abs(p.y - s.y) > POLAROID.h * 0.9,
+    );
+  const bestOf = (lo: number, hi: number): Spot | null => {
+    let best: Spot | null = null;
+    for (const s of spots) {
+      if (s.angle < lo || s.angle > hi || !free(s)) continue;
+      if (!best || s.score < best.score) best = s;
+    }
+    return best;
+  };
+  for (const [lo, hi] of SECTORS.slice(0, n)) {
+    let best = bestOf(lo, hi);
+    // Si en su sector solo cabe tapando una flor, se busca sitio en cualquier otro lado.
+    if (!best || best.hides) {
+      const anywhere = bestOf(-180, 180);
+      if (anywhere && (!best || anywhere.score < best.score)) best = anywhere;
+    }
+    if (best) picked.push(best);
+  }
+  picked.sort((a, b) => a.x - b.x || a.y - b.y);
+  // Si no cupieran todas, se quedan las más recientes.
+  return chosen.slice(chosen.length - picked.length).map((mem, k): PlacedPolaroid => {
+    const s = picked[k] as Spot;
+    return {
+      id: mem.id,
+      flower: mem.flower,
+      x: round1(s.x),
+      y: round1(s.y),
+      rot: round1((TILTS[k] as number) + jitter(rng, 1.5)),
+      w: POLAROID.w,
+      h: POLAROID.h,
+      photo: POLAROID.photo,
+      tape: Math.floor(rng() * 3),
+    };
+  });
 }
 
 export type { FlowerId };

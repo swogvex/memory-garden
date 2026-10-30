@@ -33,6 +33,8 @@ export interface ExportPlan {
   readonly photos: readonly ExportPhotoPlan[];
   readonly overflow: { readonly x: number; readonly y: number } | null;
   readonly caption: { readonly x: number; readonly y: number };
+  /** Mancha de acuarela (textura WebP) centrada en la copa, en unidades del lienzo. */
+  readonly wash: { readonly x: number; readonly y: number; readonly size: number };
 }
 
 /** La mayor escala (en pasos de 0,25) que cabe en los topes; nunca menos de 1. */
@@ -67,7 +69,7 @@ export function coverRect(
 
 /** Qué se dibuja y dónde. Función pura: no toca el DOM ni los datos. */
 export function planExport(layout: BouquetLayout): ExportPlan {
-  const artH = layout.polaroids.length > 0 ? layout.height : Math.min(layout.height, 640);
+  const artH = layout.height;
   const height = EXPORT_TOP + artH + EXPORT_BOTTOM;
   const scale = chooseScale(layout.width, height);
   return {
@@ -86,5 +88,25 @@ export function planExport(layout: BouquetLayout): ExportPlan {
     })),
     overflow: layout.overflow ? { x: layout.overflow.x, y: layout.overflow.y + EXPORT_TOP } : null,
     caption: { x: layout.width / 2, y: EXPORT_TOP + artH + 56 },
+    wash: washPlacement(layout, EXPORT_TOP),
   };
 }
+
+/**
+ * Dónde va la mancha de acuarela: un cuadrado centrado en la copa y algo mayor que ella.
+ * Lo usan la exportación (lienzo) y la vista de detalle (clase CSS por tamaño). Función pura.
+ */
+export function washPlacement(
+  layout: BouquetLayout,
+  top = 0,
+): { x: number; y: number; size: number } {
+  const empty = layout.flowers.length === 0;
+  const size = Math.round(
+    Math.min(560, Math.max(300, Math.max(layout.dome.rx, layout.dome.ry) * 2 + 170)),
+  );
+  const cy = empty ? layout.base.y - 200 : layout.dome.y + 10;
+  return { x: layout.width / 2, y: Math.round(cy + top), size };
+}
+
+/** Rutas permitidas para las texturas: solo las propias, servidas por la aplicación. */
+export const TEXTURE_PATH = /^\/?textures\/(paper|wash)\.webp$/;

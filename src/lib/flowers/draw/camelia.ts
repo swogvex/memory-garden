@@ -6,14 +6,15 @@ import {
   sepals,
   type HeadDrawer,
   type Palette,
+  pastelSet,
 } from './common';
 import { f } from '../svg';
 
-const PALETTES: readonly [Palette, Palette, Palette] = [
+const PALETTES = pastelSet([
   { dark: '#e08aa5', mid: '#f4b8c8', light: '#fdeff3', edge: '#b4607a' },
   { dark: '#e7a4b8', mid: '#f9d4de', light: '#fffafb', edge: '#b4607a' },
   { dark: '#dd7b97', mid: '#f0a5b8', light: '#fbe0e7', edge: '#a8506c' },
-];
+]);
 
 const PETAL = 'M0 0C-25-2-32-24-17-35C-8-42 8-42 17-35C32-24 25-2 0 0Z';
 const VEINS = 'M0-4C-4-16-9-28-12-33M0-4C0-16 0-28 0-37M0-4C4-16 9-28 12-33';

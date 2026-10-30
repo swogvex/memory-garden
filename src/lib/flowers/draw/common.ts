@@ -143,3 +143,29 @@ export function sepals(o: DrawOptions, y: number, count = 5, spread = 26): strin
   }
   return out;
 }
+
+/** Papel cálido hacia el que se suavizan los colores (pastel acuarela, decisión B de H7.5). */
+export const PAPER = '#fbf8f2';
+
+/** Un color suavizado hacia el papel: `t = 0` lo deja igual; `t = 1` lo convierte en papel. */
+export const soft = (color: string, t: number): string => mix(color, PAPER, t);
+
+/**
+ * Paleta pastel: cada flor conserva su tono (rosa sigue siendo rosa, girasol amarillo) pero con
+ * menos saturación. Los oscuros se aclaran más que los claros para reducir el contraste interno,
+ * como en una acuarela; el contorno se aclara menos para que la forma siga leyéndose en miniatura.
+ */
+export function pastel(p: Palette): Palette {
+  return {
+    dark: soft(p.dark, 0.3),
+    mid: soft(p.mid, 0.22),
+    light: soft(p.light, 0.1),
+    edge: soft(p.edge, 0.18),
+  };
+}
+
+export function pastelSet(
+  set: readonly [Palette, Palette, Palette],
+): readonly [Palette, Palette, Palette] {
+  return [pastel(set[0]), pastel(set[1]), pastel(set[2])];
+}

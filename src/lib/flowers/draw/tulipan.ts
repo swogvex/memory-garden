@@ -1,11 +1,11 @@
-import { WHITE, type DrawOptions, type HeadDrawer, type Palette } from './common';
+import { WHITE, type DrawOptions, type HeadDrawer, type Palette, pastelSet } from './common';
 import { mix } from '../svg';
 
-const PALETTES: readonly [Palette, Palette, Palette] = [
+const PALETTES = pastelSet([
   { dark: '#e0604f', mid: '#f4955a', light: '#fbd0a2', edge: '#a8402f' },
   { dark: '#c9442f', mid: '#e8704a', light: '#f8b78f', edge: '#8f2f21' },
   { dark: '#e6914d', mid: '#f7bf7c', light: '#fde6bf', edge: '#b5703a' },
-];
+]);
 
 const BACK = 'M0 28C-12 24-14-12 0-38C14-12 12 24 0 28Z';
 const SIDE = 'M-2 33C-27 31-34 6-29-16C-27-26-22-33-17-36C-14-24-9-12-5-2C-4 10-3 22-2 33Z';

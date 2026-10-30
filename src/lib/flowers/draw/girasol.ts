@@ -1,11 +1,19 @@
-import { layerGradient, ring, speckles, sepals, type HeadDrawer, type Palette } from './common';
+import {
+  layerGradient,
+  ring,
+  speckles,
+  sepals,
+  type HeadDrawer,
+  type Palette,
+  pastelSet,
+} from './common';
 import { f } from '../svg';
 
-const PALETTES: readonly [Palette, Palette, Palette] = [
+const PALETTES = pastelSet([
   { dark: '#d9921f', mid: '#f2c94c', light: '#fae7a0', edge: '#a8741c' },
   { dark: '#c97f12', mid: '#e8ae33', light: '#f7d98a', edge: '#9b6414' },
   { dark: '#e0a82e', mid: '#f7dc66', light: '#fdf3c2', edge: '#b08a22' },
-];
+]);
 
 const PETAL = 'M0-14C-8-22-9-38 0-48C9-38 8-22 0-14Z';
 

@@ -1,4 +1,4 @@
-import { EXPORT_BACKGROUND, coverRect, planExport } from './export-plan';
+import { EXPORT_BACKGROUND, TEXTURE_PATH, coverRect, planExport } from './export-plan';
 import type { BouquetLayout } from './model';
 import { renderBouquet } from './render';
 
@@ -14,6 +14,8 @@ export interface ExportInput {
   readonly photos: Readonly<Record<string, string>>;
   readonly titleFont: string;
   readonly textFont: string;
+  /** Texturas propias (mismo origen). Si faltan o no cargan, el PNG sale sin ellas. */
+  readonly textures?: { readonly paper: string; readonly wash: string };
 }
 
 function loadImage(url: string): Promise<HTMLImageElement> {
@@ -25,11 +27,21 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
+async function loadTexture(url: string | undefined): Promise<HTMLImageElement | null> {
+  if (!url || !TEXTURE_PATH.test(url)) return null;
+  try {
+    return await loadImage(url);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Dibuja el ramo en un lienzo y devuelve un PNG. Método:
+ *  0. Fondo marfil, papel (patrón multiplicado) y mancha de acuarela centrada en la copa (H7.5).
  *  1. El SVG del ramo (sin fotos) se rasteriza a la resolución final con `drawImage` (nítido: es vectorial).
  *  2. Las fotos y los textos se dibujan encima en el lienzo, porque un SVG cargado como imagen no puede
- *     leer `blob:` ni usar las fuentes de la página.
+ *     leer `blob:`, ni archivos externos, ni usar las fuentes de la página.
  * El PNG no lleva metadatos (ni Exif ni GPS). Solo se leen URLs `blob:` creadas por la propia aplicación.
  */
 export async function exportBouquetPng(input: ExportInput): Promise<Blob> {
@@ -40,13 +52,39 @@ export async function exportBouquetPng(input: ExportInput): Promise<Blob> {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('export:canvas');
 
-  await Promise.all([
+  const [paper, wash] = await Promise.all([
+    loadTexture(input.textures?.paper),
+    loadTexture(input.textures?.wash),
     document.fonts?.load(`600 17px ${input.textFont}`),
     document.fonts?.load(`600 30px ${input.titleFont}`),
   ]);
 
   ctx.fillStyle = EXPORT_BACKGROUND;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (paper) {
+    const pattern = ctx.createPattern(paper, 'repeat');
+    if (pattern) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = pattern;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+  }
+  if (wash) {
+    const { x, y, size } = plan.wash;
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.drawImage(
+      wash,
+      (x - size / 2) * plan.scale,
+      (y - size / 2) * plan.scale,
+      size * plan.scale,
+      size * plan.scale,
+    );
+    ctx.restore();
+  }
 
   const svg = renderBouquet(input.layout, {
     idPrefix: 'ex-',

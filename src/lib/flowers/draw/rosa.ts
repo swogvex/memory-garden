@@ -6,13 +6,14 @@ import {
   sepals,
   type HeadDrawer,
   type Palette,
+  pastelSet,
 } from './common';
 
-const PALETTES: readonly [Palette, Palette, Palette] = [
+const PALETTES = pastelSet([
   { dark: '#b84d6c', mid: '#e07f9b', light: '#f6cdd7', edge: '#8f3a55' },
   { dark: '#a8405f', mid: '#d86b89', light: '#f2b9c8', edge: '#822f4b' },
   { dark: '#c9708a', mid: '#eaa2b5', light: '#fbe2e8', edge: '#9a4a62' },
-];
+]);
 
 const PETAL = 'M0 0C-21-3-27-26-13-38C-6-44 6-44 13-38C27-26 21-3 0 0Z';
 const VEINS = 'M0 -4C-1-16-1-28 0-38M-7 -8C-9-18-9-26-7-33M7 -8C9-18 9-26 7-33';

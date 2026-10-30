@@ -35,6 +35,9 @@
   import type { View } from './router';
   import { viewState } from './view-state.svelte';
 
+  /** Texturas del ramo grande y del PNG (H7.5, decisión A). Archivos propios en `public/textures/`. */
+  const TEXTURES = { paper: '/textures/paper.webp', wash: '/textures/wash.webp' } as const;
+
   let { locale, onNavigate }: { locale: Locale; onNavigate: (view: View) => void } = $props();
 
   type LoadState =
@@ -92,6 +95,8 @@
       interactive: true,
       polaroids: true,
       wash: true,
+      // Mancha de acuarela (WebP propio, solo en el ramo grande; las miniaturas no la usan).
+      washTexture: TEXTURES.wash,
       background: null,
       text: true,
       images,
@@ -167,6 +172,7 @@
         photos,
         titleFont: root.getPropertyValue('--font-title').trim() || 'serif',
         textFont: getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif',
+        textures: TEXTURES,
         ...overflow,
       });
       exportFile = exportFileName(key);
@@ -561,7 +567,7 @@
   .thumb {
     display: block;
     width: 100%;
-    aspect-ratio: 600 / 640;
+    aspect-ratio: 600 / 700;
   }
   .thumb :global(svg) {
     display: block;
@@ -592,6 +598,9 @@
   }
   .art {
     width: 100%;
+    border-radius: var(--radius-lg);
+    /* Papel (WebP propio de 2 KB, mismo origen: lo permite img-src 'self'). */
+    background: var(--color-bg) url('/textures/paper.webp');
   }
   .art :global(svg) {
     display: block;
