@@ -474,9 +474,54 @@ describe('red y sesión', () => {
     expect(calls).toEqual([]);
   });
 
-  it('`vault` no está conectado en H7.2: da `unavailable` en vez de inventar datos', async () => {
+  it('las claves del `vault` no van por aquí (las lleva el cliente de autenticación): `unavailable`', async () => {
     const { a } = await ready();
     expect(await code(a.repo.vault.get())).toBe('unavailable');
+    expect(await code(a.repo.vault.replaceKeys({}, 1))).toBe('unavailable');
+  });
+});
+
+describe('ajustes cifrados (H8.1)', () => {
+  it('leer, guardar con revisión y ver lo guardado desde otro dispositivo', async () => {
+    const { a, h, cookie } = await ready();
+    const b = connect(h, cookie);
+    expect(await a.repo.vault.getSettings()).toEqual({ payload: null, revision: 0 });
+    const payload = fakePayload(200);
+    expect(await a.repo.vault.putSettings(payload, 0)).toEqual({ revision: 1 });
+    expect(await b.repo.vault.getSettings()).toEqual({ payload, revision: 1 });
+  });
+
+  it('revisión obsoleta: `conflict` (la pantalla recarga y avisa)', async () => {
+    const { a, h, cookie } = await ready();
+    const b = connect(h, cookie);
+    await a.repo.vault.putSettings(fakePayload(), 0);
+    expect(await code(b.repo.vault.putSettings(fakePayload(), 0))).toBe('conflict');
+  });
+
+  it('respuesta perdida: el reintento reconoce el propio guardado y no duplica la revisión', async () => {
+    const { a } = await ready();
+    const payload = fakePayload();
+    a.net.loseResponses = 1;
+    expect(await a.repo.vault.putSettings(payload, 0)).toEqual({ revision: 1 });
+    expect(await a.repo.vault.getSettings()).toEqual({ payload, revision: 1 });
+  });
+
+  it('respuesta perdida y otro dispositivo guardó entre medias: `conflict`, no un falso éxito', async () => {
+    const { a, h, cookie } = await ready();
+    const b = connect(h, cookie);
+    await b.repo.vault.putSettings(fakePayload(), 0);
+    a.net.down = true;
+    const pending = code(a.repo.vault.putSettings(fakePayload(), 0));
+    a.net.down = false;
+    expect(['conflict', 'unavailable']).toContain(await pending);
+  });
+
+  it('respuesta con forma rara: `unavailable`', async () => {
+    const { a } = await ready();
+    a.net.override = (url) =>
+      url.includes('/api/vault/settings')
+        ? new Response(JSON.stringify({ payload: 7, revision: 'x' }), { status: 200 })
+        : null;
     expect(await code(a.repo.vault.getSettings())).toBe('unavailable');
   });
 });

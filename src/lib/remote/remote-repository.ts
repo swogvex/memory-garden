@@ -7,7 +7,8 @@
  *   (la sesión caducó: hay que volver a pedir la contraseña) y se devuelve como `unavailable`.
  * - Red caída o lenta: `unavailable` (tiempo máximo por petición). La subida de recuerdos reintenta UNA vez si la
  *   respuesta se perdió y reconoce que su propio guardado ya se había aplicado (reintento idempotente).
- * - `vault` (claves y ajustes) NO está en H7.2: lo conectan el acceso y el primer acceso en H7.3.
+ * - `vault`: las claves (get/create/replaceKeys) van por el cliente de autenticación (`features/access`), no por aquí.
+ *   Los ajustes cifrados (H8.1) sí: `getSettings`/`putSettings`, con el mismo reintento idempotente que los recuerdos.
  */
 import { StorageError, type StorageErrorCode } from '@/lib/storage/errors';
 import type {
@@ -174,12 +175,53 @@ export function createRemoteRepository(options: RemoteOptions = {}): Repository 
     return { status: res.status, body };
   }
 
+  function asSettings(v: unknown): { payload: string | null; revision: number } {
+    if (
+      !isObject(v) ||
+      (v.payload !== null && typeof v.payload !== 'string') ||
+      typeof v.revision !== 'number' ||
+      !Number.isSafeInteger(v.revision) ||
+      v.revision < 0
+    )
+      throw new StorageError('unavailable');
+    return { payload: v.payload as string | null, revision: v.revision };
+  }
+
+  async function putSettingsOnce(payload: string, expectedRevision: number): Promise<Reply> {
+    return json('PUT', '/api/vault/settings', {
+      json: { payload, expected_revision: expectedRevision },
+    });
+  }
+
   const vault: VaultRepository = {
     get: () => Promise.reject(new StorageError('unavailable')),
     create: () => Promise.reject(new StorageError('unavailable')),
     replaceKeys: () => Promise.reject(new StorageError('unavailable')),
-    getSettings: () => Promise.reject(new StorageError('unavailable')),
-    putSettings: () => Promise.reject(new StorageError('unavailable')),
+
+    async getSettings() {
+      const reply = await json('GET', '/api/vault/settings');
+      if (reply.status !== 200) throw errorFor(reply, 'other');
+      return asSettings(reply.body);
+    },
+
+    async putSettings(payload, expectedRevision) {
+      let reply: Reply;
+      try {
+        reply = await putSettingsOnce(payload, expectedRevision);
+      } catch (err) {
+        // Respuesta perdida: se reintenta una vez y, si el 409 trae EXACTAMENTE nuestro sobre, es que ya se había guardado.
+        if (!(err instanceof StorageError) || err.code !== 'unavailable') throw err;
+        reply = await putSettingsOnce(payload, expectedRevision);
+        if (reply.status === 409 && isObject(reply.body)) {
+          const cur = asSettings(reply.body.current);
+          if (cur.payload === payload && cur.revision === expectedRevision + 1)
+            return { revision: cur.revision };
+        }
+      }
+      if (reply.status !== 200 || !isObject(reply.body) || typeof reply.body.revision !== 'number')
+        throw errorFor(reply, 'other');
+      return { revision: reply.body.revision };
+    },
   };
 
   async function putMemoryOnce(

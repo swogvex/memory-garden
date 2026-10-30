@@ -1,0 +1,60 @@
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  import type { GardenSource } from '@/features/calendar';
+  import { t, type Locale } from '@/lib/i18n';
+  import AvatarSection from './AvatarSection.svelte';
+  import CategoriesSection from './CategoriesSection.svelte';
+  import PreferencesSection from './PreferencesSection.svelte';
+  import PrivacySection from './PrivacySection.svelte';
+  import ProfileSection from './ProfileSection.svelte';
+  import { loadPrefs, prefs } from './prefs.svelte';
+  import './settings.css';
+
+  let {
+    locale,
+    openGarden,
+    session,
+  }: {
+    locale: Locale;
+    /** Fuente del Jardín: hace falta para cambiar la categoría de los recuerdos al renombrar o eliminar. */
+    openGarden: () => Promise<GardenSource>;
+    /** Cierre de sesión (lo pone la capa que conoce el acceso). */
+    session?: Snippet;
+  } = $props();
+</script>
+
+<div class="st">
+  {#if prefs.status === 'ready'}
+    <ProfileSection {locale} />
+    <AvatarSection {locale} />
+    <PreferencesSection {locale} />
+    <CategoriesSection {locale} {openGarden} />
+  {:else if prefs.status === 'error'}
+    <div class="st-card st-wide" role="alert" aria-labelledby="st-error-title">
+      <h2 id="st-error-title">{t(locale, 'settings.error.title')}</h2>
+      <p>
+        {t(
+          locale,
+          prefs.error === 'unreadable' ? 'settings.error.unreadable' : 'settings.error.unavailable',
+        )}
+      </p>
+      <div class="ac-actions">
+        <button type="button" class="ac-btn ac-btn-primary" onclick={() => void loadPrefs()}>
+          {t(locale, 'settings.retry')}
+        </button>
+      </div>
+    </div>
+  {:else}
+    <p class="st-card st-wide" role="status">{t(locale, 'settings.loading')}</p>
+  {/if}
+
+  <PrivacySection {locale} />
+
+  {#if session}
+    <section class="st-card st-wide" aria-labelledby="st-session-title">
+      <h2 id="st-session-title">{t(locale, 'settings.session.title')}</h2>
+      <p>{t(locale, 'settings.session.body')}</p>
+      <div class="ac-actions">{@render session()}</div>
+    </section>
+  {/if}
+</div>

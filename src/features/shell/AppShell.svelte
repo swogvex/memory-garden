@@ -2,16 +2,25 @@
   import { onMount, tick } from 'svelte';
   import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
   import { AccessGate, SignOut } from '@/features/access';
+  import {
+    AvatarBadge,
+    LanguageSwitch,
+    SettingsView,
+    loadPrefs,
+    prefs,
+    resetPrefs,
+  } from '@/features/settings';
   import { capitalize, formatMonthYear } from '@/lib/dates';
-  import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n';
+  import { t, type Locale } from '@/lib/i18n';
   import BouquetsView from './BouquetsView.svelte';
-  import { lockGarden } from './garden-data';
+  import { lockGarden, openGardenSource, openSettingsSource } from './garden-data';
   import GardenView from './GardenView.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
   import { NAV_LABEL_KEY, PATHS, VIEWS, viewFromPath, type View } from './router';
   import { viewState } from './view-state.svelte';
 
-  const locale: Locale = DEFAULT_LOCALE;
+  // Idioma de toda la interfaz: el de los ajustes cifrados al entrar; antes, el recordado en este navegador (H8.1).
+  const locale: Locale = $derived(prefs.settings.language);
   // Desarrollo: el jardín abre con datos de prueba sin pedir contraseña. Con `?acceso` se prueba el acceso real contra la API local.
   // En producción `import.meta.env.DEV` es `false` y siempre se pide el acceso.
   const bypassAccess =
@@ -29,6 +38,25 @@
   $effect(() => {
     document.title = `${t(locale, NAV_LABEL_KEY[view])} · ${t(locale, 'app.name')}`;
   });
+  $effect(() => {
+    document.documentElement.lang = locale;
+  });
+
+  const eyebrow = $derived(
+    prefs.settings.displayName
+      ? t(locale, 'shell.eyebrow.named', {
+          name: prefs.settings.displayName,
+          year: viewState.month.year,
+        })
+      : t(locale, 'shell.eyebrow', { year: viewState.month.year }),
+  );
+  const subtitle = $derived(prefs.settings.welcomeMessage || t(locale, 'app.tagline'));
+
+  /** Con la sesión abierta (el contenido se monta) se cargan los ajustes; al bloquear (se desmonta), se olvidan. */
+  function sessionPrefs() {
+    void loadPrefs(openSettingsSource);
+    return { destroy: () => resetPrefs() };
+  }
 
   async function show(next: View, push: boolean) {
     view = next;
@@ -95,10 +123,17 @@
   </svg>
 {/snippet}
 
+{#snippet signOut()}
+  <SignOut {locale} />
+{/snippet}
+
 <FlowerSprite />
 <!-- Sin sesión solo se ve la pantalla de acceso (sin menú ni cabecera); con sesión, la aplicación. -->
 <AccessGate {locale} bypass={bypassAccess}>
-  <div class="shell">
+  {#snippet footer()}
+    <LanguageSwitch {locale} />
+  {/snippet}
+  <div class="shell" use:sessionPrefs>
     <nav class="nav" aria-label={t(locale, 'nav.label')}>
       <a class="brand" href={PATHS.garden} onclick={(e) => onNavClick(e, 'garden')}>
         {t(locale, 'app.name')}
@@ -123,11 +158,11 @@
       <header class="topbar">
         <div class="titles">
           {#if view === 'garden'}
-            <p class="eyebrow">{t(locale, 'shell.eyebrow', { year: viewState.month.year })}</p>
+            <p class="eyebrow">{eyebrow}</p>
           {/if}
           <h1 tabindex="-1" bind:this={headingEl}>{title}</h1>
           {#if view === 'garden'}
-            <p class="subtitle">{t(locale, 'app.tagline')}</p>
+            <p class="subtitle">{subtitle}</p>
           {/if}
         </div>
         <a
@@ -136,22 +171,7 @@
           aria-label={t(locale, 'shell.avatar')}
           onclick={(e) => onNavClick(e, 'settings')}
         >
-          <svg
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <circle cx="12" cy="12" r="2.5" />
-            <circle cx="12" cy="5.5" r="2.5" />
-            <circle cx="12" cy="18.5" r="2.5" />
-            <circle cx="5.5" cy="12" r="2.5" />
-            <circle cx="18.5" cy="12" r="2.5" />
-          </svg>
+          <AvatarBadge />
         </a>
       </header>
 
@@ -163,10 +183,11 @@
         {:else if view === 'explore'}
           <PlaceholderView {locale} messageKey="view.soon.explore" />
         {:else}
-          <PlaceholderView {locale} messageKey="view.soon.settings" />
-          {#if !bypassAccess}
-            <div class="signout"><SignOut {locale} /></div>
-          {/if}
+          <SettingsView
+            {locale}
+            openGarden={openGardenSource}
+            session={bypassAccess ? undefined : signOut}
+          />
         {/if}
       </main>
     </div>
@@ -217,6 +238,8 @@
   .subtitle {
     grid-area: subtitle;
     margin: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-line; /* el mensaje de bienvenida admite saltos de línea */
     font-family: var(--font-title);
     font-style: italic;
     color: var(--color-text-muted);
@@ -233,9 +256,6 @@
   main:focus {
     outline: none;
   }
-  .signout {
-    margin-top: var(--space-5);
-  }
   .avatar {
     grid-area: avatar;
     flex: none;
@@ -248,6 +268,7 @@
     background: var(--color-surface-soft);
     box-shadow: var(--shadow-sm);
     color: var(--color-primary);
+    overflow: hidden;
   }
 
   /* Móvil: barra inferior */

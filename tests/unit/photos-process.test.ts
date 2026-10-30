@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { es } from '@/lib/i18n/es';
 import { MAX_ASSET_BYTES } from '@/lib/storage';
-import { MAX_INPUT_BYTES } from '@/lib/photos/constants';
+import { AVATAR_MAX_INPUT_BYTES, MAX_INPUT_BYTES } from '@/lib/photos/constants';
 import { PhotoError, type PhotoErrorCode } from '@/lib/photos/errors';
 import { isJpegMetadataFree } from '@/lib/photos/jpeg';
 import { PHOTO_ERROR_MESSAGE } from '@/lib/photos/messages';
-import { processPhoto, processPhotos, type BatchProgress } from '@/lib/photos/process';
+import {
+  processAvatar,
+  processPhoto,
+  processPhotos,
+  type BatchProgress,
+} from '@/lib/photos/process';
 import { ascii, blobOf, concat, fakeCodec, GPS_SENTINEL, latin1, makeJpeg } from './_photo-helpers';
 
 const goodFile = () => blobOf(makeJpeg({ width: 4000, height: 3000 }));
@@ -126,6 +131,58 @@ describe('processPhoto', () => {
     } catch (e) {
       expect((e as Error).message).toBe('photo:unsupported_format');
     }
+  });
+});
+
+describe('processAvatar (H8.1)', () => {
+  it('JPEG de lado largo ≤ 256 px, sin metadatos aunque el códec devuelva Exif con GPS', async () => {
+    const { codec, state } = fakeCodec({ exif: true });
+    const out = await processAvatar(goodFile(), codec);
+    expect([out.width, out.height]).toEqual([256, 192]);
+    expect(isJpegMetadataFree(out.bytes)).toBe(true);
+    expect(latin1(out.bytes)).not.toContain(GPS_SENTINEL);
+    expect(out.bytes.length).toBeLessThanOrEqual(MAX_ASSET_BYTES.avatar - 32);
+    expect(state.closes).toBe(1);
+  });
+
+  it('acepta PNG y WEBP por su contenido; rechaza HEIC, GIF, SVG y archivos vacíos SIN decodificar', async () => {
+    const png = blobOf(
+      concat(
+        [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13],
+        ascii('IHDR'),
+        [0, 0, 1, 0, 0, 0, 1, 0, 8, 6, 0, 0, 0],
+      ),
+    );
+    expect(await code(processAvatar(png, fakeCodec().codec))).toBe('ok');
+    const webp = blobOf(concat(ascii('RIFF'), [0, 0, 0, 0], ascii('WEBPVP8 '), new Uint8Array(32)));
+    expect(await code(processAvatar(webp, fakeCodec().codec))).toBe('ok');
+    for (const bytes of [
+      concat([0, 0, 0, 24], ascii('ftyp'), ascii('heic'), new Uint8Array(32)),
+      Uint8Array.from(ascii('GIF89a......')),
+      Uint8Array.from(ascii('<svg xmlns="http://www.w3.org/2000/svg"/>')),
+      new Uint8Array(0),
+    ]) {
+      const { codec, state } = fakeCodec();
+      expect(await code(processAvatar(blobOf(bytes), codec))).toBe('unsupported_format');
+      expect(state.decodes).toBe(0);
+    }
+  });
+
+  it('más de 5 MB: too_large sin decodificar', async () => {
+    const { codec, state } = fakeCodec();
+    const big = blobOf(concat([0xff, 0xd8, 0xff], new Uint8Array(AVATAR_MAX_INPUT_BYTES)));
+    expect(await code(processAvatar(big, codec))).toBe('too_large');
+    expect(state.decodes).toBe(0);
+  });
+
+  it('baja calidad y tamaño hasta caber en 128 KiB; si nada cabe, too_large', async () => {
+    const big = MAX_ASSET_BYTES.avatar + 1;
+    const fits = fakeCodec({ bytesFor: (w, _h, q) => (w > 192 || q > 0.7 ? big : 1000) });
+    const out = await processAvatar(goodFile(), fits.codec);
+    expect(out.width).toBe(192);
+    const never = fakeCodec({ bytesFor: () => big });
+    expect(await code(processAvatar(goodFile(), never.codec))).toBe('too_large');
+    expect(never.state.closes).toBe(1);
   });
 });
 

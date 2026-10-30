@@ -1,0 +1,270 @@
+/* Configuración (H8.1). Solo clases y variables de tokens.css: sin estilos en línea (CSP, DISENO §2c).
+   Los botones y campos reutilizan las clases del acceso (`ac-btn`, `ac-input`, `ac-field`, `ac-hint`, `ac-error`),
+   que son globales (access.css) para que toda la app tenga los mismos controles. */
+.st {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+}
+/* Escritorio: dos columnas que ocupan todo el ancho del contenido (como el Jardín y Ramos).
+   Privacidad, sesión y los estados de carga o error van a lo ancho. */
+@media (min-width: 72rem) {
+  .st {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .st-wide {
+    grid-column: 1 / -1;
+  }
+}
+.st-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+}
+.st-card > h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.st-card h3 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+.st-card p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.st-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+}
+/* Ningún campo puede ensanchar la tarjeta (un <select> mide lo que su opción más larga): sin esto, en móvil la página
+   se desbordaba a lo ancho y la barra inferior fija dejaba de verse al desplazarse. */
+.st .ac-field {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.st-fieldset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.st-fieldset > legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-weight: 600;
+}
+.st-textarea {
+  min-height: 6rem;
+  padding: var(--space-3);
+  resize: vertical;
+  line-height: var(--leading-body);
+}
+.st-select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding-right: var(--space-6);
+  text-overflow: ellipsis;
+}
+.st-radio {
+  display: flex;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding-block: var(--space-2);
+  cursor: pointer;
+}
+.st-radio input {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  accent-color: var(--color-primary);
+}
+.st-status {
+  min-height: 1.5em;
+  margin: 0;
+}
+.st-status.ok {
+  color: var(--color-sage-text);
+  font-weight: 600;
+}
+.st-status.error {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* Avatar */
+.st-avatar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+.st-avatar-big {
+  flex: none;
+  width: 5.5rem;
+  height: 5.5rem;
+}
+.st-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tap-min), 1fr));
+  gap: var(--space-2);
+  max-width: 28rem;
+}
+.st-preset {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  min-width: var(--tap-min);
+  padding: var(--space-1);
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  cursor: pointer;
+}
+.st-preset[aria-pressed='true'] {
+  border: 3px solid var(--color-primary);
+  background: var(--color-surface-soft);
+}
+.st-preset[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.st-preset-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Categorías */
+.st-cats {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-cat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+.st-cat-mark {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+}
+.st-cat-text {
+  display: grid;
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.st-cat-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.st-cat-flower {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.st-cat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.st-panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+.st-panel:focus {
+  outline: none;
+}
+.st-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+@media (min-width: 36rem) {
+  .st-two {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+/* Privacidad */
+.st-privacy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4) var(--space-6);
+}
+@media (min-width: 48rem) {
+  .st-privacy {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 90rem) {
+  .st-privacy {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.st-privacy section {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Selector de idioma de la pantalla de acceso */
+.st-lang {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+.st-lang button {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border-decor);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  cursor: pointer;
+}
+.st-lang button[aria-pressed='true'] {
+  border-color: var(--color-border-control);
+  background: var(--color-surface-soft);
+  font-weight: 600;
+}
+
+/* Mientras se guarda, los botones quedan inactivos sin perder el foco (aria-disabled en vez de disabled). */
+.st [aria-disabled='true'].ac-btn {
+  cursor: progress;
+  opacity: 0.6;
+}

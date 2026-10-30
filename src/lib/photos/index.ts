@@ -5,7 +5,7 @@ export { PhotoError } from './errors';
 export type { PhotoErrorCode } from './errors';
 export { isJpegMetadataFree, stripJpegMetadata } from './jpeg';
 export { PHOTO_ERROR_MESSAGE } from './messages';
-export { processPhoto, processPhotos } from './process';
+export { processAvatar, processPhoto, processPhotos } from './process';
 export type {
   BatchOptions,
   BatchProgress,

@@ -1,5 +1,7 @@
 import type { DecodedImage, ImageCodec } from './codec';
 import {
+  AVATAR_MAX_INPUT_BYTES,
+  AVATAR_SPEC,
   HEADER_BYTES,
   MAX_INPUT_BYTES,
   MAX_INPUT_PIXELS,
@@ -88,6 +90,37 @@ export async function processPhoto(
     onStage?.('thumbnail');
     const thumb = await encodeVariant(image, THUMB_SPEC);
     return { photo, thumb };
+  } finally {
+    image.close();
+  }
+}
+
+/**
+ * Avatar (H8.1): la misma tubería que una foto (tipo real por contenido, decodificar, JPEG nuevo sin metadatos) con
+ * límites propios. Solo JPG, PNG o WEBP: un HEIC, un GIF o un archivo disfrazado se rechazan aunque el navegador los abriera.
+ */
+export async function processAvatar(file: Blob, codec: ImageCodec): Promise<EncodedImage> {
+  if (file.size === 0) throw new PhotoError('unsupported_format');
+  if (file.size > AVATAR_MAX_INPUT_BYTES) throw new PhotoError('too_large');
+  const head = new Uint8Array(await file.slice(0, HEADER_BYTES).arrayBuffer());
+  const kind = sniffImageKind(head);
+  if (kind !== 'jpeg' && kind !== 'png' && kind !== 'webp')
+    throw new PhotoError('unsupported_format');
+  const displaySize = readDisplaySize(head, kind);
+  if (displaySize && displaySize.width * displaySize.height > MAX_INPUT_PIXELS)
+    throw new PhotoError('too_large');
+
+  let image: DecodedImage;
+  try {
+    image = await codec.decode(file, { kind, displaySize, maxSide: AVATAR_SPEC.sides[0] ?? 256 });
+  } catch (error) {
+    if (error instanceof PhotoError) throw error;
+    throw new PhotoError('decode_failed');
+  }
+  try {
+    if (!(image.width >= 1 && image.height >= 1) || image.width * image.height > MAX_INPUT_PIXELS)
+      throw new PhotoError('too_large');
+    return await encodeVariant(image, AVATAR_SPEC);
   } finally {
     image.close();
   }

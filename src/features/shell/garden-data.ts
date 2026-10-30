@@ -1,15 +1,29 @@
-import { currentSource, lockSession } from '@/features/access';
+import { currentSettingsSource, currentSource, lockSession } from '@/features/access';
 import { GardenUnavailableError, type GardenSource } from '@/features/calendar';
+import type { SettingsSource } from '@/lib/settings';
 
-let pending: Promise<GardenSource> | null = null;
+interface Space {
+  readonly garden: GardenSource;
+  readonly settings: SettingsSource;
+}
 
-async function load(): Promise<GardenSource> {
+let pending: Promise<Space> | null = null;
+
+async function load(): Promise<Space> {
   // Solo desarrollo. En producción Vite sustituye DEV por `false` y esta rama (y la semilla) desaparece del bundle.
   if (import.meta.env.DEV) {
-    const { createDevGardenSource } = await import('../../dev/seed');
-    return createDevGardenSource();
+    const { createDevSpace } = await import('../../dev/seed');
+    return createDevSpace();
   }
   throw new GardenUnavailableError();
+}
+
+function devSpace(): Promise<Space> {
+  pending ??= load().catch((error: unknown) => {
+    pending = null;
+    throw error;
+  });
+  return pending;
 }
 
 /**
@@ -19,11 +33,14 @@ async function load(): Promise<GardenSource> {
 export function openGardenSource(): Promise<GardenSource> {
   const unlocked = currentSource();
   if (unlocked) return Promise.resolve(unlocked);
-  pending ??= load().catch((error: unknown) => {
-    pending = null;
-    throw error;
-  });
-  return pending;
+  return devSpace().then((space) => space.garden);
+}
+
+/** Fuente de Configuración (H8.1): la misma sesión y las mismas claves que el Jardín. */
+export function openSettingsSource(): Promise<SettingsSource> {
+  const unlocked = currentSettingsSource();
+  if (unlocked) return Promise.resolve(unlocked);
+  return devSpace().then((space) => space.settings);
 }
 
 /** Suelta las claves y fuerza a reabrir la próxima vez (D-082). */
@@ -32,7 +49,10 @@ export function lockGarden(): void {
   pending = null;
   lockSession();
   void current?.then(
-    (source) => source.lock(),
+    (space) => {
+      space.settings.lock();
+      space.garden.lock();
+    },
     () => undefined,
   );
 }

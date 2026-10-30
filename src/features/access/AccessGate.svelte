@@ -15,11 +15,14 @@
     locale,
     bypass = false,
     children,
+    footer,
   }: {
     locale: Locale;
     /** Solo desarrollo: entrega directamente el contenido (con datos de prueba). En producción siempre es `false`. */
     bypass?: boolean;
     children: Snippet;
+    /** Pie de la tarjeta de acceso (el selector de idioma). */
+    footer?: Snippet;
   } = $props();
 
   type Screen = 'checking' | 'unavailable' | 'setup' | 'login' | 'recover' | 'ready';
@@ -163,6 +166,7 @@
             onCancel={() => void check()}
           />
         {/if}
+        {#if footer}{@render footer()}{/if}
       </div>
     </section>
   </main>
