@@ -22,6 +22,13 @@
   --color-focus: #5b3f8f;
   --color-error: #9b2c3f;
 
+  /* H7.5 B: papel y tarjetas (contrastes recalculados en DISENO §2b) */
+  --color-card: #fffdf9; /* tarjetas de papel claro: ciruela 12,35 · gris 6,87 · primario 8,10 */
+  --color-surface-soft: #efe8f8; /* activo y resúmenes: ciruela 10,50 · gris 5,84 · primario 6,88 */
+  --color-tape: #e8c8d1; /* cinta de las Polaroids (solo decorativa) */
+  --shadow-card: 0 1px 2px rgb(55 49 63 / 6%), 0 10px 28px rgb(55 49 63 / 9%);
+  --radius-control: 0.75rem; /* botones y chips: cápsula de bordes poco redondeados */
+
   /* Tipografía */
   --font-title: 'Playfair Display Variable', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

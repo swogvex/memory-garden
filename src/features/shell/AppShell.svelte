@@ -96,57 +96,66 @@
 {/snippet}
 
 <FlowerSprite />
-<div class="shell">
-  <nav class="nav" aria-label={t(locale, 'nav.label')}>
-    <a class="brand" href={PATHS.garden} onclick={(e) => onNavClick(e, 'garden')}>
-      {t(locale, 'app.name')}
-    </a>
-    <ul>
-      {#each VIEWS as key (key)}
-        <li>
-          <a
-            href={PATHS[key]}
-            aria-current={view === key ? 'page' : undefined}
-            onclick={(e) => onNavClick(e, key)}
-          >
-            {@render icon(key)}
-            <span class="label">{t(locale, NAV_LABEL_KEY[key])}</span>
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </nav>
-
-  <div class="content">
-    <header class="topbar">
-      <h1 tabindex="-1" bind:this={headingEl}>{title}</h1>
-      <a
-        class="avatar"
-        href={PATHS.settings}
-        aria-label={t(locale, 'shell.avatar')}
-        onclick={(e) => onNavClick(e, 'settings')}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <circle cx="12" cy="12" r="2.5" />
-          <circle cx="12" cy="5.5" r="2.5" />
-          <circle cx="12" cy="18.5" r="2.5" />
-          <circle cx="5.5" cy="12" r="2.5" />
-          <circle cx="18.5" cy="12" r="2.5" />
-        </svg>
+<!-- Sin sesión solo se ve la pantalla de acceso (sin menú ni cabecera); con sesión, la aplicación. -->
+<AccessGate {locale} bypass={bypassAccess}>
+  <div class="shell">
+    <nav class="nav" aria-label={t(locale, 'nav.label')}>
+      <a class="brand" href={PATHS.garden} onclick={(e) => onNavClick(e, 'garden')}>
+        {t(locale, 'app.name')}
       </a>
-    </header>
+      <ul>
+        {#each VIEWS as key (key)}
+          <li>
+            <a
+              href={PATHS[key]}
+              aria-current={view === key ? 'page' : undefined}
+              onclick={(e) => onNavClick(e, key)}
+            >
+              {@render icon(key)}
+              <span class="label">{t(locale, NAV_LABEL_KEY[key])}</span>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </nav>
 
-    <main id="contenido" tabindex="-1">
-      <AccessGate {locale} bypass={bypassAccess}>
+    <div class="content">
+      <header class="topbar">
+        <div class="titles">
+          {#if view === 'garden'}
+            <p class="eyebrow">{t(locale, 'shell.eyebrow', { year: viewState.month.year })}</p>
+          {/if}
+          <h1 tabindex="-1" bind:this={headingEl}>{title}</h1>
+          {#if view === 'garden'}
+            <p class="subtitle">{t(locale, 'app.tagline')}</p>
+          {/if}
+        </div>
+        <a
+          class="avatar"
+          href={PATHS.settings}
+          aria-label={t(locale, 'shell.avatar')}
+          onclick={(e) => onNavClick(e, 'settings')}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle cx="12" cy="12" r="2.5" />
+            <circle cx="12" cy="5.5" r="2.5" />
+            <circle cx="12" cy="18.5" r="2.5" />
+            <circle cx="5.5" cy="12" r="2.5" />
+            <circle cx="18.5" cy="12" r="2.5" />
+          </svg>
+        </a>
+      </header>
+
+      <main id="contenido" tabindex="-1">
         {#if view === 'garden'}
           <GardenView {locale} onNavigate={(next) => void show(next, true)} />
         {:else if view === 'bouquets'}
@@ -159,10 +168,10 @@
             <div class="signout"><SignOut {locale} /></div>
           {/if}
         {/if}
-      </AccessGate>
-    </main>
+      </main>
+    </div>
   </div>
-</div>
+</AccessGate>
 
 <style>
   .shell {
@@ -184,11 +193,22 @@
     margin-inline: auto;
     padding: var(--space-4) var(--gutter) var(--space-3);
   }
+  .titles {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
   h1 {
     min-width: 0;
     margin: 0;
-    font-size: var(--text-xl);
+    font-size: clamp(1.75rem, 5vw, 2.4rem);
     overflow-wrap: anywhere;
+  }
+  .subtitle {
+    margin: 0;
+    font-family: var(--font-title);
+    font-style: italic;
+    color: var(--color-text-muted);
   }
   h1:focus {
     outline: none;
@@ -211,9 +231,10 @@
     place-items: center;
     width: var(--tap-min);
     height: var(--tap-min);
-    border: 1px solid var(--color-border-decor);
+    border: 2px solid #fff;
     border-radius: var(--radius-pill);
-    background: var(--color-surface-accent);
+    background: var(--color-surface-soft);
+    box-shadow: var(--shadow-sm);
     color: var(--color-primary);
   }
 
@@ -253,7 +274,14 @@
   }
   li a[aria-current='page'] {
     color: var(--color-primary);
-    box-shadow: inset 0 3px 0 var(--color-primary);
+    font-weight: 600;
+  }
+  /* Móvil: el icono activo va en una cápsula lavanda (como el menú de escritorio). */
+  li a[aria-current='page'] .icon {
+    box-sizing: content-box;
+    padding: 2px 12px;
+    border-radius: var(--radius-control);
+    background: var(--color-surface-soft);
   }
   .label {
     display: block;
@@ -350,8 +378,11 @@
       text-align: left;
     }
     li a[aria-current='page'] {
-      background: var(--color-surface);
-      box-shadow: none;
+      background: var(--color-surface-soft);
+    }
+    li a[aria-current='page'] .icon {
+      padding: 0;
+      background: none;
     }
     .label {
       font-size: var(--text-base);
@@ -359,6 +390,44 @@
     .topbar,
     main {
       padding-inline: var(--space-6);
+    }
+    .nav {
+      background: rgb(255 253 249 / 55%);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .brand::before {
+      content: '';
+      flex: none;
+      width: 2rem;
+      height: 2rem;
+      background: url('/decor/mark.svg') no-repeat center / contain;
+    }
+    /* Macizo de flores al pie del menú: nace del borde inferior y se mece (decorativo). */
+    .nav::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 15rem;
+      background: url('/decor/nav.svg') no-repeat left bottom / contain;
+      transform-origin: 30% 100%;
+      pointer-events: none;
+    }
+  }
+  @media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+    .nav::after {
+      animation: mg-sway 8.5s ease-in-out infinite alternate;
+    }
+  }
+  /* Ventanas bajas: sin adorno, para que nunca tape los enlaces. */
+  @media (min-width: 48rem) and (max-height: 42rem) {
+    .nav::after {
+      display: none;
     }
   }
 </style>

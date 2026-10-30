@@ -524,8 +524,8 @@
     min-width: var(--tap-min);
     padding: 0 var(--space-4);
     border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-pill);
-    background: var(--color-bg);
+    border-radius: var(--radius-control);
+    background: var(--color-card);
     color: var(--color-primary);
     font: inherit;
     cursor: pointer;
@@ -547,6 +547,14 @@
     padding: 0;
     list-style: none;
   }
+  /* Todas las tarjetas a la misma altura y alineadas arriba (antes, las de meses vacíos bajaban). */
+  .months > li {
+    display: flex;
+  }
+  .month {
+    flex: 1 1 auto;
+    align-content: start;
+  }
   .month {
     display: grid;
     grid-template-rows: auto auto;
@@ -555,13 +563,15 @@
     padding: var(--space-3) var(--space-2);
     border: 1px solid var(--color-border-decor);
     border-radius: var(--radius-lg);
-    background: var(--color-surface);
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
     color: var(--color-text);
     font: inherit;
     cursor: pointer;
   }
   .month.empty {
-    background: transparent;
+    background: rgb(255 253 249 / 55%);
+    box-shadow: none;
     color: var(--color-text-muted);
   }
   .thumb {

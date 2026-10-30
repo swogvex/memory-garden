@@ -14,6 +14,7 @@ export const es = {
   'home.intro': 'La base del proyecto está lista. Las pantallas llegan en los próximos hitos.',
   'shell.loading': 'Cargando tu jardín…',
   'shell.avatar': 'Perfil y configuración',
+  'shell.eyebrow': 'Tu jardín · {year}',
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',
   'view.soon.bouquets': 'Aquí aparecerán tus ramos mensuales.',
   'view.soon.explore': 'Aquí podrás buscar entre tus recuerdos.',

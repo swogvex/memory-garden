@@ -95,7 +95,8 @@
     padding: var(--space-4);
     border: 1px solid var(--color-border-decor);
     border-radius: var(--radius-lg);
-    background: #fff;
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
   }
   h2 {
     margin-bottom: var(--space-3);
@@ -127,7 +128,7 @@
   }
   .featured:hover,
   .row:hover {
-    background: var(--color-surface);
+    background: var(--color-surface-soft);
   }
   .ph {
     flex: none;

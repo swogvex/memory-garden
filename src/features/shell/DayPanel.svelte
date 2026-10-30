@@ -77,7 +77,7 @@
     cursor: pointer;
   }
   .row:hover {
-    background: var(--color-surface);
+    background: var(--color-surface-soft);
   }
   .fm {
     flex: none;
@@ -100,7 +100,8 @@
     min-height: var(--tap-min);
     padding: 0 var(--space-5);
     border: 0;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-control);
+    font-weight: 600;
     background: var(--color-primary);
     color: var(--color-on-primary);
     font: inherit;

@@ -385,144 +385,148 @@
   {/if}
   <div class="layout">
     <div class="main-col">
-      <div class="toolbar">
-        <button
-          type="button"
-          class="step"
-          aria-label={t(locale, 'garden.nav.prev')}
-          onclick={() => stepMonth(-1)}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"><path d="m15 5-7 7 7 7" /></svg
-          >
-        </button>
-        <p class="count">{t(locale, countKey, { count: monthMemories.length })}</p>
-        <button
-          type="button"
-          class="step"
-          aria-label={t(locale, 'garden.nav.next')}
-          onclick={() => stepMonth(1)}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"><path d="m9 5 7 7-7 7" /></svg
-          >
-        </button>
-      </div>
-
-      <div
-        class="chips"
-        role="group"
-        aria-label={t(locale, 'garden.months.label', { year: viewState.month.year })}
-        bind:this={chipsEl}
-      >
-        {#each monthLabels as label, i (i)}
-          {@const m = i + 1}
-          {@const n = counts.get(ymKey({ year: viewState.month.year, month: m })) ?? 0}
+      <div class="cal">
+        <div class="toolbar">
           <button
             type="button"
-            class="chip"
-            class:current={m === viewState.month.month}
-            aria-current={m === viewState.month.month ? 'true' : undefined}
-            aria-label="{formatMonthYear({ year: viewState.month.year, month: m }, locale)}, {nText(
-              n,
-            )}"
-            onclick={() => {
-              if (m !== viewState.month.month)
-                setMonth(
-                  { year: viewState.month.year, month: m },
-                  m > viewState.month.month ? 'next' : 'prev',
-                );
-            }}
+            class="step"
+            aria-label={t(locale, 'garden.nav.prev')}
+            onclick={() => stepMonth(-1)}
           >
-            <span aria-hidden="true">{label}</span>
-            {#if n > 0}<span class="dot" aria-hidden="true"></span>{/if}
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"><path d="m15 5-7 7 7 7" /></svg
+            >
           </button>
-        {/each}
-      </div>
-
-      <div class="grid-wrap" bind:this={wrapEl}>
-        {#key monthKey}
-          <table
-            class="grid"
-            class:slide-next={dir === 'next'}
-            class:slide-prev={dir === 'prev'}
-            role="grid"
-            aria-label={t(locale, 'garden.grid.label', { month: monthText })}
-            bind:this={gridEl}
+          <p class="count">{t(locale, countKey, { count: monthMemories.length })}</p>
+          <button
+            type="button"
+            class="step"
+            aria-label={t(locale, 'garden.nav.next')}
+            onclick={() => stepMonth(1)}
           >
-            <thead>
-              <tr>
-                {#each weekdays as w (w.long)}
-                  <th scope="col">
-                    <span aria-hidden="true">{w.short}</span>
-                    <span class="visually-hidden">{w.long}</span>
-                  </th>
-                {/each}
-              </tr>
-            </thead>
-            <tbody>
-              {#each grid as week (week[0]?.iso)}
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"><path d="m9 5 7 7-7 7" /></svg
+            >
+          </button>
+        </div>
+
+        <div
+          class="chips"
+          role="group"
+          aria-label={t(locale, 'garden.months.label', { year: viewState.month.year })}
+          bind:this={chipsEl}
+        >
+          {#each monthLabels as label, i (i)}
+            {@const m = i + 1}
+            {@const n = counts.get(ymKey({ year: viewState.month.year, month: m })) ?? 0}
+            <button
+              type="button"
+              class="chip"
+              class:current={m === viewState.month.month}
+              aria-current={m === viewState.month.month ? 'true' : undefined}
+              aria-label="{formatMonthYear(
+                { year: viewState.month.year, month: m },
+                locale,
+              )}, {nText(n)}"
+              onclick={() => {
+                if (m !== viewState.month.month)
+                  setMonth(
+                    { year: viewState.month.year, month: m },
+                    m > viewState.month.month ? 'next' : 'prev',
+                  );
+              }}
+            >
+              <span aria-hidden="true">{label}</span>
+              {#if n > 0}<span class="dot" aria-hidden="true"></span>{/if}
+            </button>
+          {/each}
+        </div>
+
+        <div class="grid-wrap" bind:this={wrapEl}>
+          {#key monthKey}
+            <table
+              class="grid"
+              class:slide-next={dir === 'next'}
+              class:slide-prev={dir === 'prev'}
+              role="grid"
+              aria-label={t(locale, 'garden.grid.label', { month: monthText })}
+              bind:this={gridEl}
+            >
+              <thead>
                 <tr>
-                  {#each week as cell (cell.iso)}
-                    {#if cell.inMonth}
-                      {@const list = byDate.get(cell.iso) ?? []}
-                      {@const first = list[0]}
-                      <td role="gridcell">
-                        <button
-                          type="button"
-                          class="day"
-                          class:selected={selectedIso === cell.iso}
-                          class:today={cell.iso === todayIso}
-                          data-iso={cell.iso}
-                          tabindex={cell.iso === tabIso ? 0 : -1}
-                          aria-pressed={selectedIso === cell.iso}
-                          aria-current={cell.iso === todayIso ? 'date' : undefined}
-                          aria-label={dayLabel(cell.date, list.length)}
-                          onclick={() => selectDay(cell.iso)}
-                        >
-                          <span class="num" aria-hidden="true">{cell.date.day}</span>
-                          {#if first}
-                            <span class="thumb" aria-hidden="true">
-                              <span class="pol"
-                                ><Polaroid
-                                  flower={first.flower}
-                                  src={covers.urls[first.id] || null}
-                                /></span
-                              >
-                              {#if list.length > 1}<span class="plus">+{list.length - 1}</span>{/if}
-                            </span>
-                          {/if}
-                        </button>
-                      </td>
-                    {:else}
-                      <td role="gridcell" aria-disabled="true"
-                        ><span class="out">{cell.date.day}</span></td
-                      >
-                    {/if}
+                  {#each weekdays as w (w.long)}
+                    <th scope="col">
+                      <span aria-hidden="true">{w.short}</span>
+                      <span class="visually-hidden">{w.long}</span>
+                    </th>
                   {/each}
                 </tr>
-              {/each}
-            </tbody>
-          </table>
-        {/key}
+              </thead>
+              <tbody>
+                {#each grid as week (week[0]?.iso)}
+                  <tr>
+                    {#each week as cell (cell.iso)}
+                      {#if cell.inMonth}
+                        {@const list = byDate.get(cell.iso) ?? []}
+                        {@const first = list[0]}
+                        <td role="gridcell">
+                          <button
+                            type="button"
+                            class="day"
+                            class:selected={selectedIso === cell.iso}
+                            class:today={cell.iso === todayIso}
+                            data-iso={cell.iso}
+                            tabindex={cell.iso === tabIso ? 0 : -1}
+                            aria-pressed={selectedIso === cell.iso}
+                            aria-current={cell.iso === todayIso ? 'date' : undefined}
+                            aria-label={dayLabel(cell.date, list.length)}
+                            onclick={() => selectDay(cell.iso)}
+                          >
+                            <span class="num" aria-hidden="true">{cell.date.day}</span>
+                            {#if first}
+                              <span class="thumb" aria-hidden="true">
+                                <span class="pol"
+                                  ><Polaroid
+                                    flower={first.flower}
+                                    src={covers.urls[first.id] || null}
+                                  /></span
+                                >
+                                {#if list.length > 1}<span class="plus">+{list.length - 1}</span
+                                  >{/if}
+                              </span>
+                            {/if}
+                          </button>
+                        </td>
+                      {:else}
+                        <td role="gridcell" aria-disabled="true"
+                          ><span class="out">{cell.date.day}</span></td
+                        >
+                      {/if}
+                    {/each}
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          {/key}
+        </div>
       </div>
 
       {#if monthMemories.length === 0}
@@ -615,10 +619,11 @@
     min-height: var(--tap-min);
     padding: 0 var(--space-5);
     border: 0;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-control);
     background: var(--color-primary);
     color: var(--color-on-primary);
     font: inherit;
+    font-weight: 600;
     cursor: pointer;
   }
   .retry:hover,
@@ -626,9 +631,48 @@
     background: var(--color-primary-hover);
   }
   .layout {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-5);
+  }
+  /* Ramillete metido detrás de la esquina superior derecha del calendario: sus tallos quedan ocultos
+     tras la tarjeta (z-index negativo), así que asoma pegado a ella. Decorativo; se mece despacio. */
+  .layout::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -4.9rem;
+    right: 3.6rem;
+    width: 7.5rem;
+    aspect-ratio: 220 / 200;
+    background: url('/decor/tuck.svg') no-repeat center bottom / contain;
+    transform-origin: 50% 100%;
+    pointer-events: none;
+  }
+  @media (min-width: 40rem) {
+    .layout::before {
+      top: -6.6rem;
+      right: 0.5rem;
+      width: 10.5rem;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .layout::before {
+      animation: mg-sway 9s ease-in-out -2s infinite alternate;
+    }
+  }
+  .cal {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-decor);
+    border-radius: var(--radius-lg);
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
+  }
+  @media (max-width: 40rem) {
+    .cal {
+      padding: var(--space-3) var(--space-2);
+    }
   }
   .main-col {
     min-width: 0;
@@ -641,15 +685,19 @@
   }
   .card {
     padding: var(--space-4);
-    border: 1px solid var(--color-border-control);
+    border: 1px solid var(--color-border-decor);
     border-radius: var(--radius-lg);
-    background: #fff;
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
   }
   @media (min-width: 64rem) {
     .layout {
       grid-template-columns: minmax(0, 1fr) 20rem;
       gap: var(--space-6);
       align-items: start;
+    }
+    .layout::before {
+      right: calc(20rem + var(--space-6) + 0.5rem);
     }
   }
 
@@ -672,8 +720,8 @@
     width: var(--tap-min);
     height: var(--tap-min);
     border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-pill);
-    background: #fff;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
     color: var(--color-primary);
     cursor: pointer;
   }
@@ -697,8 +745,8 @@
     min-height: var(--tap-min);
     padding: 0 var(--space-4);
     border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-pill);
-    background: #fff;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
     color: var(--color-text);
     font: inherit;
     cursor: pointer;
@@ -707,6 +755,7 @@
     border-color: var(--color-primary);
     background: var(--color-primary);
     color: var(--color-on-primary);
+    font-weight: 600;
   }
   .dot {
     width: 6px;
@@ -768,9 +817,9 @@
     width: 100%;
     min-height: 4rem;
     padding: 4px 0 2px;
-    border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-md);
-    background: #fff;
+    border: 1px solid var(--color-border-decor);
+    border-radius: var(--radius-sm);
+    background: var(--color-card);
     color: var(--color-text);
     font: inherit;
     cursor: pointer;
@@ -783,11 +832,15 @@
   }
   .day.selected {
     border-color: var(--color-primary);
-    background: var(--color-surface);
+    background: var(--color-surface-soft);
     box-shadow: inset 0 0 0 1px var(--color-primary);
   }
+  /* El número va arriba a la izquierda; la Polaroid, centrada debajo. */
   .num {
+    align-self: flex-start;
+    padding-left: 6px;
     font-size: var(--text-sm);
+    line-height: 1.2;
     font-variant-numeric: tabular-nums;
   }
   .day.today .num {
@@ -801,10 +854,13 @@
     justify-content: center;
     min-height: 4rem;
     padding-top: 6px;
+    justify-content: flex-start;
+    padding-left: 6px;
     border: 1px dashed var(--color-border-decor);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+    font-style: italic;
   }
   .thumb {
     position: relative;
@@ -899,8 +955,8 @@
     min-height: var(--tap-min);
     padding: 0 var(--space-4);
     border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-pill);
-    background: #fff;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
     color: var(--color-primary);
     font: inherit;
     cursor: pointer;
@@ -915,7 +971,7 @@
     overflow: auto;
     border: 0;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    background: var(--color-bg);
+    background: var(--color-card);
     color: var(--color-text);
     box-shadow: var(--shadow-lg);
   }

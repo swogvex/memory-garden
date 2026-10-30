@@ -22,13 +22,27 @@
 
 <style>
   .polaroid {
+    position: relative;
     display: block;
     width: 100%;
     padding: 2px 2px 6px;
     background: #fff;
     border-radius: 2px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 6px rgb(55 49 63 / 16%);
     transform: rotate(-3deg);
+  }
+  /* Cinta washi (decorativa). */
+  .polaroid::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: -10%;
+    left: 30%;
+    width: 40%;
+    height: 16%;
+    background: var(--color-tape);
+    opacity: 0.8;
+    transform: rotate(3deg);
   }
   .photo {
     display: block;
