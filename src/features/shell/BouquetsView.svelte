@@ -19,11 +19,12 @@
     saveBlob,
     yearsWithMemories,
   } from '@/features/bouquets';
-  import { DEFAULT_CATEGORIES, MemoryDialog, MemoryView } from '@/features/memories';
+  import { MemoryDialog, MemoryView } from '@/features/memories';
+  import { effectiveTimeZone, prefs } from '@/features/settings';
   import {
     capitalize,
+    formatCompactDate,
     formatMonthYear,
-    formatShortDate,
     monthShortLabels,
     parseIso,
     todayIn,
@@ -45,7 +46,7 @@
     | { status: 'error' }
     | { status: 'ready'; memories: readonly GardenMemory[] };
 
-  const thisYear = todayIn().year;
+  const thisYear = $derived(todayIn(effectiveTimeZone()).year);
 
   let load = $state<LoadState>({ status: 'loading' });
   let source: GardenSource | null = null;
@@ -80,7 +81,7 @@
 
   const shortDate = (iso: string) => {
     const d = parseIso(iso);
-    return d ? formatShortDate(d, locale) : iso;
+    return d ? formatCompactDate(d, locale, prefs.settings.dateFormat) : iso;
   };
   const flowerName = (id: GardenMemory['flower']) => t(locale, flowerKey(id, 'name') as MessageKey);
 
@@ -482,7 +483,7 @@
     <MemoryDialog
       {locale}
       date={editing.date}
-      categories={DEFAULT_CATEGORIES}
+      categories={prefs.settings.categories}
       memory={editing}
       loadThumb={(m, index) => loadImage(m, index, 'thumb')}
       onSave={saveMemory}

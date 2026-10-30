@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { GardenMemory } from '@/features/calendar';
-  import { capitalize, formatLongDate, formatShortDate, parseIso } from '@/lib/dates';
+  import { prefs } from '@/features/settings';
+  import { capitalize, formatCompactDate, formatLongDate, parseIso } from '@/lib/dates';
   import { t, type Locale } from '@/lib/i18n';
   import FlowerMark from '@/components/ui/FlowerMark.svelte';
   import Polaroid from './Polaroid.svelte';
@@ -29,7 +30,7 @@
   };
   const shortDate = (iso: string) => {
     const d = parseIso(iso);
-    return d ? formatShortDate(d, locale) : iso;
+    return d ? formatCompactDate(d, locale, prefs.settings.dateFormat) : iso;
   };
 
   function onBouquetClick(event: MouseEvent) {

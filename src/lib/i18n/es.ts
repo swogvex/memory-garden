@@ -15,7 +15,6 @@ export const es = {
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',
   'view.soon.bouquets': 'Aquí aparecerán tus ramos mensuales.',
   'view.soon.explore': 'Aquí podrás buscar entre tus recuerdos.',
-  'view.soon.settings': 'Aquí podrás ajustar tu perfil y tu seguridad.',
   'view.soon.note': 'Esta sección llegará en un próximo hito.',
   'garden.loading': 'Abriendo tu jardín…',
   'garden.error.title': 'No se pudo abrir tu jardín',
@@ -321,6 +320,130 @@ export const es = {
     'La imagen se guarda sin cifrar en tu dispositivo e incluye las fotos que se ven en el ramo.',
   'bouquets.export.caption.one': '{month} · 1 recuerdo',
   'bouquets.export.caption.many': '{month} · {count} recuerdos',
+  // Configuración y privacidad (H8.1).
+  'shell.eyebrow.named': 'El jardín de {name} · {year}',
+  'access.language': 'Idioma',
+  'language.es': 'Español',
+  'language.en': 'English',
+  'settings.loading': 'Cargando tus ajustes…',
+  'settings.error.title': 'No se pudieron abrir tus ajustes',
+  'settings.error.unavailable': 'Revisa tu conexión e inténtalo de nuevo.',
+  'settings.error.unreadable':
+    'Tus ajustes guardados no se pueden abrir con estas claves. No se ha cambiado nada. Inténtalo de nuevo; si sigue pasando, avisa a quien preparó la aplicación.',
+  'settings.retry': 'Reintentar',
+  'settings.saving': 'Guardando…',
+  'settings.saved': 'Cambios guardados.',
+  'settings.error.save':
+    'No se pudo guardar. No se ha perdido nada de lo escrito: revisa tu conexión e inténtalo de nuevo.',
+  'settings.error.conflict':
+    'Otro dispositivo cambió tus ajustes hace un momento. Se ha cargado su versión: revísala y vuelve a guardar.',
+  'settings.error.quota': 'No queda espacio para guardar esta imagen.',
+  'settings.profile.title': 'Perfil',
+  'settings.profile.name': 'Tu nombre',
+  'settings.profile.name.hint': 'Aparece en la cabecera del Jardín. Se guarda cifrado.',
+  'settings.profile.welcome': 'Mensaje de bienvenida',
+  'settings.profile.welcome.hint':
+    'Aparece bajo el título del Jardín. Si lo dejas vacío, se muestra el lema de la app.',
+  'settings.profile.welcome.count': '{count} de {max} caracteres',
+  'settings.profile.error.name':
+    'El nombre admite como máximo {max} caracteres, en una sola línea.',
+  'settings.profile.error.welcome': 'El mensaje admite como máximo {max} caracteres.',
+  'settings.profile.save': 'Guardar perfil',
+  'settings.avatar.title': 'Avatar',
+  'settings.avatar.presets': 'Elige una flor',
+  'settings.avatar.preset': 'Avatar de {flower}',
+  'settings.avatar.upload': 'Subir una foto',
+  'settings.avatar.upload.hint':
+    'JPG, PNG o WEBP de hasta 5 MB. Se prepara en tu dispositivo, se le quitan los datos ocultos (como la ubicación) y se guarda cifrada.',
+  'settings.avatar.processing': 'Preparando la foto…',
+  'settings.avatar.remove': 'Quitar avatar',
+  'settings.avatar.saved': 'Avatar actualizado.',
+  'settings.avatar.error.format': 'Usa una foto JPG, PNG o WEBP.',
+  'settings.avatar.error.large':
+    'La foto supera los 5 MB o es demasiado grande para este dispositivo.',
+  'settings.prefs.title': 'Preferencias',
+  'settings.prefs.language': 'Idioma',
+  'settings.prefs.language.hint':
+    'También se recuerda en este navegador para mostrar la pantalla de acceso en tu idioma: es lo único que se guarda sin cifrar en tu dispositivo.',
+  'settings.prefs.dateFormat': 'Formato de fecha',
+  'settings.prefs.dateFormat.hint': 'Se usa en las fechas cortas de las listas y los paneles.',
+  'settings.prefs.dateFormat.dmy': 'Día, mes y año ({example})',
+  'settings.prefs.dateFormat.mdy': 'Mes, día y año ({example})',
+  'settings.prefs.dateFormat.ymd': 'Año-mes-día ({example})',
+  'settings.prefs.timeZone': 'Zona horaria',
+  'settings.prefs.timeZone.hint':
+    'Sirve para saber qué día es «hoy» en el calendario. Las fechas de tus recuerdos no cambian.',
+  'settings.prefs.timeZone.auto': 'Automática: la de este dispositivo ({zone})',
+  'settings.prefs.timeZone.manual': 'Elegir una zona',
+  'settings.prefs.timeZone.select': 'Zona horaria elegida',
+  'settings.prefs.timeZone.unknown':
+    'La zona guardada ({zone}) no existe en este navegador: se usa la de este dispositivo.',
+  'settings.prefs.save': 'Guardar preferencias',
+  'settings.categories.title': 'Categorías',
+  'settings.categories.intro':
+    'Cada categoría tiene una flor por defecto para los recuerdos nuevos. Cambiarla no cambia la flor de los recuerdos que ya tienes.',
+  'settings.categories.count': '{count} de {max} categorías',
+  'settings.categories.name': 'Nombre',
+  'settings.categories.flower': 'Flor por defecto',
+  'settings.categories.edit': 'Editar',
+  'settings.categories.edit.label': 'Editar la categoría {name}',
+  'settings.categories.remove': 'Eliminar',
+  'settings.categories.remove.label': 'Eliminar la categoría {name}',
+  'settings.categories.save': 'Guardar',
+  'settings.categories.cancel': 'Cancelar',
+  'settings.categories.add.title': 'Nueva categoría',
+  'settings.categories.add': 'Añadir categoría',
+  'settings.categories.full': 'Has llegado al máximo de {max} categorías.',
+  'settings.categories.last': 'Siempre tiene que quedar al menos una categoría.',
+  'settings.categories.remove.title': '¿Eliminar «{name}»?',
+  'settings.categories.remove.none': 'Ningún recuerdo usa esta categoría.',
+  'settings.categories.remove.one':
+    '1 recuerdo usa esta categoría. Pasará a la categoría que elijas; conserva su flor.',
+  'settings.categories.remove.many':
+    '{count} recuerdos usan esta categoría. Pasarán a la categoría que elijas; cada uno conserva su flor.',
+  'settings.categories.remove.target': 'Mover sus recuerdos a',
+  'settings.categories.remove.confirm': 'Eliminar categoría',
+  'settings.categories.counting': 'Contando los recuerdos…',
+  'settings.categories.progress': 'Actualizando recuerdos: {done} de {total}…',
+  'settings.categories.renamed': 'Categoría guardada.',
+  'settings.categories.added': 'Categoría añadida.',
+  'settings.categories.removed': 'Categoría eliminada.',
+  'settings.categories.error.required': 'Escribe un nombre.',
+  'settings.categories.error.long': 'El nombre admite como máximo {max} caracteres.',
+  'settings.categories.error.invalid': 'El nombre tiene caracteres no válidos.',
+  'settings.categories.error.duplicate': 'Ya hay una categoría con ese nombre.',
+  'settings.categories.error.partial':
+    'Se actualizaron {done} de {total} recuerdos y luego falló la conexión. La lista de categorías no ha cambiado: vuelve a intentarlo y se terminarán los que faltan.',
+  'settings.categories.error.load':
+    'No se pudieron contar los recuerdos. Revisa tu conexión e inténtalo de nuevo.',
+  'settings.categories.trashNote':
+    'Los recuerdos que están en la papelera conservan su categoría anterior.',
+  'settings.session.title': 'Sesión',
+  'settings.session.body':
+    'Al cerrar sesión, las claves se borran de la memoria de este dispositivo y se vuelve a pedir la contraseña.',
+  'privacy.title': 'Privacidad',
+  'privacy.intro': 'Cómo cuida Memory Garden tus datos, en pocas palabras.',
+  'privacy.encrypted.title': 'Lo que se cifra en tu dispositivo',
+  'privacy.encrypted.body':
+    'Tus recuerdos (título, fecha, categoría, texto, enlace y flor), tus fotos, tu avatar y estos ajustes (nombre, mensaje de bienvenida, idioma, formato de fecha, zona horaria y categorías) se cifran en tu dispositivo antes de salir. Ni el desarrollador de la app ni Cloudflare, el proveedor de alojamiento, pueden leerlos sin tu contraseña o tu clave de recuperación.',
+  'privacy.server.title': 'Lo que sí ve el servidor',
+  'privacy.server.body':
+    'Cuántos recuerdos y fotos tienes, su tamaño aproximado, cuándo se crean, se cambian o se borran, y cuándo entras en la aplicación. Tu dirección IP no se guarda: para frenar intentos de acceso se usa una huella temporal que se borra a las 24 horas.',
+  'privacy.cookies.title': 'Cookies y almacenamiento en tu navegador',
+  'privacy.cookies.body':
+    'Una única cookie técnica mantiene tu sesión abierta: deja de valer al cerrar sesión, tras 30 minutos sin actividad o, como mucho, a las 12 horas. Además, tu navegador recuerda el idioma (es o en) para mostrar la pantalla de acceso en tu idioma; es lo único que se guarda sin cifrar en tu dispositivo. No hay analíticas, anuncios ni cookies de seguimiento, y la app no carga nada de otras páginas: por eso no ves un aviso de cookies.',
+  'privacy.png.title': 'La imagen del ramo',
+  'privacy.png.body':
+    'Si descargas un ramo como imagen, ese archivo se guarda sin cifrar en tu dispositivo, con las fotos que se ven en él.',
+  'privacy.keys.title': 'Si pierdes tus claves',
+  'privacy.keys.body':
+    'Si olvidas tu contraseña, puedes entrar con tu clave de recuperación. Si pierdes las dos, nadie puede recuperar tus recuerdos, tampoco el desarrollador: no existe ninguna copia sin cifrar. Guarda tu clave de recuperación en papel, en un lugar seguro y separada de tu contraseña.',
+  'privacy.deletion.title': 'Borrar',
+  'privacy.deletion.body':
+    'Lo que mandas a la papelera se borra definitivamente a los 30 días. Las copias técnicas del proveedor pueden conservar datos cifrados hasta 7 días más.',
+  'privacy.code.title': 'Algo que debes saber',
+  'privacy.code.body':
+    'El código de la aplicación lo entrega el servidor cada vez que abres la página. Por eso tu seguridad depende de que el desarrollador y sus cuentas no estén comprometidos. Se hace lo posible para evitarlo (verificación en dos pasos, despliegues manuales), pero no se puede demostrar desde tu navegador.',
 } as const;
 
 export type MessageKey = keyof typeof es;

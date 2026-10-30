@@ -12,7 +12,8 @@
     type GardenSource,
     type SaveMemoryInput,
   } from '@/features/calendar';
-  import { DEFAULT_CATEGORIES, MemoryDialog, MemoryView } from '@/features/memories';
+  import { MemoryDialog, MemoryView } from '@/features/memories';
+  import { effectiveTimeZone, prefs } from '@/features/settings';
   import {
     addMonths,
     capitalize,
@@ -65,7 +66,8 @@
   let viewOpener: HTMLElement | null = null;
   let covers = $state<{ month: string; urls: Record<string, string> }>({ month: '', urls: {} });
 
-  const todayIso = toIso(todayIn());
+  // «Hoy» según la zona elegida en Configuración (o la del dispositivo); cambia si se cambia la preferencia.
+  const todayIso = $derived(toIso(todayIn(effectiveTimeZone())));
 
   const weekdays = $derived(weekdayLabels(locale));
   const monthLabels = $derived(monthShortLabels(locale));
@@ -595,7 +597,7 @@
     <MemoryDialog
       {locale}
       date={formDate}
-      categories={DEFAULT_CATEGORIES}
+      categories={prefs.settings.categories}
       memory={editing}
       loadThumb={(m, index) => loadImage(m, index, 'thumb')}
       onSave={saveMemory}

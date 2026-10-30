@@ -34,3 +34,12 @@ export const THUMB_SPEC: VariantSpec = {
   qualities: [0.75, 0.65, 0.55],
   maxBytes: MAX_ASSET_BYTES.thumb - ENVELOPE_OVERHEAD,
 };
+
+/** Avatar (H8.1, D-094): entrada JPG, PNG o WEBP de hasta 5 MB; sale un JPEG sin metadatos de lado largo ≤ 256 px. */
+export const AVATAR_MAX_INPUT_BYTES = 5 * 1024 * 1024;
+export const AVATAR_MAX_SIDE = 256;
+export const AVATAR_SPEC: VariantSpec = {
+  sides: [AVATAR_MAX_SIDE, 192],
+  qualities: [0.85, 0.75, 0.65],
+  maxBytes: MAX_ASSET_BYTES.avatar - ENVELOPE_OVERHEAD,
+};

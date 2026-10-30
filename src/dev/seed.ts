@@ -14,6 +14,7 @@ import {
   preparePassword,
   unwrapWithPassword,
 } from '@/lib/crypto';
+import { createSettingsSource, type SettingsSource } from '@/lib/settings';
 import { createDevMemoryRepository } from '@/lib/storage/dev-memory-adapter';
 import { MAX_PHOTOS, parseMemoryPayload, type MemoryPayload } from '@/lib/validation';
 import { buildSeedPayloads } from './seed-data';
@@ -55,8 +56,18 @@ function createUrlCache(max: number) {
   };
 }
 
-/** Espacio cifrado de verdad (PBKDF2 + AES-GCM) sobre el adaptador en memoria. */
+export interface DevSpace {
+  readonly garden: GardenSource;
+  readonly settings: SettingsSource;
+}
+
+/** Fuente del Jardín del espacio de pruebas (las pruebas unitarias de la semilla la usan sola). */
 export async function createDevGardenSource(): Promise<GardenSource> {
+  return (await createDevSpace()).garden;
+}
+
+/** Espacio cifrado de verdad (PBKDF2 + AES-GCM) sobre el adaptador en memoria: Jardín y Configuración con las mismas claves. */
+export async function createDevSpace(): Promise<DevSpace> {
   const repo = createDevMemoryRepository();
   const created = await createVault(DEV_PASSWORD);
   const { wire } = created;
@@ -165,7 +176,7 @@ export async function createDevGardenSource(): Promise<GardenSource> {
     }
   }
 
-  return {
+  const garden: GardenSource = {
     async list(): Promise<GardenMemory[]> {
       const records = await repo.memories.list();
       return Promise.all(
@@ -226,4 +237,5 @@ export async function createDevGardenSource(): Promise<GardenSource> {
       fullPhotos.clear();
     },
   };
+  return { garden, settings: createSettingsSource(repo, keyring) };
 }

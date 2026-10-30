@@ -8,7 +8,10 @@ export interface CategoryOption {
   readonly flower: Flower;
 }
 
-/** Hasta que existan los ajustes (H8): D-135/D-141. */
+/**
+ * Categorías de serie (D-135). Desde H8.1 las pantallas usan las de los ajustes cifrados (`prefs.settings.categories`,
+ * creadas con `defaultCategories` de lib/settings); esta constante queda para las pruebas del formulario.
+ */
 export const DEFAULT_CATEGORIES: readonly CategoryOption[] = [
   { name: 'Viajes', flower: 'girasol' },
   { name: 'Momentos', flower: 'camelia' },

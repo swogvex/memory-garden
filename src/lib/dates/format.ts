@@ -1,4 +1,4 @@
-import { addDays, type CalendarDate, type YearMonth } from './calendar';
+import { addDays, toIso, type CalendarDate, type YearMonth } from './calendar';
 
 /** Fecha UTC a medianoche (válida también para años < 100). */
 function utcDate(year: number, month: number, day: number): Date {
@@ -55,4 +55,50 @@ export function formatShortDate(date: CalendarDate, locale: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(utcDate(date.year, date.month, date.day));
+}
+
+/** Orden de las fechas cortas elegido en Configuración (H8.1). Mismos valores que `DATE_FORMATS` de lib/validation. */
+export type DateOrder = 'dmy' | 'mdy' | 'ymd';
+
+/**
+ * Fecha corta según la preferencia: «20 oct 2026» (dmy), «Oct 20, 2026» (mdy) o «2026-10-20» (ymd).
+ * El nombre del mes sale del idioma; el orden, de la preferencia. Sin zona horaria: es una fecha de calendario (D-024).
+ */
+export function formatCompactDate(date: CalendarDate, locale: string, order: DateOrder): string {
+  if (order === 'ymd') return toIso(date);
+  const parts = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).formatToParts(utcDate(date.year, date.month, date.day));
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? '';
+  const day = part('day');
+  const month = part('month');
+  const year = part('year');
+  return order === 'mdy' ? `${month} ${day}, ${year}` : `${day} ${month} ${year}`;
+}
+
+/** Zonas horarias que conoce el navegador (IANA). Si no puede listarlas, al menos la del dispositivo y UTC. */
+export function listTimeZones(fallback: string): string[] {
+  try {
+    const all = (Intl as { supportedValuesOf?: (key: 'timeZone') => string[] }).supportedValuesOf?.(
+      'timeZone',
+    );
+    if (all && all.length > 0) return all.includes(fallback) ? all : [fallback, ...all];
+  } catch {
+    // navegador antiguo
+  }
+  return fallback === 'UTC' ? ['UTC'] : [fallback, 'UTC'];
+}
+
+/** ¿El navegador acepta esta zona? (una zona guardada en otro dispositivo podría no existir aquí). */
+export function isKnownTimeZone(zone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: zone });
+    return true;
+  } catch {
+    return false;
+  }
 }
