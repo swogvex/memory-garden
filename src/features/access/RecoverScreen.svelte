@@ -44,7 +44,7 @@
   let busy = $state(false);
   let error = $state<ReturnType<typeof failureKey> | null>(null);
   let wait = $state(0);
-  let heading: HTMLHeadingElement | undefined;
+  let heading = $state<HTMLHeadingElement>();
   let session: RecoverySession | null = null;
   let pending: PendingReset | null = null;
   let recovered: Keyring | null = null;

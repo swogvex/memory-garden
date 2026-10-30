@@ -33,7 +33,7 @@
   let busy = $state(false);
   let error = $state<ReturnType<typeof failureKey> | null>(null);
   let wait = $state(0);
-  let heading: HTMLHeadingElement | undefined;
+  let heading = $state<HTMLHeadingElement>();
   let pending: PendingSpace | null = null; // claves en memoria: nunca en estado reactivo
   let firstRender = true;
   const countdown = createCountdown((n) => {
