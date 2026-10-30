@@ -20,5 +20,5 @@ export default defineConfig({
     },
   },
   // D-086: nada se incrusta como `data:` (la CSP no admite `data:` en img-src ni font-src).
-  vite: { build: { assetsInlineLimit: 0 } },
+  vite: { build: { assetsInlineLimit: 0, cssCodeSplit: false } },
 });

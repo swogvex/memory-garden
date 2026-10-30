@@ -31,3 +31,13 @@ test('el bundle de producción no contiene la semilla ni datos de prueba', async
   }
   expect(hits).toEqual([]);
 });
+
+test('cada hoja de estilos de la compilación está enlazada en el HTML de las vistas (sin depender de JS)', () => {
+  const css = readdirSync(join('dist', 'client', '_astro')).filter((f) => f.endsWith('.css'));
+  expect(css.length).toBeGreaterThan(0);
+  for (const view of ['jardin', 'ramos', 'explorar', 'configuracion']) {
+    const html = readFileSync(join('dist', 'client', view, 'index.html'), 'utf8');
+    const missing = css.filter((f) => !html.includes(`/_astro/${f}`));
+    expect(missing, `${view}: hojas de estilo sin enlazar`).toEqual([]);
+  }
+});
