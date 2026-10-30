@@ -25,7 +25,7 @@ test('la portada es la app: sin sesión solo el acceso; privada, accesible y sin
   await expect(page.getByRole('heading', { level: 1, name: es['app.name'] })).toBeVisible();
   await expect(page.getByRole('navigation', { name: es['nav.label'] })).toHaveCount(0);
   await expect(page.locator('main#contenido')).toHaveCount(1);
-  await expect(page.getByText(es['home.intro'])).toHaveCount(0);
+  await expect(page.getByText('La base del proyecto está lista')).toHaveCount(0);
 
   await expectNoA11yViolations(page);
 

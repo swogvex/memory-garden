@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_LOCALE, LOCALES, isLocale, t } from '@/lib/i18n';
-import { en } from '@/lib/i18n/en';
-import { es } from '@/lib/i18n/es';
+import { en } from '../../src/lib/i18n/en';
+import { es, type MessageKey } from '../../src/lib/i18n/es';
 
 describe('i18n', () => {
   it('usa español por defecto y expone es/en', () => {
@@ -15,7 +15,19 @@ describe('i18n', () => {
   });
 
   it('cae al español si falta la traducción', () => {
-    expect(t('en', 'home.intro')).toBe(es['home.intro']);
+    // `en` está completo desde H7.5: se borra una clave un momento para probar la caída al español.
+    const saved = en['app.tagline'];
+    delete en['app.tagline'];
+    try {
+      expect(t('en', 'app.tagline')).toBe(es['app.tagline']);
+    } finally {
+      en['app.tagline'] = saved;
+    }
+  });
+
+  it('el inglés tiene todas las claves del español', () => {
+    const missing = (Object.keys(es) as MessageKey[]).filter((key) => !(key in en));
+    expect(missing).toEqual([]);
   });
 
   it('interpola parámetros y deja intactos los que faltan', () => {
