@@ -7,6 +7,7 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
+    "html_handling": "drop-trailing-slash",
   },
   // Solo se sirve por el dominio propio: ni *.workers.dev ni URLs de vista previa.
   "workers_dev": false,
