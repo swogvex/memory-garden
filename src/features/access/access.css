@@ -135,6 +135,10 @@
   }
   .ac-corner {
     width: 11.5rem;
+    /* En el iPhone, arriba y abajo hay franjas del sistema (hora, barra de Safari) donde la página no
+       dibuja: un corte seco ahí se ve feo. La flor se desvanece hacia el papel en el borde exterior.
+       Las esquinas están volteadas con `scale`, así que en todas el borde exterior es su «abajo». */
+    mask-image: linear-gradient(to top, transparent 1rem, #000 4.5rem);
   }
   .ac-card {
     padding: var(--space-5) var(--space-4);
