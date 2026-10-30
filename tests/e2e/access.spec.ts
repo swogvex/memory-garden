@@ -5,6 +5,9 @@ import { expect, test, type Page } from '@playwright/test';
  * No hay criptografía real aquí (eso lo cubren las pruebas unitarias contra el servidor real): se comprueba
  * qué pantalla aparece en cada estado del servidor, los mensajes genéricos y la espera tras el 429.
  */
+
+test.use({ serviceWorkers: 'block' });
+
 const KDF = '{"v":1,"alg":"pbkdf2-sha256","iter":1500000,"salt":"AAAAAAAAAAAAAAAAAAAAAA"}';
 const REC_SALT = 'AAAAAAAAAAAAAAAAAAAAAA';
 
@@ -15,10 +18,18 @@ const configured = (kdf: string = KDF) => ({ configured: true, kdf, rec_salt: RE
 const passwordField = (page: Page) => page.getByLabel('Contraseña', { exact: true });
 
 async function mockParams(page: Page, body: Record<string, unknown> | number): Promise<void> {
-  await page.route('**/api/auth/params', (route) =>
+  await page.route('**/api/auth/params**', (route) =>
     typeof body === 'number'
-      ? route.fulfill({ status: body, contentType: 'application/json', body: '{}' })
-      : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) }),
+      ? route.fulfill({
+          status: body,
+          contentType: 'application/json',
+          body: '{}',
+        })
+      : route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(body),
+        }),
   );
 }
 
@@ -97,4 +108,24 @@ test('la contraseña no queda en la URL ni en el almacenamiento del navegador', 
     JSON.stringify([{ ...localStorage }, { ...sessionStorage }]),
   );
   expect(stored).not.toContain(secret);
+});
+
+test('la compilación de producción aplica los estilos de los componentes Svelte (CSS enlazado)', async ({
+  page,
+}) => {
+  await mockParams(page, configured());
+
+  await page.goto('/jardin');
+
+  const button = page.getByRole('button', { name: 'Entrar' });
+  await expect(button).toBeVisible();
+
+  const box = await button.boundingBox();
+
+  expect(
+    box?.height ?? 0,
+    'el botón no tiene estilos: falta el CSS de las islas',
+  ).toBeGreaterThanOrEqual(44);
+
+  await expect(button).not.toHaveCSS('border-radius', '0px');
 });

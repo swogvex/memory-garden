@@ -1,11 +1,10 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import {
-  WORDLIST_ES,
-  generateSpanishPassphrase,
-  PASSPHRASE_WORDS_ES,
-  checkPasswordPolicy,
-} from '../../src/lib/crypto';
+
+import { WORDLIST_ES, checkPasswordPolicy } from '../../src/lib/crypto';
+
+import { generateSpanishPassphrase, PASSPHRASE_WORDS_ES } from '@/lib/crypto/passphrase-es';
+
 import { generatePassphrase } from '../../src/lib/crypto/password-policy';
 
 /** Lista de palabras para la frase de paso (D-063, pregunta abierta 16). Comprueba las propiedades que la entropía exige. */
