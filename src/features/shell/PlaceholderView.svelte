@@ -13,9 +13,10 @@
   .soon {
     max-width: 36rem;
     padding: var(--space-5);
-    border: 1px dashed var(--color-border-control);
+    border: 1px solid var(--color-border-decor);
     border-radius: var(--radius-lg);
-    background: var(--color-surface-accent);
+    background: var(--color-card);
+    box-shadow: var(--shadow-card);
   }
   .note {
     margin: 0;

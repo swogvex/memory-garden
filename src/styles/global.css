@@ -14,7 +14,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  /* Papel: WebP propio de 2 KB (img-src 'self'); el color queda debajo por si no carga. */
+  background: var(--color-bg) url('/textures/paper.webp');
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -26,7 +27,8 @@ h2,
 h3 {
   font-family: var(--font-title);
   line-height: var(--leading-title);
-  font-weight: 600;
+  font-weight: 500;
+  text-wrap: balance;
   margin: 0 0 var(--space-4);
 }
 h1 {
@@ -61,7 +63,26 @@ a:hover {
 .handwritten {
   font-family: var(--font-hand);
   font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+/* Antetítulo en versalitas (p. ej. «TU JARDÍN · 2026»). */
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
+}
+
+/* Adornos florales: se mecen despacio alrededor del punto donde nacen (solo `rotate`, sin repintar). */
+@keyframes mg-sway {
+  from {
+    rotate: -1.6deg;
+  }
+  to {
+    rotate: 1.8deg;
+  }
 }
 
 .visually-hidden {
@@ -84,7 +105,7 @@ a:hover {
   padding: var(--space-3) var(--space-4);
   background: var(--color-primary);
   color: var(--color-on-primary);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
   text-decoration: none;
 }
 .skip-link:focus {

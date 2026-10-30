@@ -92,37 +92,78 @@
 {#if screen === 'ready'}
   {@render children()}
 {:else}
-  <section class="ac" aria-labelledby="ac-brand">
-    <div class="ac-card">
-      <p class="ac-brand" id="ac-brand">{t(locale, 'app.name')}</p>
-      <p class="handwritten ac-tagline">{t(locale, 'app.tagline')}</p>
+  <!-- Pantalla de acceso a página completa: es el contenido principal mientras no hay sesión. -->
+  <main id="contenido" class="ac-page" tabindex="-1">
+    <section class="ac" aria-labelledby="ac-brand">
+      <!-- Marco floral decorativo (H7.5): oculto a lectores de pantalla y sin clics. -->
+      <div class="ac-decor" aria-hidden="true">
+        <span class="ac-corner ac-c1"
+          ><img class="base" src="/decor/c1-base.svg" alt="" /><img
+            class="sway"
+            src="/decor/c1-sway.svg"
+            alt=""
+          /></span
+        >
+        <span class="ac-corner ac-c2"
+          ><img class="base" src="/decor/c2-base.svg" alt="" /><img
+            class="sway"
+            src="/decor/c2-sway.svg"
+            alt=""
+          /></span
+        >
+        <span class="ac-corner ac-c3"
+          ><img class="base" src="/decor/c3-base.svg" alt="" /><img
+            class="sway"
+            src="/decor/c3-sway.svg"
+            alt=""
+          /></span
+        >
+        <span class="ac-corner ac-c4"
+          ><img class="base" src="/decor/c4-base.svg" alt="" /><img
+            class="sway"
+            src="/decor/c4-sway.svg"
+            alt=""
+          /></span
+        >
+      </div>
+      <div class="ac-card">
+        <span class="ac-mark" aria-hidden="true"></span>
+        <h1 class="ac-brand" id="ac-brand">{t(locale, 'app.name')}</h1>
+        <p class="handwritten ac-tagline">{t(locale, 'app.tagline')}</p>
 
-      {#if screen === 'checking'}
-        <p role="status">{t(locale, 'access.checking')}</p>
-      {:else if screen === 'unavailable'}
-        <div class="ac-form" role="alert">
-          <h2>{t(locale, 'access.unavailable.title')}</h2>
-          <p>{t(locale, 'access.unavailable.body')}</p>
-          <div class="ac-actions">
-            <button type="button" class="ac-btn ac-btn-primary" onclick={check}>
-              {t(locale, 'access.retry')}
-            </button>
+        {#if screen === 'checking'}
+          <p role="status">{t(locale, 'access.checking')}</p>
+        {:else if screen === 'unavailable'}
+          <div class="ac-form" role="alert">
+            <h2>{t(locale, 'access.unavailable.title')}</h2>
+            <p>{t(locale, 'access.unavailable.body')}</p>
+            <div class="ac-actions">
+              <button type="button" class="ac-btn ac-btn-primary" onclick={check}>
+                {t(locale, 'access.retry')}
+              </button>
+            </div>
           </div>
-        </div>
-      {:else if screen === 'setup'}
-        <SetupWizard {locale} {client} onDone={unlocked} />
-      {:else if screen === 'login' && status?.configured}
-        <LoginScreen
-          {locale}
-          {client}
-          {status}
-          {notice}
-          onUnlocked={unlocked}
-          onForgot={() => (current = 'recover')}
-        />
-      {:else if screen === 'recover' && status?.configured}
-        <RecoverScreen {locale} {client} {status} onDone={unlocked} onCancel={() => void check()} />
-      {/if}
-    </div>
-  </section>
+        {:else if screen === 'setup'}
+          <SetupWizard {locale} {client} onDone={unlocked} />
+        {:else if screen === 'login' && status?.configured}
+          <LoginScreen
+            {locale}
+            {client}
+            {status}
+            {notice}
+            onUnlocked={unlocked}
+            onForgot={() => (current = 'recover')}
+          />
+        {:else if screen === 'recover' && status?.configured}
+          <RecoverScreen
+            {locale}
+            {client}
+            {status}
+            onDone={unlocked}
+            onCancel={() => void check()}
+          />
+        {/if}
+      </div>
+    </section>
+  </main>
 {/if}

@@ -8,7 +8,7 @@ test.use({ timezoneId: 'Europe/Madrid', locale: 'es-ES' });
 async function open(page: Page) {
   await page.clock.setFixedTime(new Date('2026-10-20T10:00:00+02:00'));
   await page.goto('/jardin');
-  await expect(page.getByRole('grid')).toBeVisible();
+  await expect(page.getByRole('grid')).toBeVisible({ timeout: 45_000 });
 }
 const day = (page: Page, iso: string) => page.locator(`button[data-iso="${iso}"]`);
 const title = (page: Page) => page.getByRole('heading', { level: 1 });

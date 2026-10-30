@@ -231,7 +231,7 @@
     overflow: hidden;
     border: 0;
     border-radius: var(--radius-lg);
-    background: var(--color-bg);
+    background: var(--color-card);
     color: var(--color-text);
     box-shadow: var(--shadow-lg);
     touch-action: pan-y;
@@ -265,8 +265,8 @@
     width: var(--tap-min);
     height: var(--tap-min);
     border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-pill);
-    background: #fff;
+    border-radius: var(--radius-control);
+    background: var(--color-card);
     color: var(--color-primary);
     cursor: pointer;
   }
@@ -349,16 +349,39 @@
     align-items: center;
     justify-content: flex-end;
     gap: var(--space-3);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding: var(--space-3) var(--space-5) calc(var(--space-3) + env(safe-area-inset-bottom));
     border-top: 1px solid var(--color-border-decor);
+  }
+  /* Flores en la esquina inferior izquierda de la barra de botones (los botones van a la derecha).
+     Nacen del borde, se mecen despacio y se ocultan si aparece un aviso en la barra. */
+  .actions::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    aspect-ratio: 1;
+    background: url('/decor/k1.svg') no-repeat left bottom / contain;
+    transform-origin: 0 100%;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .actions::before {
+      animation: mg-sway 7.5s ease-in-out infinite alternate;
+    }
   }
   .primary,
   .secondary,
   .danger {
     min-height: var(--tap-min);
     padding: 0 var(--space-5);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-control);
     font: inherit;
+    font-weight: 600;
     cursor: pointer;
   }
   .primary {
