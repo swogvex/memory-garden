@@ -123,7 +123,9 @@ describe('primer acceso y desbloqueo con contraseña', () => {
     expect(a.authPw).not.toBe(c.authPw);
     expect(a.authPw).not.toContain(PW);
     expect(Object.keys(a).sort()).toEqual(['authPw', 'kdf']); // ninguna clave de cifrado expuesta en el objeto
-    expect(JSON.stringify(a)).not.toMatch(/kek|key/i);
+    // Solo los NOMBRES de propiedad: authPw es base64url aleatorio y puede contener «key» por azar.
+    expect(Object.keys(a).join(',')).not.toMatch(/kek|key/i);
+    expect(Object.values(a).some((v) => v instanceof CryptoKey)).toBe(false);
   });
 
   it('lo que recibe el servidor (auth_pw) NO abre la envoltura: las etiquetas HKDF de auth y de kek son distintas (§3 regla 6)', async () => {
