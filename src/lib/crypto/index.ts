@@ -18,7 +18,12 @@ export {
   isRecoveryKeyWellFormed,
   normalizeRecoveryInput,
 } from './recovery-key';
-export { checkPasswordPolicy, assertPasswordPolicy, generatePassphrase } from './password-policy';
+export {
+  checkPasswordPolicy,
+  assertPasswordPolicy,
+  generatePassphrase,
+  normalizeForList,
+} from './password-policy';
 export { Keyring } from './keyring';
 export {
   createVault,
@@ -42,5 +47,5 @@ export type {
   RecoveryReset,
   Options as VaultOptions,
 } from './vault';
-export type { Passphrase } from './password-policy';
+export type { CommonPasswordData, Passphrase } from './password-policy';
 export { WORDLIST_ES } from './wordlist-es';

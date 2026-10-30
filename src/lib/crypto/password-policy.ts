@@ -4,10 +4,16 @@ import { CryptoError } from './errors';
 
 /**
  * Política de contraseña (crypto-spec.md §4.5, D-063). PBKDF2 hace que la contraseña sea el eslabón débil.
- * Esto NO mide fortaleza real: filtra lo evidentemente malo. El medidor visual llega en H8.
+ * Esto NO mide fortaleza real: filtra lo evidentemente malo (corta, repetida, común o «palabra común + números»).
+ *
+ * Dos niveles (H8.2, D-122):
+ * - Siempre: longitud mínima, variedad, repeticiones («teamoteamoteamo») y esta lista corta escrita a mano.
+ * - Con `data` (la lista grande generada por scripts/build-common-passwords.mjs, que la interfaz carga aparte porque pesa):
+ *   contraseñas largas conocidas y «palabra común + relleno» («barcelona12345», «Superman!!!!!!»).
+ * Las funciones de cifrado (`createVault`, `changePassword`…) aplican el primer nivel; las pantallas, los dos.
  */
 
-/** Lista PROVISIONAL escrita a mano (sin licencia de terceros). Sustituir por una lista verificada (pregunta abierta 16 / D-063). */
+/** Lista corta escrita a mano (sin licencia de terceros). Siempre activa, también sin la lista grande. */
 const COMMON: readonly string[] = [
   'passwordpassword',
   'password123456',
@@ -60,18 +66,58 @@ export function lengthInCodePoints(s: string): number {
   return Array.from(s.normalize('NFKC')).length;
 }
 
-export function checkPasswordPolicy(password: string): PolicyResult {
+/** Lista grande de contraseñas comunes, ya normalizada con `normalizeForList`. */
+export interface CommonPasswordData {
+  /** Contraseñas conocidas de 14 o más caracteres (normalizadas). */
+  readonly long: ReadonlySet<string>;
+  /** Palabras o claves comunes de 4 a 13 letras: «base» que se suele rellenar con números o símbolos. */
+  readonly base: ReadonlySet<string>;
+}
+
+/** Forma con la que se compara con las listas: NFKC, minúsculas y sin espacios ni separadores habituales. */
+export function normalizeForList(password: string): string {
+  return password
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[\s\-_.]+/gu, '');
+}
+
+/** «abcabcabcabc», «teamoteamoteamo»: una misma pieza repetida dos o más veces. */
+function isRepetition(s: string): boolean {
+  const cps = Array.from(s);
+  for (let size = 1; size <= cps.length / 2; size++) {
+    if (cps.length % size !== 0) continue;
+    const unit = cps.slice(0, size).join('');
+    if (unit.repeat(cps.length / size) === s) return true;
+  }
+  return false;
+}
+
+/** «barcelona12345», «12345barcelona!», «superman!!!!!!»: una palabra común rodeada solo de cifras o símbolos. */
+function isBaseWithFiller(key: string, base: ReadonlySet<string>): boolean {
+  const core = key.replace(/^[^\p{L}]+/u, '').replace(/[^\p{L}]+$/u, '');
+  if (Array.from(core).length < 4 || !/^\p{L}+$/u.test(core)) return false;
+  return base.has(core);
+}
+
+export function checkPasswordPolicy(password: string, data?: CommonPasswordData): PolicyResult {
   const reasons: ('too_short' | 'common' | 'low_variety')[] = [];
   const norm = password.normalize('NFKC');
   const cps = Array.from(norm);
   if (cps.length < MIN_PASSWORD_LENGTH) reasons.push('too_short');
-  if (COMMON.includes(norm.toLowerCase().replace(/\s+/g, ''))) reasons.push('common');
+  const key = normalizeForList(password);
+  if (
+    COMMON.includes(key) ||
+    isRepetition(key) ||
+    (data !== undefined && (data.long.has(key) || isBaseWithFiller(key, data.base)))
+  )
+    reasons.push('common');
   if (new Set(cps).size < 5) reasons.push('low_variety');
   return { ok: reasons.length === 0, reasons };
 }
 
-export function assertPasswordPolicy(password: string): void {
-  if (!checkPasswordPolicy(password).ok) throw new CryptoError('password_policy');
+export function assertPasswordPolicy(password: string, data?: CommonPasswordData): void {
+  if (!checkPasswordPolicy(password, data).ok) throw new CryptoError('password_policy');
 }
 
 /** Entero uniforme en [0, n) por rechazo sobre 16 bits (sin sesgo de módulo). */

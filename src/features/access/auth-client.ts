@@ -78,6 +78,22 @@ export interface KdfUpgradeRequest {
   readonly expectedKeyRevision: number;
 }
 
+export interface PasswordChangeRequest {
+  readonly currentAuthPw: string;
+  readonly kdf: string;
+  readonly authPw: string;
+  readonly wrappedMkPw: string;
+  readonly expectedKeyRevision: number;
+}
+
+export interface RecoveryKeyRequest {
+  readonly currentAuthPw: string;
+  readonly recSalt: string;
+  readonly authRec: string;
+  readonly wrappedMkRec: string;
+  readonly expectedKeyRevision: number;
+}
+
 export interface AuthClient {
   params(): Promise<AuthParams>;
   setup(request: SetupRequest): Promise<{ readonly keyRevision: number }>;
@@ -85,6 +101,10 @@ export interface AuthClient {
   recover(authRec: string): Promise<RecoverReply>;
   recoveryReset(request: RecoveryResetRequest): Promise<{ readonly keyRevision: number }>;
   upgradeKdf(request: KdfUpgradeRequest): Promise<{ readonly keyRevision: number }>;
+  /** Cambio de contraseña (crypto-spec §8.3): el servidor revoca las demás sesiones y renueva la cookie. */
+  changePassword(request: PasswordChangeRequest): Promise<{ readonly keyRevision: number }>;
+  /** Clave de recuperación nueva (crypto-spec §8.5): la anterior deja de valer al confirmarse. */
+  regenerateRecoveryKey(request: RecoveryKeyRequest): Promise<{ readonly keyRevision: number }>;
   /** Mejor esfuerzo: nunca lanza. */
   logout(): Promise<void>;
 }
@@ -234,6 +254,28 @@ export function createAuthClient(options: AuthClientOptions = {}): AuthClient {
         kdf: r.kdf,
         auth_pw: r.authPw,
         wrapped_mk_pw: r.wrappedMkPw,
+        expected_key_revision: r.expectedKeyRevision,
+      });
+      return isInt(b.key_revision) ? { keyRevision: b.key_revision } : bad();
+    },
+
+    async changePassword(r) {
+      const b = await call('PUT', '/api/vault/password', {
+        current_auth_pw: r.currentAuthPw,
+        kdf: r.kdf,
+        auth_pw: r.authPw,
+        wrapped_mk_pw: r.wrappedMkPw,
+        expected_key_revision: r.expectedKeyRevision,
+      });
+      return isInt(b.key_revision) ? { keyRevision: b.key_revision } : bad();
+    },
+
+    async regenerateRecoveryKey(r) {
+      const b = await call('PUT', '/api/vault/recovery-key', {
+        current_auth_pw: r.currentAuthPw,
+        rec_salt: r.recSalt,
+        auth_rec: r.authRec,
+        wrapped_mk_rec: r.wrappedMkRec,
         expected_key_revision: r.expectedKeyRevision,
       });
       return isInt(b.key_revision) ? { keyRevision: b.key_revision } : bad();

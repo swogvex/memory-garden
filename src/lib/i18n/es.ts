@@ -185,16 +185,17 @@ export const es = {
   'password.hint':
     'Mínimo {min} caracteres. Una frase larga es más fácil de recordar y más segura que una palabra con símbolos.',
   'password.error.short': 'Usa al menos {min} caracteres.',
-  'password.error.common': 'Esta contraseña es demasiado común.',
+  'password.error.common':
+    'Esta contraseña es demasiado común o fácil de adivinar (por ejemplo, una palabra conocida con números al final, o algo repetido).',
   'password.error.variety': 'Usa más caracteres distintos.',
   'password.error.mismatch': 'Las dos contraseñas no coinciden.',
-  'password.meter.label': 'Longitud: {level}',
+  'password.meter.label': 'Fortaleza estimada: {level}',
   'password.meter.0': 'no cumple los requisitos',
   'password.meter.1': 'justa',
   'password.meter.2': 'buena',
   'password.meter.3': 'muy buena',
   'password.meter.note':
-    'Solo mide la longitud y la variedad: no sabe si la contraseña ya se ha filtrado. No uses una contraseña de otro sitio.',
+    'Es una estimación: no sabe si la contraseña ya se ha filtrado ni si contiene datos tuyos. No uses una contraseña de otro sitio.',
   'key.label': 'Clave de recuperación',
   'key.copy': 'Copiar',
   'key.copied': 'Clave copiada.',
@@ -444,6 +445,45 @@ export const es = {
   'privacy.code.title': 'Algo que debes saber',
   'privacy.code.body':
     'El código de la aplicación lo entrega el servidor cada vez que abres la página. Por eso tu seguridad depende de que el desarrollador y sus cuentas no estén comprometidos. Se hace lo posible para evitarlo (verificación en dos pasos, despliegues manuales), pero no se puede demostrar desde tu navegador.',
+  // Seguridad: contraseña y clave de recuperación (H8.2).
+  'security.password.title': 'Contraseña',
+  'security.password.intro':
+    'Cambiarla no vuelve a cifrar tus recuerdos: solo cambia la llave con la que se abren. Al cambiarla se cerrará la sesión en tus otros dispositivos.',
+  'security.password.start': 'Cambiar contraseña',
+  'security.password.current': 'Contraseña actual',
+  'security.password.new': 'Contraseña nueva',
+  'security.password.repeat': 'Repite la contraseña nueva',
+  'security.password.submit': 'Guardar la contraseña nueva',
+  'security.password.working':
+    'Cambiando la contraseña en tu dispositivo… puede tardar unos segundos.',
+  'security.password.done':
+    'Contraseña cambiada. Tus recuerdos siguen igual; en tus otros dispositivos tendrás que volver a entrar con la nueva.',
+  'security.password.error.current': 'La contraseña actual no es correcta.',
+  'security.password.error.same': 'La contraseña nueva es igual a la actual.',
+  'security.cancel': 'Cancelar',
+  'security.recovery.title': 'Clave de recuperación',
+  'security.recovery.intro':
+    'Tu clave de recuperación no se guarda en ningún sitio, ni aquí ni en el servidor: por eso no se puede volver a mostrar. Si no la encuentras o crees que alguien la ha visto, genera una nueva y la anterior dejará de servir.',
+  'security.recovery.start': 'Generar una clave nueva',
+  'security.recovery.password': 'Para generar una clave nueva, escribe tu contraseña actual.',
+  'security.recovery.continue': 'Continuar',
+  'security.recovery.working': 'Preparando la clave nueva en tu dispositivo…',
+  'security.recovery.show.title': 'Tu nueva clave de recuperación',
+  'security.recovery.show.intro':
+    'Se muestra una sola vez. Cópiala o descárgala y guárdala en un lugar seguro. Tu clave anterior sigue valiendo hasta que confirmes el cambio.',
+  'security.recovery.saved': 'He guardado la clave nueva en un lugar seguro',
+  'security.recovery.verify.title': 'Comprueba que la has guardado',
+  'security.recovery.verify.body': 'Escribe la clave nueva tal como la has guardado.',
+  'security.recovery.verify.label': 'Clave de recuperación nueva',
+  'security.recovery.submit': 'Activar la clave nueva',
+  'security.recovery.activating': 'Activando la clave nueva…',
+  'security.recovery.done': 'Tu nueva clave ya está activa. La anterior ya no sirve.',
+  'security.recovery.cancelled': 'No se ha cambiado nada: tu clave anterior sigue valiendo.',
+  'security.recovery.error.notsaved': 'Marca la casilla cuando hayas guardado la clave.',
+  'security.error.conflict':
+    'Tus claves cambiaron desde otro dispositivo. No se ha cambiado nada aquí: vuelve a intentarlo.',
+  'security.error.expired': 'Tu sesión ha caducado. Vuelve a entrar e inténtalo de nuevo.',
+  'security.error.generic': 'No se pudo completar. No se ha cambiado nada: inténtalo de nuevo.',
 } as const;
 
 export type MessageKey = keyof typeof es;

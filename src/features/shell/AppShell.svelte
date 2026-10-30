@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
-  import { AccessGate, SignOut } from '@/features/access';
+  import { AccessGate, SecuritySection, SignOut } from '@/features/access';
   import {
     AvatarBadge,
     LanguageSwitch,
@@ -127,6 +127,10 @@
   <SignOut {locale} />
 {/snippet}
 
+{#snippet security()}
+  <SecuritySection {locale} />
+{/snippet}
+
 <FlowerSprite />
 <!-- Sin sesión solo se ve la pantalla de acceso (sin menú ni cabecera); con sesión, la aplicación. -->
 <AccessGate {locale} bypass={bypassAccess}>
@@ -187,6 +191,7 @@
             {locale}
             openGarden={openGardenSource}
             session={bypassAccess ? undefined : signOut}
+            security={bypassAccess ? undefined : security}
           />
         {/if}
       </main>
