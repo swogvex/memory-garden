@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import type { CommonPasswordData } from '@/lib/crypto';
   import { t, type Locale, type MessageKey } from '@/lib/i18n';
+  import { commonPasswordsOrNull } from './common-list';
   import { PASSWORD_MIN, passwordIssues, passwordLevel, type PasswordIssue } from './setup-model';
 
   const ERROR_KEY: Record<PasswordIssue, MessageKey> = {
@@ -15,6 +18,8 @@
     password = $bindable(''),
     repeat = $bindable(''),
     showErrors,
+    labelKey = 'password.label',
+    repeatKey = 'password.repeat',
   }: {
     locale: Locale;
     idPrefix: string;
@@ -22,14 +27,23 @@
     repeat: string;
     /** Los errores solo se enseñan después de intentar continuar (no mientras escribe). */
     showErrors: boolean;
+    /** Etiquetas (en Configuración: «Contraseña nueva» y «Repite la contraseña nueva»). */
+    labelKey?: MessageKey;
+    repeatKey?: MessageKey;
   } = $props();
 
   let visible = $state(false);
   let suggested = $state(false);
   let suggesting = $state(false);
 
-  const issues = $derived(passwordIssues(password, repeat));
-  const level = $derived(passwordLevel(password));
+  // Lista grande de contraseñas comunes (D-122): se descarga al abrir la pantalla; hasta entonces, la política básica.
+  let common = $state.raw<CommonPasswordData | null>(null);
+  onMount(() => {
+    void commonPasswordsOrNull().then((data) => (common = data));
+  });
+
+  const issues = $derived(passwordIssues(password, repeat, common));
+  const level = $derived(passwordLevel(password, common));
   const errorKeys = $derived(issues.map((i) => ERROR_KEY[i]));
 
   async function suggest() {
@@ -49,7 +63,7 @@
 </script>
 
 <div class="ac-field">
-  <label class="ac-label" for="{idPrefix}-password">{t(locale, 'password.label')}</label>
+  <label class="ac-label" for="{idPrefix}-password">{t(locale, labelKey)}</label>
   <input
     id="{idPrefix}-password"
     class="ac-input"
@@ -81,7 +95,7 @@
 </div>
 
 <div class="ac-field">
-  <label class="ac-label" for="{idPrefix}-repeat">{t(locale, 'password.repeat')}</label>
+  <label class="ac-label" for="{idPrefix}-repeat">{t(locale, repeatKey)}</label>
   <input
     id="{idPrefix}-repeat"
     class="ac-input"

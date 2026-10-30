@@ -23,12 +23,13 @@ describe('contraseña', () => {
     ).toEqual([]);
   });
 
-  it('el indicador sube con la longitud y es 0 si no cumple la política', () => {
+  it('el indicador estima la fortaleza (H8.2) y es 0 si no cumple la política', () => {
     expect(passwordLevel('corta')).toBe(0);
     expect(passwordLevel('memorygarden2026')).toBe(0);
     expect(passwordLevel('catorce letras!')).toBe(1);
-    expect(passwordLevel('una frase bastante larga')).toBe(3);
-    expect(passwordLevel('dieciocho caracteres')).toBe(2);
+    expect(passwordLevel('dieciocho caracteres')).toBe(1);
+    expect(passwordLevel('una frase bastante larga')).toBe(2);
+    expect(passwordLevel('lirio-cometa-baldosa-nube-trigo-farol')).toBe(3);
   });
 });
 

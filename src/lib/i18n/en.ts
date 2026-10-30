@@ -186,16 +186,17 @@ export const en: Partial<Record<MessageKey, string>> = {
   'password.hint':
     'At least {min} characters. A long phrase is easier to remember and safer than a word with symbols.',
   'password.error.short': 'Use at least {min} characters.',
-  'password.error.common': 'This password is too common.',
+  'password.error.common':
+    'This password is too common or easy to guess (for example, a well-known word with numbers at the end, or something repeated).',
   'password.error.variety': 'Use more different characters.',
   'password.error.mismatch': 'The two passwords do not match.',
-  'password.meter.label': 'Length: {level}',
+  'password.meter.label': 'Estimated strength: {level}',
   'password.meter.0': 'does not meet the requirements',
   'password.meter.1': 'fair',
   'password.meter.2': 'good',
   'password.meter.3': 'very good',
   'password.meter.note':
-    'It only measures length and variety: it cannot tell whether the password has been leaked. Do not reuse a password from another site.',
+    'It is an estimate: it cannot tell whether the password has been leaked or contains your personal details. Do not reuse a password from another site.',
   'key.label': 'Recovery key',
   'key.copy': 'Copy',
   'key.copied': 'Key copied.',
@@ -439,4 +440,42 @@ export const en: Partial<Record<MessageKey, string>> = {
   'privacy.code.title': 'Something you should know',
   'privacy.code.body':
     'The app’s code is delivered by the server every time you open the page. So your security depends on the developer and their accounts not being compromised. Everything possible is done to prevent it (two-step verification, manual deployments), but it cannot be proven from your browser.',
+  // Seguridad: contraseña y clave de recuperación (H8.2).
+  'security.password.title': 'Password',
+  'security.password.intro':
+    'Changing it does not re-encrypt your memories: it only changes the key that opens them. When you change it, your other devices will be signed out.',
+  'security.password.start': 'Change password',
+  'security.password.current': 'Current password',
+  'security.password.new': 'New password',
+  'security.password.repeat': 'Repeat the new password',
+  'security.password.submit': 'Save the new password',
+  'security.password.working': 'Changing the password on your device… it may take a few seconds.',
+  'security.password.done':
+    'Password changed. Your memories are unchanged; on your other devices you will need to sign in again with the new one.',
+  'security.password.error.current': 'The current password is not correct.',
+  'security.password.error.same': 'The new password is the same as the current one.',
+  'security.cancel': 'Cancel',
+  'security.recovery.title': 'Recovery key',
+  'security.recovery.intro':
+    'Your recovery key is not stored anywhere, neither here nor on the server: that is why it cannot be shown again. If you cannot find it or think someone has seen it, generate a new one and the old one will stop working.',
+  'security.recovery.start': 'Generate a new key',
+  'security.recovery.password': 'To generate a new key, enter your current password.',
+  'security.recovery.continue': 'Continue',
+  'security.recovery.working': 'Preparing the new key on your device…',
+  'security.recovery.show.title': 'Your new recovery key',
+  'security.recovery.show.intro':
+    'It is shown only once. Copy or download it and keep it somewhere safe. Your previous key keeps working until you confirm the change.',
+  'security.recovery.saved': 'I have saved the new key somewhere safe',
+  'security.recovery.verify.title': 'Check that you saved it',
+  'security.recovery.verify.body': 'Type the new key exactly as you saved it.',
+  'security.recovery.verify.label': 'New recovery key',
+  'security.recovery.submit': 'Activate the new key',
+  'security.recovery.activating': 'Activating the new key…',
+  'security.recovery.done': 'Your new key is active. The previous one no longer works.',
+  'security.recovery.cancelled': 'Nothing has changed: your previous key still works.',
+  'security.recovery.error.notsaved': 'Tick the box once you have saved the key.',
+  'security.error.conflict':
+    'Your keys were changed from another device. Nothing has been changed here: try again.',
+  'security.error.expired': 'Your session has expired. Sign in again and try again.',
+  'security.error.generic': 'It could not be completed. Nothing has been changed: try again.',
 };

@@ -19,6 +19,7 @@ import {
   type VaultWire,
 } from '@/lib/crypto';
 import { AuthError, type AuthClient, type AuthParams } from './auth-client';
+import { commonPasswordsOrNull } from './common-list';
 import { passwordIssues, recoveryInputState } from './setup-model';
 
 export type AccessFailure =
@@ -60,7 +61,10 @@ export type SpaceStatus =
   Extract<AuthParams, { configured: true }> | { readonly configured: false };
 
 /** Convierte un fallo de red/servidor en el fallo de acceso correspondiente. */
-function fromAuth(error: unknown, invalid: AccessFailure = 'wrong_credentials'): AccessError {
+export function fromAuth(
+  error: unknown,
+  invalid: AccessFailure = 'wrong_credentials',
+): AccessError {
   if (error instanceof AccessError) return error;
   if (error instanceof AuthError) {
     switch (error.code) {
@@ -105,7 +109,8 @@ export async function beginSetup(
   password: string,
   tuning: Tuning = {},
 ): Promise<PendingSpace> {
-  if (passwordIssues(password).length > 0) throw new AccessError('policy');
+  if (passwordIssues(password, undefined, await commonPasswordsOrNull()).length > 0)
+    throw new AccessError('policy');
   const created = await createVault(password, tuning.vault);
   let keyring: Keyring | null = created.keyring;
   let lostResponse = false;
@@ -272,7 +277,8 @@ export async function startRecovery(
   return {
     async prepareReset(newPassword) {
       if (!material) throw new AccessError('unavailable');
-      if (passwordIssues(newPassword).length > 0) throw new AccessError('policy');
+      if (passwordIssues(newPassword, undefined, await commonPasswordsOrNull()).length > 0)
+        throw new AccessError('policy');
       let reset;
       try {
         reset = await resetViaRecovery(material, wire, newPassword, tuning.vault);

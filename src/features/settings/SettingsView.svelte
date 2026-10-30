@@ -14,12 +14,15 @@
     locale,
     openGarden,
     session,
+    security,
   }: {
     locale: Locale;
     /** Fuente del Jardín: hace falta para cambiar la categoría de los recuerdos al renombrar o eliminar. */
     openGarden: () => Promise<GardenSource>;
     /** Cierre de sesión (lo pone la capa que conoce el acceso). */
     session?: Snippet;
+    /** Contraseña y clave de recuperación (H8.2; las pone la capa que conoce el acceso). */
+    security?: Snippet;
   } = $props();
 </script>
 
@@ -47,6 +50,8 @@
   {:else}
     <p class="st-card st-wide" role="status">{t(locale, 'settings.loading')}</p>
   {/if}
+
+  {#if security}{@render security()}{/if}
 
   <PrivacySection {locale} />
 
