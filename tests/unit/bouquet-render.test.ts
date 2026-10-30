@@ -139,7 +139,7 @@ describe('renderizado del ramo', () => {
     expect(renderBouquet(layout, options({ background: null }))).not.toMatch(/<rect width="600"/);
   });
 
-  it('un mes vacío se dibuja (brote de 3 hojas y lazo) sin flores', () => {
+  it('un mes vacío se dibuja (capullos, ramas y lazo) sin flores', () => {
     const svg = renderBouquet(layoutOf(0), options());
     expect(count(svg, /role="button"/g)).toBe(0);
     expect(svg.length).toBeGreaterThan(1000);
@@ -175,6 +175,33 @@ describe('renderizado del ramo', () => {
     );
   });
 
+  it('el relleno y el lazo son decorativos: ocultos a lectores de pantalla y sin foco', () => {
+    const layout = layoutOf(8, 3);
+    const svg = renderBouquet(layout, options());
+    // Botones = flores; el relleno va dentro de grupos aria-hidden.
+    expect(count(svg, /role="button"/g)).toBe(layout.flowers.length);
+    expect(count(svg, /<g aria-hidden="true">/g)).toBe(2);
+    // Las Polaroids no capturan clics: la flor de debajo sigue respondiendo.
+    expect(count(svg, /class="mg-pol"[^>]*pointer-events="none"/g)).toBe(3);
+  });
+
+  it('textura de acuarela: solo la ruta propia; cualquier otra se ignora', () => {
+    const layout = layoutOf(8);
+    expect(renderBouquet(layout, options())).not.toContain('<image');
+    expect(renderBouquet(layout, options({ washTexture: '/textures/wash.webp' }))).toContain(
+      '<image href="/textures/wash.webp"',
+    );
+    for (const bad of [
+      'https://evil.example/wash.webp',
+      '/textures/../secret.webp',
+      'javascript:alert(1)',
+      'data:image/webp;base64,AAAA',
+      '/textures/otra.webp',
+    ]) {
+      expect(renderBouquet(layout, options({ washTexture: bad }))).not.toContain('<image');
+    }
+  });
+
   it('con el aro de foco oculto por defecto (opacity 0) y animación solo por clases', () => {
     const svg = renderBouquet(layoutOf(8), options());
     expect(svg).toContain('class="mg-ring"');
@@ -182,21 +209,28 @@ describe('renderizado del ramo', () => {
   });
 });
 
-describe('peso del ramo (presupuesto, medido en Node al cerrar H6.1)', () => {
+describe('peso del ramo (presupuesto D-157, revisado en H7.5 por el relleno decorativo)', () => {
   const doc = (n: number, detail: 'full' | 'lite') =>
     renderBouquet(layoutOf(n, 5), options({ detail }));
   const elements = (svg: string) => count(svg, /<[a-zA-Z]/g);
 
-  it('21 flores a detalle completo: ≤ 330 KiB y ≤ 3.400 elementos (medido ~285 KiB y ~2.960)', () => {
+  it('21 flores a detalle completo: ≤ 340 KiB y ≤ 3.600 elementos (medido ~319 KiB y ~3.390)', () => {
     const svg = doc(21, 'full');
-    expect(svg.length).toBeLessThan(330 * 1024);
-    expect(elements(svg)).toBeLessThan(3400);
+    expect(svg.length).toBeLessThan(340 * 1024);
+    expect(elements(svg)).toBeLessThan(3600);
   });
 
-  it('21 flores a detalle reducido: ≤ 175 KiB y ≤ 2.000 elementos (medido ~150 KiB y ~1.730)', () => {
+  it('21 flores a detalle reducido: ≤ 190 KiB y ≤ 2.200 elementos (medido ~176 KiB y ~2.030)', () => {
     const svg = doc(21, 'lite');
-    expect(svg.length).toBeLessThan(175 * 1024);
-    expect(elements(svg)).toBeLessThan(2000);
+    expect(svg.length).toBeLessThan(190 * 1024);
+    expect(elements(svg)).toBeLessThan(2200);
+  });
+
+  it('el relleno decorativo solo: ≤ 45 KiB y ≤ 520 elementos (medido ~41 KiB y ~470)', () => {
+    const layout = layoutOf(21, 5);
+    const svg = renderBouquet({ ...layout, flowers: [], overflow: null }, options());
+    expect(svg.length).toBeLessThan(45 * 1024);
+    expect(elements(svg)).toBeLessThan(520);
   });
 
   it('con 100 recuerdos pesa lo mismo que con 21: el tope visual acota el peso', () => {

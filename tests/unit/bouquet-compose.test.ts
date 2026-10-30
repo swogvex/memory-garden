@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { FLOWER_IDS, fnv1a, makeRng } from '@/lib/flowers';
+import { FLOWER_IDS, FLOWER_INFO, fnv1a, makeRng } from '@/lib/flowers';
 import {
+  CANVAS_HEIGHT,
   CANVAS_WIDTH,
-  HEIGHT_FLOWERS,
-  HEIGHT_PHOTOS,
   MAX_FLOWERS,
   MAX_POLAROIDS,
   composeBouquet,
+  stemPoint,
   type BouquetLayout,
   type BouquetMemory,
 } from '@/features/bouquets';
@@ -45,11 +45,12 @@ describe('composición determinista del ramo', () => {
   });
 
   it('instantánea: composición fija de un mes de referencia (8 recuerdos, 3 con foto)', () => {
-    // Valor calculado con esta implementación al cerrar H6.1. Si cambia, la composición de
-    // los ramos ya creados cambiaría: hay que decidirlo a propósito (y anotarlo en DECISIONES).
+    // Valor calculado con esta implementación en H7.5 (rediseño del ramo; antes, '0b1ddc67' de H6.1).
+    // Si cambia, la composición de los ramos ya creados cambiaría: hay que decidirlo a propósito
+    // (y anotarlo en DECISIONES). La semilla no cambia: solo depende del mes y de los ids.
     const layout = compose(memories(8, 3, 'ref'));
     expect(layout.seed).toBe('75aa568b');
-    expect(pin(layout)).toBe('0b1ddc67');
+    expect(pin(layout)).toBe('f4409364');
   });
 
   it('la semilla cambia con el mes y con el conjunto de recuerdos', () => {
@@ -125,13 +126,54 @@ describe('crecimiento y tope visual', () => {
     expect(mean(8)).toBeGreaterThan(mean(21) - 0.01);
   });
 
-  it('el follaje crece con el ramo y un mes vacío tiene un brote de 3 hojas', () => {
-    expect(compose([]).leaves).toHaveLength(3);
+  it('el follaje y el relleno crecen con el ramo, con tope', () => {
     expect(compose(memories(21)).leaves.length).toBeGreaterThan(compose(memories(3)).leaves.length);
+    expect(compose(memories(21)).filler.length).toBeGreaterThan(compose(memories(3)).filler.length);
     for (const n of [1, 8, 21, 100]) {
-      const leaves = compose(memories(n)).leaves.length;
-      expect(leaves).toBeGreaterThanOrEqual(5);
-      expect(leaves).toBeLessThanOrEqual(18);
+      const layout = compose(memories(n));
+      expect(layout.leaves.length).toBeGreaterThanOrEqual(2);
+      expect(layout.leaves.length).toBeLessThanOrEqual(18);
+      expect(layout.filler.length).toBeGreaterThanOrEqual(5);
+      expect(layout.filler.length).toBeLessThanOrEqual(18);
+      expect(layout.filler.some((f) => f.kind === 'bud')).toBe(false);
+    }
+  });
+
+  it('un mes vacío tiene su estado propio: capullos cerrados, ramas y hojas, sin flores', () => {
+    const layout = compose([]);
+    expect(layout.flowers).toHaveLength(0);
+    expect(layout.filler.filter((f) => f.kind === 'bud')).toHaveLength(3);
+    expect(layout.leaves.length).toBeGreaterThanOrEqual(2);
+    for (const l of layout.leaves) expect(l.owner.kind).toBe('filler');
+  });
+
+  it('ninguna hoja flota: cada una nace sobre la curva de su tallo', () => {
+    for (const n of [0, 1, 3, 8, 21, 100]) {
+      for (let k = 0; k < 10; k++) {
+        const layout = compose(memories(n, 0, `hoja${k}`));
+        for (const l of layout.leaves) {
+          const owner =
+            l.owner.kind === 'flower'
+              ? layout.flowers[l.owner.index]
+              : layout.filler[l.owner.index];
+          expect(owner).not.toBe(undefined);
+          if (!owner) continue;
+          const p = stemPoint(owner.stem, l.t);
+          expect(Math.hypot(p.x - l.x, p.y - l.y)).toBeLessThan(0.5);
+        }
+      }
+    }
+  });
+
+  it('todos los tallos (flores y relleno) pasan por el lazo', () => {
+    for (const n of [0, 1, 8, 30]) {
+      const layout = compose(memories(n));
+      for (const item of [...layout.flowers, ...layout.filler]) {
+        expect(item.stem.y1).toBe(layout.base.y);
+        expect(Math.abs(item.stem.x1 - layout.base.x)).toBeLessThanOrEqual(13);
+        expect(item.stem.ey).toBeGreaterThan(layout.base.y);
+        expect(item.stem.ey).toBeLessThanOrEqual(CANVAS_HEIGHT);
+      }
     }
   });
 });
@@ -157,7 +199,11 @@ describe('equilibrio y límites del lienzo', () => {
             const a = layout.flowers[i];
             const b = layout.flowers[j];
             if (!a || !b) continue;
-            expect(Math.hypot(a.x - b.x, a.y - b.y) / (a.radius + b.radius)).toBeGreaterThan(0.6);
+            // Una espiga (lavanda) puede quedar algo más metida detrás de otra flor (H7.5).
+            const spike =
+              FLOWER_INFO[a.flower].role === 'spike' || FLOWER_INFO[b.flower].role === 'spike';
+            const ratio = Math.hypot(a.x - b.x, a.y - b.y) / (a.radius + b.radius);
+            expect(ratio).toBeGreaterThan(spike ? 0.5 : 0.6);
           }
         }
       }
@@ -166,7 +212,7 @@ describe('equilibrio y límites del lienzo', () => {
 
   it('los tallos se recogen cerca del lazo', () => {
     for (const f of compose(memories(30)).flowers)
-      expect(Math.abs(f.stemX - 300)).toBeLessThanOrEqual(26);
+      expect(Math.abs(f.stemX - 300)).toBeLessThanOrEqual(13);
   });
 
   it('todos los números del resultado son finitos y se pueden serializar', () => {
@@ -176,17 +222,17 @@ describe('equilibrio y límites del lienzo', () => {
 });
 
 describe('Polaroids', () => {
-  it('sin fotos no hay Polaroids y el lienzo es más bajo', () => {
+  it('sin fotos no hay Polaroids; el lienzo tiene siempre el mismo alto', () => {
     const layout = compose(memories(8, 0));
     expect(layout.polaroids).toHaveLength(0);
-    expect(layout.height).toBe(HEIGHT_FLOWERS);
+    expect(layout.height).toBe(CANVAS_HEIGHT);
+    expect(compose(memories(8, 3)).height).toBe(CANVAS_HEIGHT);
   });
 
   it('con fotos: como máximo 5, solo de recuerdos con foto y los más recientes', () => {
     const list = memories(12, 7);
     const layout = compose(list);
     expect(layout.polaroids).toHaveLength(MAX_POLAROIDS);
-    expect(layout.height).toBe(HEIGHT_PHOTOS);
     const withPhoto = [...list]
       .filter((m) => m.hasPhoto)
       .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.id < b.id ? -1 : 1));
@@ -200,7 +246,24 @@ describe('Polaroids', () => {
     for (const p of compose(memories(30, 5)).polaroids) {
       expect(p.x - p.w / 2).toBeGreaterThanOrEqual(0);
       expect(p.x + p.w / 2).toBeLessThanOrEqual(CANVAS_WIDTH);
-      expect(p.y + p.h / 2).toBeLessThanOrEqual(HEIGHT_PHOTOS);
+      expect(p.y - p.h / 2).toBeGreaterThanOrEqual(0);
+      expect(p.y + p.h / 2).toBeLessThanOrEqual(CANVAS_HEIGHT);
+    }
+  });
+
+  it('las Polaroids van en el borde del ramo: no tapan el centro de ninguna flor ni el lazo', () => {
+    for (const n of [1, 3, 8, 21, 30]) {
+      for (let k = 0; k < 20; k++) {
+        const layout = compose(memories(n, 5, `pol${k}`));
+        for (const p of layout.polaroids) {
+          for (const f of layout.flowers) {
+            const inside = Math.abs(f.x - p.x) < p.w / 2 && Math.abs(f.y - p.y) < p.h / 2;
+            expect(inside).toBe(false);
+          }
+          const overBow = Math.abs(p.x - layout.base.x) < 64 && p.y + p.h / 2 > layout.base.y - 40;
+          expect(overBow).toBe(false);
+        }
+      }
     }
   });
 

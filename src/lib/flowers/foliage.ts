@@ -1,5 +1,5 @@
 import type { LeafKind } from './draw/common';
-import { Defs, f, type Detail } from './svg';
+import { Defs, f, mix, type Detail } from './svg';
 
 /** Hojas apuntando hacia arriba (−y), con la base en el origen. Longitud nominal en el comentario. */
 const LEAVES: Record<LeafKind, { d: string; rib: string; veins: string }> = {
@@ -22,13 +22,23 @@ const LEAVES: Record<LeafKind, { d: string; rib: string; veins: string }> = {
 
 export const LEAF_LENGTH: Record<LeafKind, number> = { lance: 40, broad: 42, strap: 62 };
 
+/** Verdes salvia suavizados hacia el papel (pastel, H7.5). */
+const PAPER = '#fbf8f2';
+const softGreen = (c: string, t: number) => mix(c, PAPER, t);
 const GREENS: readonly (readonly [string, string, string])[] = [
   ['#4a6444', '#6f8a66', '#9db592'],
   ['#52704f', '#7a9671', '#a8bf9d'],
   ['#4d6a52', '#6c8c78', '#9dbaa6'],
-];
+].map(
+  ([a, b, c]) =>
+    [
+      softGreen(a as string, 0.2),
+      softGreen(b as string, 0.18),
+      softGreen(c as string, 0.12),
+    ] as const,
+);
 
-export const STEM_COLOR = '#5f7a57';
+export const STEM_COLOR = '#74896b';
 
 function leafGradient(defs: Defs, tone: number): string {
   const g = GREENS[tone % 3] as readonly [string, string, string];

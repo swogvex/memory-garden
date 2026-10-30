@@ -1,4 +1,4 @@
-import { WHITE, type DrawOptions, type HeadDrawer } from './common';
+import { WHITE, soft, type DrawOptions, type HeadDrawer } from './common';
 import { f, mix } from '../svg';
 import { jitter } from '../rng';
 
@@ -11,7 +11,7 @@ const COLORS: readonly (readonly string[])[] = [
 const PETAL = 'M0 0C-5.5-1-7-9 0-12C7-9 5.5-1 0 0Z';
 
 function floretGroup(o: DrawOptions, variant: number): string {
-  const color = (COLORS[o.tone % 3] as readonly string[])[variant] as string;
+  const color = soft((COLORS[o.tone % 3] as readonly string[])[variant] as string, 0.18);
   const key = `hortensia-${o.tone}-${variant}`;
   o.defs.radial(`${key}-g`, [
     [0, mix(color, '#3b3f7a', 0.35)],
@@ -30,7 +30,7 @@ function floretGroup(o: DrawOptions, variant: number): string {
 export const drawHortensia: HeadDrawer = (o) => {
   o.defs.shape('hortensia-petal', PETAL);
   const keys = [0, 1, 2, 3].map((v) => floretGroup(o, v));
-  const dome = (['#a9b6ea', '#e3a9c4', '#c2b0e6'] as const)[o.tone % 3] as string;
+  const dome = soft((['#a9b6ea', '#e3a9c4', '#c2b0e6'] as const)[o.tone % 3] as string, 0.2);
   o.defs.radial(
     `hortensia-dome-${o.tone}`,
     [
