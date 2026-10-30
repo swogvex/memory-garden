@@ -1,11 +1,12 @@
 /**
  * Lista de contraseñas comunes (D-122). GENERADA por scripts/build-common-passwords.mjs: no editar a mano.
- * Origen: <URL Raw que usaste>
+ * Origen: https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt
  * Licencia: MIT (SecLists, archivo LICENSE del repositorio)
  * SHA-256 del archivo de origen: 68782d6a4a19a4768d5f15dd66bd534e7a33055cc755411e33f16d18c50fdcce
  * 1 contraseñas de 14+ caracteres y 5000 «bases» de 4–13 letras, normalizadas.
  */
-export const COMMON_PASSWORDS_SOURCE = '<URL Raw que usaste>';
+export const COMMON_PASSWORDS_SOURCE =
+  'https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt';
 export const COMMON_PASSWORDS_LICENSE = 'MIT (SecLists, archivo LICENSE del repositorio)';
 export const COMMON_PASSWORDS_SHA256 =
   '68782d6a4a19a4768d5f15dd66bd534e7a33055cc755411e33f16d18c50fdcce';

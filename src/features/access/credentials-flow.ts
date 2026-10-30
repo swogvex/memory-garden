@@ -64,7 +64,6 @@ async function prove(client: AuthClient, current: string, tuning: Tuning): Promi
  * lo reintenta UNA vez. Un 409 tras una respuesta perdida también se comprueba así antes de darlo por conflicto.
  */
 async function sendOnce(
-  client: AuthClient,
   send: () => Promise<unknown>,
   applied: () => Promise<boolean>,
 ): Promise<void> {
@@ -102,7 +101,6 @@ export async function changeOwnPassword(
       throw new AccessError('unwrap_failed');
     }
     await sendOnce(
-      client,
       () =>
         client.changePassword({
           currentAuthPw: change.currentAuthPw,
@@ -153,7 +151,6 @@ export async function beginRecoveryKeyRotation(
       if (discarded) throw new AccessError('unavailable');
       if (done) return;
       await sendOnce(
-        client,
         () =>
           client.regenerateRecoveryKey({
             currentAuthPw: regen.currentAuthPw,
