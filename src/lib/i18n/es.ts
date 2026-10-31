@@ -2,6 +2,10 @@
 export const es = {
   'app.name': 'Memory Garden',
   'app.tagline': 'Pequeños momentos, grandes flores.',
+  'app.description': 'Un espacio privado.',
+  'notfound.title': 'Página no encontrada',
+  'notfound.body': 'Esta dirección no existe.',
+  'notfound.back': 'Volver al inicio',
   'a11y.skipToContent': 'Saltar al contenido',
   'nav.label': 'Navegación principal',
   'nav.garden': 'Jardín',
@@ -10,6 +14,7 @@ export const es = {
   'nav.settings': 'Configuración',
   'footer.note': 'Un jardín privado, sin rastreadores.',
   'shell.loading': 'Cargando tu jardín…',
+  'shell.loadError': 'No se pudo cargar tu jardín. Comprueba la conexión e inténtalo de nuevo.',
   'shell.avatar': 'Perfil y configuración',
   'shell.eyebrow': 'Tu jardín · {year}',
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',

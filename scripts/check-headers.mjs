@@ -96,8 +96,10 @@ check(
 
 const robots = await get('/robots.txt');
 check(
-  'robots.txt: Disallow: /',
-  robots.status === 200 && /Disallow: \//.test(robots.text),
+  'robots.txt: solo Disallow: /api/ (el HTML se rastrea para que se lea el noindex, D-258)',
+  robots.status === 200 &&
+    /^Disallow: \/api\/$/m.test(robots.text) &&
+    !/^Disallow: \/\s*$/m.test(robots.text),
   String(robots.status),
 );
 

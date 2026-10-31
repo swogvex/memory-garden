@@ -100,8 +100,8 @@ describe('resto de cabeceras (PS-32, PS-51)', () => {
     expect(api).toEqual(html);
   });
 
-  it('robots.txt cierra todo (higiene, no seguridad)', () => {
-    expect(readFileSync('public/robots.txt', 'utf8')).toBe('User-agent: *\nDisallow: /\n');
+  it('robots.txt deja leer el noindex y solo cierra la API (D-258; higiene, no seguridad)', () => {
+    expect(readFileSync('public/robots.txt', 'utf8')).toBe('User-agent: *\nDisallow: /api/\n');
   });
 });
 

@@ -767,7 +767,7 @@
     z-index: -1;
     left: 0;
     bottom: 0;
-    height: 100%;
+    height: calc(var(--tap-min) + 2 * var(--space-3));
     aspect-ratio: 1;
     background: url('/decor/k1.svg') no-repeat left bottom / contain;
     transform-origin: 0 100%;

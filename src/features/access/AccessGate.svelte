@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount, type Snippet } from 'svelte';
   import type { Keyring } from '@/lib/crypto';
+  import { scrollRegion } from '@/lib/dom/scroll-region';
   import { t, type Locale } from '@/lib/i18n';
   import { readStatus, type SpaceStatus } from './access-flow';
   import { createAuthClient } from './auth-client';
@@ -98,7 +99,8 @@
 {:else}
   <!-- Pantalla de acceso a página completa: es el contenido principal mientras no hay sesión. -->
   <main id="contenido" class="ac-page" tabindex="-1">
-    <section class="ac" aria-labelledby="ac-brand">
+    <!-- Sin nombre: no es un punto de referencia aparte (el principal es `main`; la tarjeta, si se desplaza, es la región). -->
+    <section class="ac">
       <!-- Marco floral decorativo (H7.5): oculto a lectores de pantalla y sin clics. -->
       <div class="ac-decor" aria-hidden="true">
         <span class="ac-corner ac-c1"
@@ -130,7 +132,8 @@
           /></span
         >
       </div>
-      <div class="ac-card">
+      <!-- La tarjeta se desplaza por dentro (las flores de las esquinas siguen a la vista); si lo hace, se puede enfocar. -->
+      <div class="ac-card" use:scrollRegion={'ac-brand'}>
         <span class="ac-mark" aria-hidden="true"></span>
         <h1 class="ac-brand" id="ac-brand">{t(locale, 'app.name')}</h1>
         <p class="handwritten ac-tagline">{t(locale, 'app.tagline')}</p>
@@ -174,7 +177,8 @@
             onCancel={() => void check()}
           />
         {/if}
-        {#if footer}{@render footer()}{/if}
+        <!-- El pie (idioma) espera a que se sepa qué pantalla toca: si no, el formulario lo empuja hacia abajo (CLS). -->
+        {#if footer && screen !== 'checking'}{@render footer()}{/if}
       </div>
     </section>
   </main>

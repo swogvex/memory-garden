@@ -5,6 +5,10 @@ import type { MessageKey } from './es';
 export const en: Partial<Record<MessageKey, string>> = {
   'app.name': 'Memory Garden',
   'app.tagline': 'Small moments, big flowers.',
+  'app.description': 'A private space.',
+  'notfound.title': 'Page not found',
+  'notfound.body': 'This address does not exist.',
+  'notfound.back': 'Back to the start',
   'a11y.skipToContent': 'Skip to content',
   'nav.label': 'Main navigation',
   'nav.garden': 'Garden',
@@ -13,6 +17,7 @@ export const en: Partial<Record<MessageKey, string>> = {
   'nav.settings': 'Settings',
   'footer.note': 'A private garden, with no trackers.',
   'shell.loading': 'Loading your garden…',
+  'shell.loadError': 'Your garden could not be loaded. Check your connection and try again.',
   'shell.avatar': 'Profile and settings',
   'shell.eyebrow': 'Your garden · {year}',
   'shell.noscript': 'Memory Garden needs JavaScript to work.',

@@ -3,6 +3,7 @@
   import FlowerMark from '@/components/ui/FlowerMark.svelte';
   import type { GardenMemory } from '@/features/calendar';
   import { capitalize, formatLongDate, parseIso } from '@/lib/dates';
+  import { scrollRegion } from '@/lib/dom/scroll-region';
   import { t, type Locale } from '@/lib/i18n';
   import { FLOWER_LABEL, SEASON_LABEL } from './defaults';
 
@@ -130,7 +131,8 @@
       </button>
     </div>
 
-    <div class="body">
+    <!-- H9.2: si el cuerpo se desplaza (p. ej. con la confirmación de papelera), se puede enfocar (WCAG 2.1.1). -->
+    <div class="body" use:scrollRegion={id('title')}>
       <p class="when">{longDate}</p>
       <dl class="meta">
         <div>
@@ -283,6 +285,10 @@
     overscroll-behavior: contain;
     touch-action: pan-y;
   }
+  /* El diálogo recorta lo que sobresale: el aro de foco va por dentro. */
+  .body:focus-visible {
+    outline-offset: -3px;
+  }
   .when {
     margin: 0;
     color: var(--color-text-muted);
@@ -363,7 +369,8 @@
     z-index: -1;
     left: 0;
     bottom: 0;
-    height: 100%;
+    /* H9.2: alto fijo (el de la barra con un botón). Con `100%` el ramillete crecía al abrir la confirmación. */
+    height: calc(var(--tap-min) + 2 * var(--space-3));
     aspect-ratio: 1;
     background: url('/decor/k1.svg') no-repeat left bottom / contain;
     transform-origin: 0 100%;
@@ -420,6 +427,8 @@
   .discard-text {
     flex: 1 1 14rem;
     margin: 0;
+    /* Que el texto de la confirmación no quede encima del ramillete de la esquina. */
+    padding-left: var(--space-7);
     text-align: left;
   }
   .discard-text strong {

@@ -12,21 +12,76 @@
   isolation: isolate;
   overflow: hidden;
   display: grid;
-  place-items: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: 5rem var(--gutter);
+  grid-template-rows: minmax(0, 1fr);
+  /* H9.2: arriba y no centrada. Centrada, la tarjeta saltaba al pasar de «Comprobando…» al formulario
+     (CLS 0,10 medido con Lighthouse); arriba solo crece hacia abajo y lo de encima no se mueve. */
+  place-items: start center;
+  /* Alto de la pantalla: la página no se desplaza; si el contenido no cabe, se desplaza la tarjeta por
+     dentro y las flores de las esquinas siguen a la vista (petición del usuario, H9.2). */
+  height: 100vh;
+  height: 100dvh;
+  padding: clamp(2rem, 9vh, 6rem) var(--gutter);
 }
 .ac-card {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 30rem;
+  max-height: 100%;
   padding: var(--space-6) var(--space-5);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-decor) transparent;
   border: 1px solid var(--color-border-decor);
   border-radius: var(--radius-lg);
   background: var(--color-card);
   box-shadow: var(--shadow-card);
+}
+.ac-card:focus-visible {
+  outline-offset: 3px;
+}
+/* Tableta: más ancha. */
+@media (min-width: 48rem) {
+  .ac-card {
+    max-width: 40rem;
+    padding: var(--space-7) var(--space-7) var(--space-6);
+  }
+}
+/* Escritorio: tarjeta ancha. Los campos y botones se quedan en una columna cómoda en el centro; el aviso de
+   privacidad usa todo el ancho en dos columnas de lectura. */
+@media (min-width: 64rem) {
+  .ac-card {
+    /* Ancha, pero dejando ver las flores de los lados en pantallas de 1024–1400 px. */
+    max-width: max(40rem, min(54rem, calc(100vw - 28rem)));
+  }
+  /* Solo dentro de la tarjeta de acceso: Configuración reutiliza estas clases. */
+  .ac-card .ac-form > :not(.ac-privacy) {
+    justify-self: center;
+    width: 100%;
+    max-width: 34rem;
+  }
+  .ac-card .ac-privacy {
+    display: block;
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+  .ac-card .ac-privacy p {
+    margin: 0 0 var(--space-3);
+    break-inside: avoid;
+  }
+}
+/* Pantallas muy bajas (móvil en horizontal, zoom grande): mejor que se desplace la página entera que una tarjeta
+   diminuta con su propia barra (WCAG 1.4.10). */
+@media (max-height: 30rem) {
+  .ac {
+    height: auto;
+    min-height: 100dvh;
+  }
+  .ac-card {
+    max-height: none;
+    overflow: visible;
+  }
 }
 .ac-mark {
   display: block;
@@ -135,8 +190,9 @@
   }
 }
 @media (max-width: 40rem) {
+  /* Bandas arriba y abajo para que se vean las flores de las esquinas; la tarjeta se desplaza por dentro. */
   .ac {
-    padding-block: 8.5rem;
+    padding-block: clamp(3rem, 13vh, 7.5rem) clamp(2.5rem, 11vh, 6.5rem);
   }
   .ac-corner {
     width: 13rem;
@@ -242,12 +298,12 @@
   height: 1.5rem;
   accent-color: var(--color-primary);
 }
+/* Sin caja con desplazamiento propio (D-249, H9.2): ocupa lo que necesita y se desplaza la página.
+   Con `max-height` + `overflow` era una región que no se alcanzaba con el teclado (axe, WCAG 2.1.1). */
 .ac-privacy {
   display: grid;
   gap: var(--space-3);
-  max-height: 22rem;
   padding: var(--space-3) var(--space-4);
-  overflow-y: auto;
   border: 1px solid var(--color-border-decor);
   border-radius: var(--radius-md);
   background: var(--color-bg);

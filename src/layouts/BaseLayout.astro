@@ -32,11 +32,11 @@ const fullTitle = `${title} · ${t(locale, 'app.name')}`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#f8f6f1" />
     <title>{fullTitle}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="description" content={description ?? t(locale, 'app.description')} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>

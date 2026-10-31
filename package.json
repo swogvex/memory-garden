@@ -22,6 +22,9 @@
     "check": "astro check",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:audit": "node scripts/run-audit.mjs",
+    "audit:summary": "node scripts/audit-summary.mjs",
+    "audit:dist": "node scripts/audit-dist.mjs",
     "scan:secrets": "node scripts/scan-secrets.mjs",
     "validate": "npm run format:check && npm run lint && npm run check && npm run test && npm run build && npm run test:e2e"
   },
