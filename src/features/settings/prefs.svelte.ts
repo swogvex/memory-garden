@@ -1,5 +1,5 @@
 /**
- * Estado compartido de los ajustes (H8.1): lo leen la cabecera, el Jardín, Ramos, el formulario y Configuración.
+ * Estado compartido de los ajustes: lo leen la cabecera, el Jardín, Ramos, el formulario y Configuración.
  * Vive solo en memoria. Lo único que sale de aquí hacia el navegador es el idioma (`local-language.ts`).
  *
  * Reglas:
@@ -21,7 +21,7 @@ import {
 import type { Settings } from '@/lib/validation';
 import { readLocalLanguage, writeLocalLanguage } from './local-language';
 
-export type PrefsStatus = 'idle' | 'loading' | 'ready' | 'error';
+type PrefsStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 interface PrefsState {
   status: PrefsStatus;

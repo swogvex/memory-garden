@@ -2,7 +2,7 @@ import { utf8, type Bytes } from './bytes';
 import { hkdfSha256, hmacSha256 } from './hash';
 
 /** Huella de IP temporal (sessions-and-limits.md §7.2, D-056). */
-export const IP_EPOCH_SECONDS = 6 * 3600;
+const IP_EPOCH_SECONDS = 6 * 3600;
 
 const V4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 

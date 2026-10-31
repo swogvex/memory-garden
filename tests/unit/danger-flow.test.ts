@@ -15,8 +15,8 @@ import { SETUP_CODE, count, makeHarness, type Harness } from './server/_support'
 import { FAST, bridge, type Bridge } from './_access-helpers';
 
 /**
- * H8.3b · Papelera, «Borrar todos los recuerdos» y «Eliminar el espacio» desde el cliente, contra el Worker real
- * (D1 y R2 simulados). Incluye el criterio de aceptación de H8 completo: exportar → ELIMINAR el espacio → código nuevo →
+ * Papelera, «Borrar todos los recuerdos» y «Eliminar el espacio» desde el cliente, contra el Worker real
+ * (D1 y R2 simulados). Incluye el criterio de aceptación completo: exportar → ELIMINAR el espacio → código nuevo →
  * restaurar ⇒ los mismos recuerdos y fotos.
  */
 const PASSWORD = 'correcto caballo bateria grapa 2026';
@@ -152,7 +152,7 @@ describe('eliminar el espacio', () => {
   );
 
   it(
-    'criterio de H8: exportar → eliminar el espacio → código nuevo → restaurar devuelve los mismos recuerdos y fotos',
+    'exportar → eliminar el espacio → código nuevo → restaurar devuelve los mismos recuerdos y fotos',
     async () => {
       const s = await space();
       await s.garden.create({

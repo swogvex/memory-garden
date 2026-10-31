@@ -9,7 +9,7 @@ export interface CategoryOption {
 }
 
 /**
- * Categorías de serie (D-135). Desde H8.1 las pantallas usan las de los ajustes cifrados (`prefs.settings.categories`,
+ * Categorías de serie (D-135). Las pantallas usan las de los ajustes cifrados (`prefs.settings.categories`,
  * creadas con `defaultCategories` de lib/settings); esta constante queda para las pruebas del formulario.
  */
 export const DEFAULT_CATEGORIES: readonly CategoryOption[] = [

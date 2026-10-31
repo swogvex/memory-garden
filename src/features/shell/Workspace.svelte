@@ -17,7 +17,7 @@
   import { viewState } from './view-state.svelte';
 
   /**
-   * H9.3 · La aplicación con sesión (menú, cabecera y vistas). Se carga aparte (import dinámico desde AppShell):
+   * La aplicación con sesión (menú, cabecera y vistas). Se carga aparte (import dinámico desde AppShell):
    * la pantalla de acceso no descarga ni ejecuta el Jardín, los Ramos, las flores ni Configuración.
    * El estado de navegación (`view`) y el título del documento siguen en AppShell.
    */

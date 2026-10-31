@@ -6,7 +6,7 @@ import { CryptoError } from './errors';
  * Política de contraseña (crypto-spec.md §4.5, D-063). PBKDF2 hace que la contraseña sea el eslabón débil.
  * Esto NO mide fortaleza real: filtra lo evidentemente malo (corta, repetida, común o «palabra común + números»).
  *
- * Dos niveles (H8.2, D-122):
+ * Dos niveles (D-122):
  * - Siempre: longitud mínima, variedad, repeticiones («teamoteamoteamo») y esta lista corta escrita a mano.
  * - Con `data` (la lista grande generada por scripts/build-common-passwords.mjs, que la interfaz carga aparte porque pesa):
  *   contraseñas largas conocidas y «palabra común + relleno» («barcelona12345», «Superman!!!!!!»).
@@ -60,10 +60,6 @@ const COMMON: readonly string[] = [
 export interface PolicyResult {
   readonly ok: boolean;
   readonly reasons: readonly ('too_short' | 'common' | 'low_variety')[];
-}
-
-export function lengthInCodePoints(s: string): number {
-  return Array.from(s.normalize('NFKC')).length;
 }
 
 /** Lista grande de contraseñas comunes, ya normalizada con `normalizeForList`. */

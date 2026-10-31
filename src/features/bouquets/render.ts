@@ -16,7 +16,7 @@ import { renderFiller } from './filler';
 import type { BouquetLayout, PlacedFlower, PlacedPolaroid, StemCurve } from './model';
 import { stemPath } from './stem-geometry';
 
-export interface RenderLabels {
+interface RenderLabels {
   /** Nombre accesible del dibujo entero. */
   readonly root: string;
   /** Nombre accesible de una flor («Rosa, título, 14 de octubre»). */

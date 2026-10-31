@@ -10,7 +10,7 @@ export const SETUP_CODE = 'ABCDE-FGHJK-MNPQR-STVWX-YZ012';
 export const ORIGIN = 'http://localhost:4322';
 export const T0 = 1_800_000_000; // segundos Unix fijos
 /** Identificador válido (16 bytes) que sustituye a `:id` al llamar a una ruta de la tabla. */
-export const SAMPLE_ID = toB64Url(new Uint8Array(16).fill(0x22));
+const SAMPLE_ID = toB64Url(new Uint8Array(16).fill(0x22));
 
 export interface Harness {
   d1: TestD1;

@@ -1,5 +1,5 @@
 /**
- * Puerto de datos de «Tus datos» en Configuración (H8.3): exportar el espacio desbloqueado y continuar una restauración
+ * Puerto de datos de «Tus datos» en Configuración: exportar el espacio desbloqueado y continuar una restauración
  * con el mismo archivo. La restauración inicial (espacio vacío) va por el asistente de la pantalla de acceso.
  */
 import type { Keyring } from '@/lib/crypto';

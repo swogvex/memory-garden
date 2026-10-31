@@ -3,7 +3,7 @@
  * en las pruebas lo cumple un adaptador sobre SQLite real (tests/unit/server/_d1.ts).
  * Todas las sentencias son literales con parámetros enlazados (PS-01): nunca se concatena entrada.
  */
-export interface D1RunMeta {
+interface D1RunMeta {
   changes?: number;
   last_row_id?: number;
 }

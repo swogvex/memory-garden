@@ -1,5 +1,5 @@
 /**
- * Operaciones irreversibles de Configuración (H8.3b): borrar todos los recuerdos y eliminar el espacio.
+ * Operaciones irreversibles de Configuración: borrar todos los recuerdos y eliminar el espacio.
  * Las dos piden la contraseña ACTUAL; se envía solo su prueba derivada (`auth_pw`), nunca la contraseña.
  * El servidor trabaja por tandas (`done: false` ⇒ se repite la misma petición) y repetirla es seguro.
  *

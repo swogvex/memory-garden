@@ -1,4 +1,4 @@
-/** Límites de photos-and-storage.md §6 y data-model.md (D-075, D-094). El Worker los aplica de verdad en H7. */
+/** Límites de photos-and-storage.md §6 y data-model.md (D-075, D-094). El Worker los vuelve a aplicar en el servidor. */
 export const MAX_PHOTOS_PER_MEMORY = 5;
 export const MAX_ASSETS_PER_MEMORY = MAX_PHOTOS_PER_MEMORY * 2; // fotos + miniaturas
 export const MIN_ASSET_BYTES = 32;

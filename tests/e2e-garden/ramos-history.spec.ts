@@ -3,7 +3,7 @@ import { es } from '../../src/lib/i18n/es';
 import { expect, test } from './fixtures';
 
 /**
- * H9.3 · Ramos con historial (D-264) y recuerdos en memoria entre secciones (D-262), contra `astro dev` con la semilla.
+ * Ramos con historial (D-264) y recuerdos en memoria entre secciones (D-262), contra `astro dev` con la semilla.
  */
 test.use({ timezoneId: 'Europe/Madrid', locale: 'es-ES' });
 

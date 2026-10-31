@@ -24,7 +24,7 @@ describe('contraseña', () => {
     ).toEqual([]);
   });
 
-  it('el indicador estima la fortaleza (H8.2) y es 0 si no cumple la política', () => {
+  it('el indicador estima la fortaleza y es 0 si no cumple la política', () => {
     expect(passwordLevel('corta')).toBe(0);
     expect(passwordLevel('memorygarden2026')).toBe(0);
     expect(passwordLevel('catorce letras!')).toBe(1);
@@ -64,7 +64,7 @@ describe('clave de recuperación tecleada', () => {
     expect(text).not.toMatch(/contraseña:/i);
   });
 
-  it('H8.4: en inglés, el archivo y su nombre van en inglés', () => {
+  it('en inglés, el archivo y su nombre van en inglés', () => {
     const k = key();
     const text = recoveryKeyFileText(k, 'en');
     expect(text).toContain(k);

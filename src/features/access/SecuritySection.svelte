@@ -3,7 +3,7 @@
   import PasswordChangeCard from './PasswordChangeCard.svelte';
   import RecoveryKeyCard from './RecoveryKeyCard.svelte';
 
-  // Dos tarjetas de Configuración (H8.2). Viven en `access` porque usan sus flujos y componentes de contraseña y clave.
+  // Dos tarjetas de Configuración. Viven en `access` porque usan sus flujos y componentes de contraseña y clave.
   let { locale }: { locale: Locale } = $props();
 </script>
 

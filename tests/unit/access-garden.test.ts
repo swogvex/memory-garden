@@ -108,7 +108,7 @@ describe('fuente de datos remota', () => {
       });
       expect(fromA.replacedRemote).toBe(false);
       h.clock.now += 5;
-      // B tenía la revisión vieja: se guarda encima y lo dice (H8.4, aviso `replaced_remote` de D-188).
+      // B tenía la revisión vieja: se guarda encima y lo dice (aviso `replaced_remote` de D-188).
       const fromB = await b.source.update(created.memory.id, {
         fields: fields('Desde B'),
         photos: [],
@@ -135,7 +135,7 @@ describe('fuente de datos remota', () => {
         error = e;
       }
       expect((error as Error).message).toBe('garden:save_failed');
-      expect(saveFailureOf(error)).toBe('remote_changed'); // la pantalla explica qué ha pasado (H8.4)
+      expect(saveFailureOf(error)).toBe('remote_changed'); // la pantalla explica qué ha pasado
       expect(await a.source.list()).toEqual([]);
     },
     TIMEOUT,

@@ -14,7 +14,7 @@ const view = viewFromPath(`/${Astro.params.view}`) ?? 'garden';
 ---
 
 <BaseLayout title={t(locale, NAV_LABEL_KEY[view])} locale={locale} shell>
-  {/* H9.5 (D-266): el marco del acceso va en el HTML, no en la isla, para pintarse sin esperar al JS. */}
+  {/* D-266: el marco del acceso va en el HTML, no en la isla, para pintarse sin esperar al JS. */}
   <AccessDecor />
   <AppShell client:only="svelte">
     <p slot="fallback" role="status">

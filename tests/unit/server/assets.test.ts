@@ -10,7 +10,7 @@ import {
   putMemoryCall,
 } from './_support';
 
-/** H7.2 · fotos: subida, lectura, borrado, límites, abuso y cortes de conexión (PS-04, PS-38, PS-42, PS-44, PS-61). */
+/** Fotos: subida, lectura, borrado, límites, abuso y cortes de conexión (PS-04, PS-38, PS-42, PS-44, PS-61). */
 async function ready() {
   const h = makeHarness();
   const { cookie } = await doSetup(h);

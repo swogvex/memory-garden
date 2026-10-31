@@ -4,7 +4,7 @@ import { ok, problem } from './http';
 import { intInRange, memoryPayload } from './validate';
 
 /**
- * Ajustes cifrados del espacio (H8.1; data-model.md, columnas `vault.settings_payload` y `vault.settings_revision`).
+ * Ajustes cifrados del espacio (data-model.md, columnas `vault.settings_payload` y `vault.settings_revision`).
  * El servidor guarda un sobre opaco con la misma cabecera que un recuerdo ([0x01, 0x01, 0x01 (datos), mk_version]):
  * nunca ve el nombre, el mensaje, el idioma, las categorías ni qué avatar se eligió.
  * Concurrencia optimista: la revisión que se espera viaja en la petición y va también dentro del AAD del sobre
@@ -54,7 +54,7 @@ interface VaultRow {
 }
 
 /**
- * GET /api/vault (H8.3) → el registro del espacio TAL CUAL: envolturas de la clave maestra, parámetros y ajustes cifrados.
+ * GET /api/vault → el registro del espacio TAL CUAL: envolturas de la clave maestra, parámetros y ajustes cifrados.
  * Lo usa la exportación cifrada (D-100): el archivo lleva las dos envolturas para que la contraseña o la clave de recuperación
  * lo abran. Solo con sesión completa; no revela nada que esa sesión no tenga ya (todo son sobres cifrados o datos públicos).
  */

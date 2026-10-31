@@ -1,5 +1,5 @@
 /**
- * Restaurar un espacio desde una copia `.mgx` (H8.3; privacy-and-backups.md §8.4, D-100, D-101).
+ * Restaurar un espacio desde una copia `.mgx` (privacy-and-backups.md §8.4, D-100, D-101).
  * Solo sobre un espacio VACÍO y con el código de configuración: es un primer acceso que, en vez de generar una clave
  * maestra nueva, reutiliza la del archivo (los ids y el AAD de cada sobre dependen de ella y del id del espacio).
  *

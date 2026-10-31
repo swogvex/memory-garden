@@ -25,15 +25,7 @@ import {
   SEASONS,
 } from './limits';
 
-export {
-  DATE_FORMATS,
-  FLOWERS,
-  LANGUAGES,
-  LIMITS,
-  MAX_CATEGORIES,
-  MAX_PHOTOS,
-  SEASONS,
-} from './limits';
+export { DATE_FORMATS, FLOWERS, LIMITS, MAX_CATEGORIES, MAX_PHOTOS, SEASONS } from './limits';
 
 const id = pipe(string(), regex(/^[A-Za-z0-9_-]{22}$/));
 /** Una línea, no vacía, sin controles. */
@@ -64,7 +56,7 @@ const photoRef = strictObject({
 });
 
 /** Contenido de un recuerdo tal y como se cifra (CONTEXTO §5). Todos los campos son obligatorios (`null` si no hay enlace). */
-export const MemoryPayloadSchema = strictObject({
+const MemoryPayloadSchema = strictObject({
   title: line(LIMITS.title),
   date: pipe(
     string(),
@@ -84,8 +76,8 @@ export const MemoryPayloadSchema = strictObject({
 });
 export type MemoryPayload = InferOutput<typeof MemoryPayloadSchema>;
 
-/** Ajustes cifrados del espacio (provisional; H8 los completa). */
-export const SettingsSchema = strictObject({
+/** Ajustes cifrados del espacio. */
+const SettingsSchema = strictObject({
   displayName: pipe(
     string(),
     maxLength(LIMITS.displayName),
@@ -117,7 +109,7 @@ export interface SafeIssue {
 
 /**
  * Error de validación SIN valores del usuario: Valibot incluye `input` y `received` en sus incidencias,
- * así que se descartan aquí; solo salen la ruta y la regla (la interfaz decide el mensaje, H5/H8).
+ * así que se descartan aquí; solo salen la ruta y la regla (la interfaz decide el mensaje).
  */
 export class ValidationError extends Error {
   readonly issues: readonly SafeIssue[];

@@ -4,7 +4,7 @@ import { expectNoA11yViolations } from '../a11y/axe';
 import { expect, test } from './fixtures';
 
 /**
- * H9.2 · Regresión de la auditoría: la vista de un recuerdo con la confirmación de papelera abierta no deja una
+ * Regresión de la auditoría: la vista de un recuerdo con la confirmación de papelera abierta no deja una
  * región con desplazamiento a la que no se llega con el teclado (axe `scrollable-region-focusable`, WCAG 2.1.1).
  */
 test.use({ timezoneId: 'Europe/Madrid', locale: 'es-ES' });

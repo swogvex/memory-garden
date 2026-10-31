@@ -11,7 +11,7 @@ export interface ApiResult {
 }
 
 /** Códigos de error y su estado HTTP. Cuerpos genéricos: nunca incluyen datos del usuario ni detalles internos (D-060). */
-export const ERRORS = {
+const ERRORS = {
   bad_request: 400,
   unauthorized: 401,
   invalid_credentials: 401,

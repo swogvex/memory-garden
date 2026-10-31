@@ -1,5 +1,5 @@
 import type { Ctx, Handler } from './auth';
-import { lazyCleanup, purgeMemory, removeAssets } from './cleanup';
+import { lazyCleanup, purgeMemory } from './cleanup';
 import {
   LIST_PAGE,
   MAX_ASSETS_PER_MEMORY,
@@ -337,5 +337,3 @@ export const purgeMemoryRoute: Handler = async (ctx) => {
   await purgeMemory(ctx.db, ctx.r2, vault.id, id, ctx.now);
   return { status: 204 };
 };
-
-export { removeAssets };

@@ -3,9 +3,9 @@ import { es } from '../../src/lib/i18n/es';
 import { expectNoA11yViolations } from '../a11y/axe';
 
 /**
- * Navegación de la aplicación con sesión (H7.5). En desarrollo el acceso se omite con datos de prueba,
+ * Navegación de la aplicación con sesión. En desarrollo el acceso se omite con datos de prueba,
  * así que aquí se ven el menú, la cabecera y las vistas. Antes estaba en `tests/e2e/shell.spec.ts`,
- * pero desde H7.5 la compilación sin sesión solo muestra la pantalla de acceso.
+ * pero la compilación sin sesión solo muestra la pantalla de acceso.
  * Ejecuta también axe sobre Ramos (D-205), el Jardín, Explorar y Configuración.
  */
 

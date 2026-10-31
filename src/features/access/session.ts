@@ -31,7 +31,7 @@ export function installSource(keyring: Keyring, repository?: Repository): Garden
   source = createGardenSource(repo, keyring);
   settings = createSettingsSource(repo, keyring); // mismas claves y mismo repositorio: un solo bloqueo para todo
   trash = createTrashSource(repo, keyring);
-  backup = createBackupSource(repo, keyring); // copia cifrada (H8.3): sin estado propio; se suelta con las claves
+  backup = createBackupSource(repo, keyring); // copia cifrada: sin estado propio; se suelta con las claves
   return source;
 }
 

@@ -1,4 +1,4 @@
-// H9.1 · Pesos de `dist/client` frente a los presupuestos (después de `npm run build`).
+// Pesos de `dist/client` frente a los presupuestos (después de `npm run build`).
 // Mide sin comprimir, gzip (nivel 9) y brotli (calidad 11) con node:zlib. Cloudflare comprime al servir:
 // la cifra transferida real está entre las dos (compárala con la pestaña Red o Lighthouse).
 // «Carga inicial» = lo que pide el HTML de la portada (scripts, islas, hojas) y sus imports ESTÁTICOS;
@@ -14,11 +14,11 @@ const ROOT = 'dist/client';
 const KiB = 1024;
 const showAll = process.argv.includes('--all');
 
-/** Presupuestos de H9 (provisionales hasta medir; se fijan en `performance-report.md`). */
+/** Presupuestos (D-268). */
 const BUDGETS = {
   initialJsGzip: 150 * KiB,
   cssGzip: 35 * KiB,
-  // H9.3 (D-263): 140 y no 120. Tres familias son decisión de diseño; se guardan en caché un año (solo la 1.ª visita).
+  // D-263: 140 y no 120. Tres familias son decisión de diseño; se guardan en caché un año (solo la 1.ª visita).
   firstLoadFonts: 140 * KiB,
   accessDecorGzip: 60 * KiB,
   texture: 30 * KiB,
@@ -144,7 +144,7 @@ check(
 for (const t of textures) check(`Textura ${posix.basename(t.rel)}`, t.raw, BUDGETS.texture);
 for (const h of htmls) check(`HTML ${h.rel}`, h.raw, BUDGETS.html);
 
-console.log('# Pesos de dist/client (H9.1)\n');
+console.log('# Pesos de dist/client\n');
 console.log('| Presupuesto | Medido (KiB) | Límite (KiB) | Estado | Nota |');
 console.log('|---|---|---|---|---|');
 for (const r of results)

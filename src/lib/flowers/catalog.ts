@@ -20,8 +20,8 @@ export type FlowerField = 'name' | 'meaning' | 'alt';
 export type FlowerKey = `catalog.flower.${FlowerId}.${FlowerField}`;
 
 /** Papel de la flor en la composición: las grandes al centro, las espigas en el borde. */
-export type FlowerRole = 'focal' | 'mid' | 'spike';
-export type LeafShape = 'lance' | 'broad' | 'strap';
+type FlowerRole = 'focal' | 'mid' | 'spike';
+type LeafShape = 'lance' | 'broad' | 'strap';
 
 export interface FlowerInfo {
   readonly id: FlowerId;

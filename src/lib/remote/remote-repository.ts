@@ -1,5 +1,5 @@
 /**
- * Adaptador remoto de la interfaz `Repository` (H7.2b): habla con la API del Worker (`/api/memories`, `/api/assets`).
+ * Adaptador remoto de la interfaz `Repository`: habla con la API del Worker (`/api/memories`, `/api/assets`).
  * Solo maneja datos CIFRADOS u opacos, igual que el adaptador de desarrollo: las pantallas no cambian.
  *
  * - Misma interfaz, mismos errores (`StorageError`, mensajes fijos). Sin consola, sin almacenamiento del navegador.
@@ -8,8 +8,8 @@
  * - Red caída o lenta: `unavailable` (tiempo máximo por petición). La subida de recuerdos reintenta UNA vez si la
  *   respuesta se perdió y reconoce que su propio guardado ya se había aplicado (reintento idempotente).
  * - `vault`: las claves (create/replaceKeys) van por el cliente de autenticación (`features/access`), no por aquí;
- *   `get` (H8.3) solo LEE el registro cifrado para la exportación.
- *   Los ajustes cifrados (H8.1) sí: `getSettings`/`putSettings`, con el mismo reintento idempotente que los recuerdos.
+ *   `get` solo LEE el registro cifrado para la exportación.
+ *   Los ajustes cifrados sí: `getSettings`/`putSettings`, con el mismo reintento idempotente que los recuerdos.
  */
 import { StorageError, type StorageErrorCode } from '@/lib/storage/errors';
 import type {
@@ -233,7 +233,7 @@ export function createRemoteRepository(options: RemoteOptions = {}): Repository 
   }
 
   const vault: VaultRepository = {
-    // H8.3: lo usa la exportación cifrada. 404 = no hay espacio (no debería ocurrir con sesión).
+    // Lo usa la exportación cifrada. 404 = no hay espacio (no debería ocurrir con sesión).
     async get() {
       const reply = await json('GET', '/api/vault');
       if (reply.status === 404) return null;

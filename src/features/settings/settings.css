@@ -1,4 +1,4 @@
-/* Configuración (H8.1). Solo clases y variables de tokens.css: sin estilos en línea (CSP, DISENO §2c).
+/* Configuración. Solo clases y variables de tokens.css: sin estilos en línea (CSP, DISENO §2c).
    Los botones y campos reutilizan las clases del acceso (`ac-btn`, `ac-input`, `ac-field`, `ac-hint`, `ac-error`),
    que son globales (access.css) para que toda la app tenga los mismos controles. */
 .st {
@@ -125,7 +125,7 @@
   font-weight: 600;
 }
 
-/* Papelera (H8.3b) */
+/* Papelera */
 .st-trash {
   display: grid;
   gap: var(--space-3);
@@ -156,7 +156,7 @@
   }
 }
 
-/* Zona de peligro (H8.3b) */
+/* Zona de peligro */
 .st-danger {
   border-color: var(--color-error);
 }

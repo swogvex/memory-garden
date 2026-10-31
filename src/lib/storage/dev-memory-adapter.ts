@@ -1,7 +1,7 @@
 /**
  * ⚠ SOLO PARA DESARROLLO Y PRUEBAS. ⚠
  * Adaptador en memoria de la interfaz de repositorio: no persiste nada, no autentica nada y no
- * sustituye a D1/R2. Se sustituye por el adaptador remoto en H7 sin tocar las pantallas.
+ * sustituye a D1/R2. En producción se usa el adaptador remoto (`lib/remote`), con la misma interfaz.
  * Falla a propósito en compilaciones de producción. No se exporta desde `index.ts`.
  */
 import { StorageError } from './errors';
@@ -256,7 +256,7 @@ export function createDevMemoryRepository(options: DevAdapterOptions = {}): Repo
           throw new StorageError('quota');
         }
         if (totalBytes() + size > quota) throw new StorageError('quota');
-        // Simplificación del adaptador: el avatar queda `ready` de inmediato (H7 define su ligadura).
+        // Simplificación del adaptador: el avatar queda `ready` de inmediato.
         const rec: AssetRecord = {
           id: input.id,
           memoryId: null,

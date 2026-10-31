@@ -38,7 +38,7 @@ async function loadTexture(url: string | undefined): Promise<HTMLImageElement | 
 
 /**
  * Dibuja el ramo en un lienzo y devuelve un PNG. Método:
- *  0. Fondo marfil, papel (patrón multiplicado) y mancha de acuarela centrada en la copa (H7.5).
+ *  0. Fondo marfil, papel (patrón multiplicado) y mancha de acuarela centrada en la copa.
  *  1. El SVG del ramo (sin fotos) se rasteriza a la resolución final con `drawImage` (nítido: es vectorial).
  *  2. Las fotos y los textos se dibujan encima en el lienzo, porque un SVG cargado como imagen no puede
  *     leer `blob:`, ni archivos externos, ni usar las fuentes de la página.

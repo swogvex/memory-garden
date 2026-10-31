@@ -1,7 +1,7 @@
 import type { MessageKey } from '@/lib/i18n';
 import type { PhotoErrorCode } from './errors';
 
-/** Mensajes de DISENO.md §14 (provisionales hasta H8). */
+/** Mensajes de DISENO.md §14. */
 export const PHOTO_ERROR_MESSAGE = {
   unsupported_format: 'photo.error.format',
   too_large: 'photo.error.large',

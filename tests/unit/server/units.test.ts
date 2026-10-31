@@ -178,6 +178,6 @@ describe('cabeceras de seguridad (D-083)', () => {
     expect(h['Permissions-Policy']).toMatch(/camera=\(\)/);
     expect(h['Cross-Origin-Resource-Policy']).toBe('same-origin');
     expect(Object.keys(h).some((k) => /^access-control-/i.test(k))).toBe(false);
-    expect(Object.keys(h).some((k) => /^strict-transport-security$/i.test(k))).toBe(false); // HSTS: ajuste de zona (H7.3)
+    expect(Object.keys(h).some((k) => /^strict-transport-security$/i.test(k))).toBe(false); // HSTS: ajuste de zona (D-199)
   });
 });

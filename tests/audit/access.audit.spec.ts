@@ -11,7 +11,7 @@ import {
 } from '../a11y/audit';
 
 /**
- * H9.1 · Auditoría del acceso contra la COMPILACIÓN (`npm run build` antes), con la API simulada.
+ * Auditoría del acceso contra la COMPILACIÓN (`npm run build` antes), con la API simulada.
  * Solo se ejecuta con `npm run test:audit` (proyecto `audit`, D-248: no entra en `validate`).
  * Registra cada estado en test-results; `npm run audit:summary` hace la tabla.
  */

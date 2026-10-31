@@ -14,7 +14,7 @@ export async function settleAnimations(page: Page): Promise<void> {
   });
 }
 
-// axe detecta solo una parte de los problemas de WCAG: no demuestra cumplimiento (se audita en H9).
+// axe detecta solo una parte de los problemas de WCAG: no demuestra cumplimiento (ver `npm run test:audit`).
 export async function expectNoA11yViolations(page: Page): Promise<void> {
   await settleAnimations(page);
   const results = await new AxeBuilder({ page })

@@ -1,4 +1,4 @@
-// H9.1 · Junta los registros de `test-results/**/a11y-audit.json` (de `npm run test:audit`) en una tabla para pegar.
+// Junta los registros de `test-results/**/a11y-audit.json` (de `npm run test:audit`) en una tabla para pegar.
 // Uso: npm run audit:summary            → resumen
 //      npm run audit:summary -- --full  → además, cada infracción y cada objetivo < 44 px
 import { readdir, readFile } from 'node:fs/promises';
@@ -33,7 +33,7 @@ if (rows.length === 0) {
 rows.sort((a, b) => a.label.localeCompare(b.label, 'es'));
 
 const count = (list, impact) => list.filter((v) => v.impact === impact).length;
-console.log(`# Auditoría H9.1 · ${rows.length} estados\n`);
+console.log(`# Auditoría de accesibilidad · ${rows.length} estados\n`);
 console.log(
   '| Estado | Vista | lang | crít. | serias | mod. | menores | < 24 px | < 44 px | desbord. | sin foco visible | foco tapado |',
 );

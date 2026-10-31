@@ -20,7 +20,7 @@ import { PW, PW2, TEST_POLICY, expectCode } from './_helpers';
 
 /**
  * Cliente (crypto) + «servidor» (repositorio en memoria) juntos: lo único que cruza la frontera son cadenas
- * y bytes cifrados. Esto es lo que H5 (pantallas) y H7 (API real) repetirán con otro adaptador.
+ * y bytes cifrados. Las pantallas y el adaptador remoto usan la misma interfaz.
  */
 const opts = { policy: TEST_POLICY } as const;
 const SECRET_TEXT = 'TEXTO-PERSONAL-ÚNICO-ñ-🌸-7731';

@@ -1,17 +1,17 @@
 import type { BouquetLayout } from './model';
 
 /** Márgenes de la imagen exportada, en unidades del lienzo del ramo (600 de ancho). */
-export const EXPORT_TOP = 24;
-export const EXPORT_BOTTOM = 96;
+const EXPORT_TOP = 24;
+const EXPORT_BOTTOM = 96;
 /** Fondo opaco (marfil de la identidad visual). */
 export const EXPORT_BACKGROUND = '#F8F6F1';
 /** Anchura objetivo en píxeles: 2400 px (escala 4). */
-export const EXPORT_TARGET_WIDTH = 2400;
+const EXPORT_TARGET_WIDTH = 2400;
 /** Topes de seguridad para iOS y navegadores con lienzos limitados. */
 export const EXPORT_MAX_SIDE = 4096;
 export const EXPORT_MAX_PIXELS = 16_000_000;
 
-export interface ExportPhotoPlan {
+interface ExportPhotoPlan {
   readonly id: string;
   /** Centro de la Polaroid y giro, en unidades del lienzo (ya con el margen superior). */
   readonly x: number;

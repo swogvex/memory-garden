@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { formatCompactDate, isKnownTimeZone, listTimeZones } from '@/lib/dates';
 import { DATE_FORMATS } from '@/lib/validation/limits';
 
-/** H8.1 · formato de fecha corto elegido en Configuración y lista de zonas horarias. */
+/** Formato de fecha corto elegido en Configuración y lista de zonas horarias. */
 describe('formatCompactDate', () => {
   const d = { year: 2026, month: 10, day: 5 };
 

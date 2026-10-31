@@ -1,4 +1,4 @@
-// H9.1 · Ejecuta la auditoría de accesibilidad (proyectos `audit` y `audit-garden`, solo Chromium) y su resumen.
+// Ejecuta la auditoría de accesibilidad (proyectos `audit` y `audit-garden`, solo Chromium) y su resumen.
 // Requiere `npm run build` antes (el proyecto `audit` va contra la compilación). No entra en `validate` (D-248).
 // Uso: npm run test:audit                  → toda la auditoría
 //      npm run test:audit -- access        → solo los archivos cuyo nombre contenga «access»

@@ -83,11 +83,3 @@ export function b64uDecode(s: string): Bytes {
   if (acc !== 0) throw new CryptoError('invalid_input'); // bits sobrantes no nulos
   return out;
 }
-
-/** Comparación en tiempo constante para bytes del mismo largo. */
-export function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
-  if (a.length !== b.length) return false;
-  let d = 0;
-  for (let i = 0; i < a.length; i++) d |= a[i]! ^ b[i]!;
-  return d === 0;
-}

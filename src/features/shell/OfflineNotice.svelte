@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { t, type Locale } from '@/lib/i18n';
 
-  // Aviso de sin conexión (H8.4). Visible también en la pantalla de acceso. El contenedor con `role="status"` existe siempre
+  // Aviso de sin conexión. Visible también en la pantalla de acceso. El contenedor con `role="status"` existe siempre
   // para que los lectores de pantalla anuncien el cambio; solo el texto aparece y desaparece.
   let { locale }: { locale: Locale } = $props();
   let offline = $state(false);

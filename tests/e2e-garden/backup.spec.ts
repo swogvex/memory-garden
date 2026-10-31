@@ -7,7 +7,7 @@ import { expectNoA11yViolations } from '../a11y/axe';
 import { expect, test } from './fixtures';
 
 /**
- * H8.3 · copia cifrada en la interfaz (`astro dev`, espacio de pruebas cifrado de verdad en memoria).
+ * Copia cifrada en la interfaz (`astro dev`, espacio de pruebas cifrado de verdad en memoria).
  * 1) Configuración → Tus datos exporta un `.mgx` real. 2) Con `?acceso` y la API simulada (`page.route`), el asistente
  * «Restaurar desde una copia» abre ESE archivo, pide clave nueva y código, y sube los sobres.
  * La ida y vuelta completa contra el Worker (mismos recuerdos y fotos) la cubre `tests/unit/backup-roundtrip.test.ts`.

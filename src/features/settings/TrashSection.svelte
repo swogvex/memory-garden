@@ -6,7 +6,7 @@
   import type { Status } from './messages';
   import { effectiveTimeZone, prefs } from './prefs.svelte';
 
-  // Papelera (H8.3b; D-058): restaurar o borrar para siempre. Pasados 30 días el servidor la purga solo.
+  // Papelera (D-058): restaurar o borrar para siempre. Pasados 30 días el servidor la purga solo.
   let { locale, openTrash }: { locale: Locale; openTrash: () => Promise<TrashSource> } = $props();
   const uid = $props.id();
   const id = (name: string) => `${uid}-${name}`;

@@ -36,15 +36,15 @@ import {
 } from 'valibot';
 import type { GenericSchema, InferOutput } from 'valibot';
 
-export const MGX_MAGIC = [0x4d, 0x47, 0x58, 0x31] as const;
+const MGX_MAGIC = [0x4d, 0x47, 0x58, 0x31] as const;
 export const MGX_VERSION = 1;
 export const PREFIX_BYTES = 12;
-export const MAX_HEADER_BYTES = 4096;
+const MAX_HEADER_BYTES = 4096;
 export const MAX_MANIFEST_BYTES = 64 * 1024 * 1024;
-export const MAX_ENTRIES = 250_000;
+const MAX_ENTRIES = 250_000;
 
 /** Tope por tipo (coinciden con los del servidor: `src/server/config.ts`). */
-export const MAX_ENTRY_BYTES = {
+const MAX_ENTRY_BYTES = {
   settings: 65_536,
   memory: 65_536,
   photo: 2 * 1024 * 1024,

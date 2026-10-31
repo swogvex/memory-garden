@@ -19,7 +19,7 @@ export function segment(marker: number, payload: ArrayLike<number>): Uint8Array 
   return concat([0xff, marker, length >> 8, length & 255], payload);
 }
 
-export function exifPayload(orientation = 1, little = true): Uint8Array {
+function exifPayload(orientation = 1, little = true): Uint8Array {
   const u16 = (v: number): number[] =>
     little ? [v & 255, (v >> 8) & 255] : [(v >> 8) & 255, v & 255];
   const u32 = (v: number): number[] =>

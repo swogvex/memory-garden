@@ -2,7 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { DEFAULT_LOCALE, t } from '@/lib/i18n';
 
-// H9.2 · Página 404 propia: sin JavaScript, `noindex` (BaseLayout) y un enlace al inicio.
+// Página 404 propia: sin JavaScript, `noindex` (BaseLayout) y un enlace al inicio.
 // En Cloudflare, una ruta que no existe llega al Worker y Astro responde con esta página y estado 404.
 const locale = DEFAULT_LOCALE;
 ---

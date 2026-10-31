@@ -24,9 +24,9 @@ import { SETUP_CODE, makeHarness, type Harness } from './server/_support';
 import { FAST, bridge, type Bridge } from './_access-helpers';
 
 /**
- * H8.3 · copia cifrada `.mgx` contra el Worker real (D1 y R2 simulados). Criterio de aceptación de H8:
+ * Copia cifrada `.mgx` contra el Worker real (D1 y R2 simulados). Criterio de aceptación de la copia:
  * «exportar → borrar todo → importar devuelve los mismos recuerdos y fotos». Aquí «borrar todo» es un servidor nuevo y vacío
- * (lo que queda tras perder D1 o eliminar el espacio); el borrado desde la app llega en H8.3b.
+ * (lo que queda tras perder D1 o eliminar el espacio).
  */
 const PASSWORD = 'correcto caballo bateria grapa 2026';
 const NEW_PASSWORD = 'otra frase muy larga para el jardin';

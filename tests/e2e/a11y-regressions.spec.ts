@@ -3,7 +3,7 @@ import { es } from '../../src/lib/i18n/es';
 import { expectNoA11yViolations } from '../a11y/axe';
 
 /**
- * H9.2 · Regresiones de lo que encontró la auditoría de H9.1, contra la compilación (entran en `validate`).
+ * Regresiones de lo que encontró la auditoría de accesibilidad, contra la compilación (entran en `validate`).
  * - Aviso de privacidad del primer acceso sin región con desplazamiento inalcanzable (axe, WCAG 2.1.1).
  * - La tarjeta de acceso no salta al pasar de «Comprobando…» al formulario (CLS, solo Chromium).
  * - robots.txt deja leer el `noindex`; 404 propia y privada.

@@ -11,7 +11,7 @@ import {
   putMemoryCall,
 } from './_support';
 
-/** H7.2 · recuerdos: crear, leer, editar con revisión, papelera, borrado definitivo, conflictos y límites (PS-03, PS-04, PS-44). */
+/** Recuerdos: crear, leer, editar con revisión, papelera, borrado definitivo, conflictos y límites (PS-03, PS-04, PS-44). */
 async function ready() {
   const h = makeHarness();
   const { cookie } = await doSetup(h);

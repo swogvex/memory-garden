@@ -4,26 +4,26 @@ import { expect, type Page, type TestInfo } from '@playwright/test';
 import { settleAnimations } from './axe';
 
 /**
- * H9.1 · Auditoría de accesibilidad (medición, no cumplimiento).
+ * Auditoría de accesibilidad (medición, no cumplimiento).
  *
  * Cada `auditState` registra un estado de la interfaz (pantalla, modal, ancho) en
  * `test-results/<prueba>/a11y-audit.json`; `npm run audit:summary` los junta en una tabla.
  * Reglas:
  *  - axe con WCAG 2.0–2.2 A/AA **y** `best-practice`, guardando TODAS las infracciones y su impacto.
- *  - Falla en duro solo con impacto `critical` (criterio de H9). `serious` falla con `expect.soft`
+ *  - Falla en duro solo con impacto `critical` (D-268). `serious` falla con `expect.soft`
  *    para que la pasada siga y se vea todo; `moderate`/`minor` solo se registran.
  *  - Objetivos táctiles: < 24 px (mínimo de WCAG 2.5.8) falla en blando; < 44 px (objetivo del proyecto) se registra.
  *  - Reflujo: desbordamiento horizontal del documento.
  * axe y estas comprobaciones automáticas NO demuestran WCAG 2.2 AA: falta la revisión manual y con lector de pantalla.
  */
 
-export interface AxeFinding {
+interface AxeFinding {
   id: string;
   impact: string;
   help: string;
   targets: string[];
 }
-export interface TargetFinding {
+interface TargetFinding {
   name: string;
   selector: string;
   width: number;
@@ -112,7 +112,7 @@ async function measureTargets(page: Page) {
   });
 }
 
-export async function overflowPx(page: Page): Promise<number> {
+async function overflowPx(page: Page): Promise<number> {
   return page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

@@ -6,7 +6,7 @@
   import { securityErrorKey } from './security-messages';
   import { lockSession } from './session';
 
-  // Zona de peligro (H8.3b): borrar todos los recuerdos y eliminar el espacio. Contraseña actual + palabra escrita.
+  // Zona de peligro: borrar todos los recuerdos y eliminar el espacio. Contraseña actual + palabra escrita.
   // Vive en `access` porque usa la prueba de contraseña y cierra la sesión.
   let { locale }: { locale: Locale } = $props();
   const uid = $props.id();

@@ -24,7 +24,7 @@ import { rows } from './server/_d1';
 import { SETUP_CODE, makeHarness } from './server/_support';
 import { FAST, bridge } from './_access-helpers';
 
-/** H8.1 · ajustes: modelo, fuente cifrada (desarrollo y servidor real simulado) y cambio de categoría de los recuerdos. */
+/** Ajustes: modelo, fuente cifrada (desarrollo y servidor real simulado) y cambio de categoría de los recuerdos. */
 const TIMEOUT = 120_000;
 const PASSWORD = 'una frase larga para las pruebas de ajustes';
 

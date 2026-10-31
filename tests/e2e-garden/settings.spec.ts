@@ -5,7 +5,7 @@ import { expectNoA11yViolations } from '../a11y/axe';
 import { expect, test } from './fixtures';
 
 /**
- * H8.1 · Configuración con el espacio de pruebas (`astro dev`, datos cifrados en memoria; se pierden al recargar).
+ * Configuración con el espacio de pruebas (`astro dev`, datos cifrados en memoria; se pierden al recargar).
  * Cubre perfil, avatar floral, idioma, categorías y la página de privacidad, más axe con todo abierto.
  */
 const main = (page: Page) => page.locator('main#contenido');

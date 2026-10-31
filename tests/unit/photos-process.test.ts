@@ -134,7 +134,7 @@ describe('processPhoto', () => {
   });
 });
 
-describe('processAvatar (H8.1)', () => {
+describe('processAvatar', () => {
   it('JPEG de lado largo ≤ 256 px, sin metadatos aunque el códec devuelva Exif con GPS', async () => {
     const { codec, state } = fakeCodec({ exif: true });
     const out = await processAvatar(goodFile(), codec);

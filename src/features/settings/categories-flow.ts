@@ -1,6 +1,6 @@
 /**
  * Renombrar o eliminar una categoría cambia el texto de la categoría DENTRO de cada recuerdo cifrado: el servidor no
- * sabe qué categoría tiene cada uno, así que el cambio se hace aquí, recuerdo a recuerdo (decisión del usuario, H8).
+ * sabe qué categoría tiene cada uno, así que el cambio se hace aquí, recuerdo a recuerdo (decisión del usuario).
  *
  * Orden seguro: primero se reescriben los recuerdos y, solo si TODOS se guardan, la lista de categorías.
  * Si la conexión cae a mitad, unos recuerdos tienen ya el nombre nuevo y otros el viejo; repetir la operación termina los
@@ -11,7 +11,7 @@
  */
 import type { GardenMemory, GardenSource, MemoryFields, PhotoSlot } from '@/features/calendar';
 
-export function fieldsOf(memory: GardenMemory): MemoryFields {
+function fieldsOf(memory: GardenMemory): MemoryFields {
   return {
     title: memory.title,
     date: memory.date,
@@ -23,7 +23,7 @@ export function fieldsOf(memory: GardenMemory): MemoryFields {
   };
 }
 
-export function keptSlots(memory: GardenMemory): PhotoSlot[] {
+function keptSlots(memory: GardenMemory): PhotoSlot[] {
   return memory.photos.map((p) => ({
     kind: 'kept' as const,
     assetId: p.assetId,

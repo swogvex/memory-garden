@@ -57,7 +57,7 @@
   let sheetEl = $state<HTMLDialogElement>();
   let chipsEl = $state<HTMLDivElement>();
   let source: GardenSource | null = null;
-  // H9.3 (D-262): «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
+  // D-262: «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
   let slowLoad = $state(false);
   let formOpen = $state(false);
   let formDate = $state('');

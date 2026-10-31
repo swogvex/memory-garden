@@ -96,7 +96,7 @@ export async function processPhoto(
 }
 
 /**
- * Avatar (H8.1): la misma tubería que una foto (tipo real por contenido, decodificar, JPEG nuevo sin metadatos) con
+ * Avatar: la misma tubería que una foto (tipo real por contenido, decodificar, JPEG nuevo sin metadatos) con
  * límites propios. Solo JPG, PNG o WEBP: un HEIC, un GIF o un archivo disfrazado se rechazan aunque el navegador los abriera.
  */
 export async function processAvatar(file: Blob, codec: ImageCodec): Promise<EncodedImage> {

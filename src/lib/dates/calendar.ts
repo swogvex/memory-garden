@@ -14,8 +14,8 @@ export interface GridCell {
   readonly inMonth: boolean;
 }
 
-export const GRID_WEEKS = 6;
-export const WEEK_LENGTH = 7;
+const GRID_WEEKS = 6;
+const WEEK_LENGTH = 7;
 
 const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 

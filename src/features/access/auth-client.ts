@@ -44,7 +44,7 @@ export interface SetupRequest {
   readonly mkVersion: number;
 }
 
-export interface LoginReply {
+interface LoginReply {
   readonly vaultId: string;
   readonly kdf: string;
   readonly mkVersion: number;
@@ -52,7 +52,7 @@ export interface LoginReply {
   readonly wrappedMkPw: string;
 }
 
-export interface RecoverReply {
+interface RecoverReply {
   readonly vaultId: string;
   readonly mkVersion: number;
   readonly keyRevision: number;
@@ -60,7 +60,7 @@ export interface RecoverReply {
   readonly wrappedMkRec: string;
 }
 
-export interface RecoveryResetRequest {
+interface RecoveryResetRequest {
   readonly kdf: string;
   readonly authPw: string;
   readonly wrappedMkPw: string;
@@ -70,7 +70,7 @@ export interface RecoveryResetRequest {
   readonly expectedKeyRevision: number;
 }
 
-export interface KdfUpgradeRequest {
+interface KdfUpgradeRequest {
   readonly currentAuthPw: string;
   readonly kdf: string;
   readonly authPw: string;
@@ -78,7 +78,7 @@ export interface KdfUpgradeRequest {
   readonly expectedKeyRevision: number;
 }
 
-export interface PasswordChangeRequest {
+interface PasswordChangeRequest {
   readonly currentAuthPw: string;
   readonly kdf: string;
   readonly authPw: string;
@@ -86,7 +86,7 @@ export interface PasswordChangeRequest {
   readonly expectedKeyRevision: number;
 }
 
-export interface RecoveryKeyRequest {
+interface RecoveryKeyRequest {
   readonly currentAuthPw: string;
   readonly recSalt: string;
   readonly authRec: string;
@@ -105,9 +105,9 @@ export interface AuthClient {
   changePassword(request: PasswordChangeRequest): Promise<{ readonly keyRevision: number }>;
   /** Clave de recuperación nueva (crypto-spec §8.5): la anterior deja de valer al confirmarse. */
   regenerateRecoveryKey(request: RecoveryKeyRequest): Promise<{ readonly keyRevision: number }>;
-  /** H8.3b: borra para siempre todos los recuerdos. `done = false`: queda trabajo, repetir la misma petición. */
+  /** Borra para siempre todos los recuerdos. `done = false`: queda trabajo, repetir la misma petición. */
   purgeAllMemories(currentAuthPw: string): Promise<{ readonly done: boolean }>;
-  /** H8.3b: elimina el espacio entero y gasta el código de configuración. Igual que el anterior con `done`. */
+  /** Elimina el espacio entero y gasta el código de configuración. Igual que el anterior con `done`. */
   deleteSpace(currentAuthPw: string): Promise<{ readonly done: boolean }>;
   /** Mejor esfuerzo: nunca lanza. */
   logout(): Promise<void>;

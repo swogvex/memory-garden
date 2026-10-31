@@ -2,10 +2,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { es } from '../../src/lib/i18n/es';
 
 /**
- * H9.3 · Rendimiento de la pantalla de acceso, contra la compilación:
+ * Rendimiento de la pantalla de acceso, contra la compilación:
  * - la aplicación con sesión (Workspace: vistas, flores, sprite) no se monta en el acceso;
  * - `?medir` muestra el medidor de Web Vitals sin romper la CSP; sin `?medir` no existe.
- * H9.5 (D-266) · El marco floral (elemento LCP del acceso) está en el HTML y se pinta sin JS.
+ * D-266: El marco floral (elemento LCP del acceso) está en el HTML y se pinta sin JS.
  */
 test.use({ serviceWorkers: 'block' });
 
@@ -49,7 +49,7 @@ test('?medir muestra el medidor sin violaciones de CSP; sin ?medir no aparece', 
   expect(csp).toEqual([]);
 });
 
-test.describe('H9.5 · marco floral en el HTML (LCP)', () => {
+test.describe('marco floral en el HTML (LCP)', () => {
   test('el HTML de cada vista ya trae las 4 esquinas, con prioridad alta en la capa base', async ({
     request,
   }) => {

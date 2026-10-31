@@ -1,5 +1,5 @@
 /**
- * Papelera (H8.3b; D-058): lo que se mandó a la papelera se puede restaurar o borrar para siempre durante 30 días; después
+ * Papelera (D-058): lo que se mandó a la papelera se puede restaurar o borrar para siempre durante 30 días; después
  * el servidor lo purga solo. Sin interfaz: descifra el título y la fecha para la lista; el servidor nunca los ve.
  */
 import type { Keyring } from '@/lib/crypto';

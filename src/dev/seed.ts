@@ -21,8 +21,6 @@ import { createDevMemoryRepository } from '@/lib/storage/dev-memory-adapter';
 import { MAX_PHOTOS, parseMemoryPayload, type MemoryPayload } from '@/lib/validation';
 import { buildSeedPayloads } from './seed-data';
 
-/** Marcador que NO debe aparecer nunca en el bundle de producción (prueba tests/e2e/prod-bundle.spec.ts). */
-export const DEV_SEED_MARKER = '__MG_DEV_SEED__';
 /** Contraseña del espacio de pruebas: solo existe en memoria, en desarrollo. */
 const DEV_PASSWORD = 'Contraseña-solo-de-pruebas-H4-jardín';
 const SCHEMA_VERSION = 1;

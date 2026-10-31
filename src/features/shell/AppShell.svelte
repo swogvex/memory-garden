@@ -9,7 +9,7 @@
   import { NAV_LABEL_KEY, PATHS, viewFromPath, type View } from './router';
   import { viewState } from './view-state.svelte';
 
-  // Idioma de toda la interfaz: el de los ajustes cifrados al entrar; antes, el recordado en este navegador (H8.1).
+  // Idioma de toda la interfaz: el de los ajustes cifrados al entrar; antes, el recordado en este navegador.
   const locale: Locale = $derived(prefs.settings.language);
   // Desarrollo: el jardín abre con datos de prueba sin pedir contraseña. Con `?acceso` se prueba el acceso real contra la API local.
   // En producción `import.meta.env.DEV` es `false` y siempre se pide el acceso.
@@ -19,7 +19,7 @@
   let view = $state<View>(viewFromPath(window.location.pathname) ?? 'garden');
   let headingEl = $state<HTMLHeadingElement>();
 
-  // H9.3 · La aplicación con sesión va en su propio archivo y se pide DESPUÉS de pintar el acceso: no compite con la
+  // La aplicación con sesión va en su propio archivo y se pide DESPUÉS de pintar el acceso: no compite con la
   // primera carga y, mientras se escribe la contraseña, ya está descargada. Si aún no ha llegado al entrar, se espera.
   // Promesa guardada fuera del estado reactivo: la plantilla la lee sin modificar estado al pintarse.
   type WorkspaceModule = typeof import('./Workspace.svelte');
@@ -70,7 +70,7 @@
     window.addEventListener('pageshow', onPageShow);
     window.addEventListener('pagehide', onPageHide);
     const prefetch = window.setTimeout(loadWorkspace, 0);
-    // H9.3 (D-260): medidor de Web Vitals en pantalla, solo si la URL lleva `?medir`. No guarda ni envía nada.
+    // D-260: medidor de Web Vitals en pantalla, solo si la URL lleva `?medir`. No guarda ni envía nada.
     if (new URLSearchParams(window.location.search).has('medir'))
       void import('@/lib/perf/vitals-overlay').then((m) => m.startVitalsOverlay());
     return () => {
