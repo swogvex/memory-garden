@@ -125,6 +125,42 @@
   font-weight: 600;
 }
 
+/* Papelera (H8.3b) */
+.st-trash {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.st-trash li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-decor);
+}
+.st-trash-text {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.st-trash-title {
+  font-weight: 600;
+}
+@media (min-width: 48rem) {
+  .st-trash li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+/* Zona de peligro (H8.3b) */
+.st-danger {
+  border-color: var(--color-error);
+}
+
 /* Avatar */
 .st-avatar-row {
   display: flex;

@@ -1,4 +1,4 @@
-import { constantTimeEqual, fromB64Url, randomId, utf8 } from './bytes';
+import { constantTimeEqual, fromB64Url, randomId, utf8, type Bytes } from './bytes';
 import type { D1Like } from './d1';
 import type { R2Like } from './r2';
 import { normalizeCode, type Config } from './env';
@@ -92,6 +92,23 @@ async function checkSecret(
   return { ok: equal && bytes !== null && account !== null, accountId: account?.id ?? null };
 }
 
+/** Huella de un código de configuración para `setup_lock` (nunca se guarda el código). */
+export async function setupLockHash(pepper: Bytes, code: string): Promise<string> {
+  return secretHash(pepper, utf8(`mg1/setup-lock|${code}`));
+}
+
+/**
+ * Prueba de la contraseña actual para operaciones irreversibles (H8.3b): `current_auth_pw` en el cuerpo, con el mismo
+ * límite de intentos que el acceso. Devuelve `null` si es correcta, o la respuesta de error (genérica) si no.
+ */
+export async function provePassword(ctx: Ctx): Promise<ApiResult | null> {
+  const gate = await gateFor(ctx, 'login');
+  if (gate.retryAfter > 0) return rateLimited(gate.retryAfter);
+  if (!(await checkSecret(ctx, 'pw', ctx.body.current_auth_pw)).ok) return failed(ctx, gate);
+  await ctx.db.batch(successStatements(ctx.db, gate));
+  return null;
+}
+
 function sessionCookie(ctx: Ctx, token: string, maxAge: number): string[] {
   return [setCookie(ctx.cookie, token, maxAge)];
 }
@@ -123,8 +140,13 @@ export const setup: Handler = async (ctx) => {
   ]);
   const codeOk = ctx.cfg.setupCode !== null && constantTimeEqual(a, b);
   const exists = await ctx.db.prepare('SELECT 1 AS x FROM account LIMIT 1').first();
-  // Código incorrecto, sin código configurado o espacio ya creado: la misma respuesta genérica (PS-07).
-  if (!codeOk || exists) return failed(ctx, gate);
+  // H8.3b: un código ya gastado al eliminar el espacio no vuelve a valer. Se consulta SIEMPRE (mismo trabajo con cualquier código).
+  const locked = await ctx.db
+    .prepare('SELECT 1 AS x FROM setup_lock WHERE code_hash = ?1')
+    .bind(await setupLockHash(ctx.cfg.pepper, provided))
+    .first();
+  // Código incorrecto, sin código configurado, gastado o espacio ya creado: la misma respuesta genérica (PS-07).
+  if (!codeOk || exists || locked) return failed(ctx, gate);
 
   const vaultId = b64Exact(ctx.body.vault_id, 16);
   const kdf = parseKdf(ctx.body.kdf);

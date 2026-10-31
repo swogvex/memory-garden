@@ -2,10 +2,12 @@
 export { default as AccessGate } from './AccessGate.svelte';
 export { default as SignOut } from './SignOut.svelte';
 export { default as SecuritySection } from './SecuritySection.svelte';
+export { default as DangerSection } from './DangerSection.svelte';
 export {
   currentBackupSource,
   currentSettingsSource,
   currentSource,
+  currentTrashSource,
   lockSession,
   onLock,
   type LockReason,

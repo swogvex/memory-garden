@@ -5,6 +5,7 @@
 import type { GardenSource } from '@/features/calendar';
 import { createBackupSource, type BackupSource } from '@/lib/backup';
 import { createSettingsSource, type SettingsSource } from '@/lib/settings';
+import { createTrashSource, type TrashSource } from '@/lib/trash';
 import type { Keyring } from '@/lib/crypto';
 import { createRemoteRepository } from '@/lib/remote/remote-repository';
 import type { Repository } from '@/lib/storage/types';
@@ -15,6 +16,7 @@ export type LockReason = 'expired' | 'idle' | 'manual';
 let source: GardenSource | null = null;
 let settings: SettingsSource | null = null;
 let backup: BackupSource | null = null;
+let trash: TrashSource | null = null;
 const listeners = new Set<(reason: LockReason) => void>();
 
 /** Crea la fuente de datos con las claves recién obtenidas. `repository` solo lo usan las pruebas. */
@@ -28,6 +30,7 @@ export function installSource(keyring: Keyring, repository?: Repository): Garden
     });
   source = createGardenSource(repo, keyring);
   settings = createSettingsSource(repo, keyring); // mismas claves y mismo repositorio: un solo bloqueo para todo
+  trash = createTrashSource(repo, keyring);
   backup = createBackupSource(repo, keyring); // copia cifrada (H8.3): sin estado propio; se suelta con las claves
   return source;
 }
@@ -44,6 +47,10 @@ export function currentBackupSource(): BackupSource | null {
   return backup;
 }
 
+export function currentTrashSource(): TrashSource | null {
+  return trash;
+}
+
 /** Suelta las claves y las imágenes descifradas. Con `reason`, avisa a quien escuche (la pantalla vuelve al acceso). */
 export function lockSession(reason?: LockReason): void {
   const current = source;
@@ -51,6 +58,7 @@ export function lockSession(reason?: LockReason): void {
   settings?.lock();
   settings = null;
   backup = null;
+  trash = null;
   current?.lock();
   if (reason && current) for (const listener of [...listeners]) listener(reason);
 }

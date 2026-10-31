@@ -549,6 +549,58 @@ export const es = {
     'Si una restauración se quedó a medias, elige el mismo archivo: se sube lo que falte y lo que ya está no se toca.',
   'settings.data.continue.start': 'Continuar',
   'settings.data.continue.done': 'Listo. Añadidos: {restored} · Ya estaban: {skipped}',
+  'settings.trash.title': 'Papelera',
+  'settings.trash.intro':
+    'Lo que mandas a la papelera se puede recuperar durante 30 días; después se borra para siempre, con sus fotos. La papelera no se incluye en la copia cifrada.',
+  'settings.trash.loading': 'Cargando la papelera…',
+  'settings.trash.empty': 'La papelera está vacía.',
+  'settings.trash.untitled': 'Recuerdo sin título',
+  'settings.trash.purgeAt': 'Se borrará el {date}',
+  'settings.trash.restore': 'Restaurar',
+  'settings.trash.restore.label': 'Restaurar «{title}»',
+  'settings.trash.purge': 'Borrar para siempre',
+  'settings.trash.purge.label': 'Borrar para siempre «{title}»',
+  'settings.trash.confirm': '¿Borrar para siempre? No se puede deshacer.',
+  'settings.trash.purge.yes': 'Sí, borrar',
+  'settings.trash.emptyAll': 'Vaciar la papelera',
+  'settings.trash.emptyConfirm':
+    '¿Borrar para siempre todo lo que hay en la papelera? No se puede deshacer.',
+  'settings.trash.restored': 'Restaurado: ya está otra vez en tu jardín.',
+  'settings.trash.purged': 'Borrado para siempre.',
+  'settings.trash.emptied': 'La papelera se ha vaciado.',
+  'settings.trash.error.conflict':
+    'Ese recuerdo cambió en otro dispositivo. La lista se ha actualizado.',
+  'settings.trash.error.generic': 'No se pudo completar. Inténtalo de nuevo.',
+  'settings.trash.error.load': 'No se pudo cargar la papelera.',
+  'danger.title': 'Zona de peligro',
+  'danger.intro':
+    'Estas acciones no se pueden deshacer. Antes, exporta una copia cifrada en «Tus datos».',
+  'danger.word.label': 'Para confirmar, escribe {word}',
+  'danger.working': 'Borrando… No cierres esta página.',
+  'danger.memories.title': 'Borrar todos los recuerdos',
+  'danger.memories.body':
+    'Borra para siempre todos tus recuerdos y sus fotos, también los de la papelera. Tu nombre, tus ajustes, el avatar y tu contraseña se quedan.',
+  'danger.memories.start': 'Borrar todos los recuerdos…',
+  'danger.memories.submit': 'Borrar todos los recuerdos',
+  'danger.memories.word': 'BORRAR',
+  'danger.memories.done': 'Se han borrado todos los recuerdos.',
+  'danger.space.title': 'Eliminar el espacio',
+  'danger.space.body':
+    'Borra todo: recuerdos, fotos, ajustes, contraseña y clave de recuperación. Se cierra la sesión en todos los dispositivos y la aplicación no se podrá volver a usar hasta que se configure un código de configuración nuevo.',
+  'danger.space.start': 'Eliminar el espacio…',
+  'danger.space.submit': 'Eliminar el espacio para siempre',
+  'danger.space.word': 'ELIMINAR',
+  'danger.space.done': 'Tu espacio se ha eliminado.',
+  'danger.space.left1':
+    'Las copias técnicas del proveedor pueden conservar tus datos cifrados (ilegibles sin tus claves) hasta 7 días.',
+  'danger.space.left2': 'Si los registros técnicos estaban activados, se borran solos en 3 días.',
+  'danger.space.left3':
+    'Las copias .mgx que hayas guardado no se borran: elimínalas tú si ya no las quieres.',
+  'danger.space.exit': 'Salir',
+  'danger.error.password': 'Escribe tu contraseña actual.',
+  'danger.error.word': 'Escribe la palabra exactamente como se indica.',
+  'danger.error.retry':
+    'No se pudo completar. Puede que una parte ya se haya borrado: vuelve a intentarlo para terminar.',
 } as const;
 
 export type MessageKey = keyof typeof es;

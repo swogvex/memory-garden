@@ -21,7 +21,7 @@ const { DatabaseSync } = process.getBuiltinModule('node:sqlite') as unknown as {
   DatabaseSync: new (path: string) => SqliteDb;
 };
 
-const MIGRATIONS = ['0001_init.sql'];
+const MIGRATIONS = ['0001_init.sql', '0002_setup_lock.sql'];
 
 export function migrationSql(file: string): string {
   return readFileSync(new URL(`../../../migrations/${file}`, import.meta.url), 'utf8');

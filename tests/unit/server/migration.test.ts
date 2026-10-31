@@ -233,3 +233,24 @@ describe('migración 0001', () => {
     fails(() => ins('x'.repeat(65)), 'CHECK constraint failed');
   });
 });
+
+describe('migración 0002 (H8.3b)', () => {
+  it('añade `setup_lock` sobre 0001 y solo admite huellas de 43 caracteres', () => {
+    const { raw } = createD1(false);
+    raw.exec(migrationSql('0001_init.sql'));
+    raw.exec(migrationSql('0002_setup_lock.sql'));
+    raw.prepare('INSERT INTO setup_lock (code_hash, created_at) VALUES (?, 1)').run('a'.repeat(43));
+    fails(
+      () =>
+        raw.prepare('INSERT INTO setup_lock (code_hash, created_at) VALUES (?, 1)').run('corto'),
+      'CHECK constraint failed',
+    );
+    fails(
+      () =>
+        raw
+          .prepare('INSERT INTO setup_lock (code_hash, created_at) VALUES (?, 1)')
+          .run('a'.repeat(43)),
+      'UNIQUE constraint failed',
+    );
+  });
+});

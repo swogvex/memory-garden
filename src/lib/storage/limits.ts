@@ -11,3 +11,5 @@ export const MAX_PENDING_ASSETS = 12;
 export const MAX_PENDING_BYTES = 48 * 1024 * 1024;
 export const TOTAL_QUOTA_BYTES = 5 * 1024 ** 3;
 export const MAX_PAYLOAD_CHARS = 65536; // CHECK de memory.payload / vault.settings_payload
+/** Días que un recuerdo pasa en la papelera antes de borrarse solo (D-058; `TRASH_TTL` del servidor). */
+export const TRASH_DAYS = 30;
