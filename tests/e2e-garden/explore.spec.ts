@@ -11,7 +11,7 @@ test.describe('Explorar', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/explorar');
     await expect(page.getByRole('heading', { level: 1, name: 'Explorar' })).toBeVisible();
-    await expect(rows(page).first()).toBeVisible();
+    await expect(rows(page).first()).toBeVisible({ timeout: 45_000 }); // D-283: primera carga en frío
   });
 
   test('todos los recuerdos, del más reciente al más antiguo, de 60 en 60', async ({ page }) => {

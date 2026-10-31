@@ -14,7 +14,7 @@ const addButton = (page: Page) => page.getByRole('button', { name: tt('garden.ad
 async function open(page: Page) {
   await page.clock.setFixedTime(new Date('2026-10-20T10:00:00+02:00'));
   await page.goto('/jardin');
-  await expect(page.getByRole('grid')).toBeVisible();
+  await expect(page.getByRole('grid')).toBeVisible({ timeout: 45_000 }); // D-283: primera carga en frío
 }
 async function openForm(page: Page, iso: string) {
   await day(page, iso).click();
