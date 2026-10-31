@@ -4,6 +4,7 @@
   import { AvatarBadge, SettingsView, loadPrefs, prefs, resetPrefs } from '@/features/settings';
   import { t, type Locale } from '@/lib/i18n';
   import BouquetsView from './BouquetsView.svelte';
+  import ExploreView from './ExploreView.svelte';
   import {
     forgetMemories,
     openBackupSource,
@@ -12,7 +13,6 @@
     openTrashSource,
   } from './garden-data';
   import GardenView from './GardenView.svelte';
-  import PlaceholderView from './PlaceholderView.svelte';
   import { NAV_LABEL_KEY, PATHS, VIEWS, type View } from './router';
   import { viewState } from './view-state.svelte';
 
@@ -154,7 +154,7 @@
       {:else if view === 'bouquets'}
         <BouquetsView {locale} {onNavigate} />
       {:else if view === 'explore'}
-        <PlaceholderView {locale} messageKey="view.soon.explore" />
+        <ExploreView {locale} {onNavigate} />
       {:else}
         <SettingsView
           {locale}
