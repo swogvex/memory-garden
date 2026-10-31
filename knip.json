@@ -1,6 +1,6 @@
 {
   "entry": [
-    "scripts/{bench-kdf,build-common-passwords,build-wordlist,check-headers,inspect-jpeg}.mjs",
+    "scripts/{bench-kdf,build-common-passwords,build-wordlist,inspect-jpeg}.mjs",
     "tests/audit/**/*.spec.ts",
     "tests/audit-garden/**/*.spec.ts"
   ]

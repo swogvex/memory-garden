@@ -1,0 +1,12 @@
+# Solo las acciones del CI (fijadas por SHA, D-275): una PR al mes con todas juntas.
+# Las dependencias de npm se actualizan a mano (MAINTENANCE.md), por los scripts de instalación aprobados (D-065).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns:
+          - '*'
