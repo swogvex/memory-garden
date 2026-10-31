@@ -17,8 +17,6 @@ export const es = {
   'shell.avatar': 'Perfil y configuración',
   'shell.eyebrow': 'Tu jardín · {year}',
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',
-  'view.soon.explore': 'Aquí podrás buscar entre tus recuerdos.',
-  'view.soon.note': 'Esta sección llegará en un próximo hito.',
   'garden.loading': 'Abriendo tu jardín…',
   'garden.error.title': 'No se pudo abrir tu jardín',
   'garden.error.body': 'Inténtalo de nuevo en unos minutos.',
@@ -112,6 +110,22 @@ export const es = {
   'season.verano': 'Verano',
   'season.otono': 'Otoño',
   'season.invierno': 'Invierno',
+  'explore.search.label': 'Buscar en tus recuerdos',
+  'explore.search.hint': 'Busca en títulos, textos, categorías y descripciones de fotos.',
+  'explore.filter.category': 'Categoría',
+  'explore.filter.flower': 'Flor',
+  'explore.filter.season': 'Temporada',
+  'explore.filter.year': 'Año',
+  'explore.filter.any': 'Todas',
+  'explore.filter.anyYear': 'Todos',
+  'explore.clear': 'Quitar filtros',
+  'explore.count.none': 'Ningún recuerdo coincide.',
+  'explore.noResults':
+    'No hay recuerdos con esta búsqueda y estos filtros. Prueba con otras palabras o quita algún filtro.',
+  'explore.more': 'Mostrar {count} más',
+  'explore.empty':
+    'Aún no hay recuerdos. Cuando plantes el primero en el Jardín, podrás buscarlo aquí.',
+  'explore.empty.garden': 'Ir al Jardín',
   'photo.error.format':
     'Este formato no se puede abrir en este navegador. Expórtala como JPEG o PNG.',
   'photo.error.large':
