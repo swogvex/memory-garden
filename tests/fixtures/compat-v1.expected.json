@@ -1,0 +1,76 @@
+{
+  "vaultId": "VsECsfk1UHnw0H4gXXo18Q",
+  "recoveryKey": "8W1G-GYJX-DWWE-SK11-9AEZ-CS66-G1Q5",
+  "snapshot": {
+    "memories": [
+      {
+        "title": "Tarde en el río",
+        "date": "2025-12-31",
+        "category": "Momentos",
+        "text": "Texto con tildes, ñ y emoji 🌸",
+        "link": null,
+        "flower": "rosa",
+        "season": "invierno",
+        "photos": [
+          {
+            "assetId": "Pc34DPzjvFwiBbKaL3iP9g",
+            "thumbId": "-mODcXjVQZxovc2CIsLQGw",
+            "alt": "el río"
+          },
+          {
+            "assetId": "vRlryIxETtyXGoxtAMS55g",
+            "thumbId": "gbwGIGKXccTtjm3CaoVvAA",
+            "alt": "las piedras"
+          }
+        ],
+        "id": "CvIR0dVL-hgLOnBZTm07lg"
+      },
+      {
+        "title": "Sin fotos",
+        "date": "2025-12-31",
+        "category": "Momentos",
+        "text": "Texto de prueba de «Nochevieja».",
+        "link": null,
+        "flower": "rosa",
+        "season": "invierno",
+        "photos": [],
+        "id": "OC8MUXbwBnxLkto_5WDiDQ"
+      }
+    ],
+    "photos": {
+      "CvIR0dVL-hgLOnBZTm07lg/0": "8d382cdcf9e23b754759efe562f076cf3f5134e8f5246c260d8ddb3d5e54064c",
+      "CvIR0dVL-hgLOnBZTm07lg/0/t": "91518b630e6a47a88caed437d483c4c1e3a6f950f8632c97f7517010530efd4e",
+      "CvIR0dVL-hgLOnBZTm07lg/1": "86eb524982bb05fe864dd3b50d22bd3d58dbed5b1b895b5602d82eb3ca7c52cf",
+      "CvIR0dVL-hgLOnBZTm07lg/1/t": "7165ade2b83c6b0b63bf27bb793c0ed56b30769dc126f456dc7d0145a0282e7b"
+    },
+    "settings": {
+      "displayName": "Referencia",
+      "welcomeMessage": "Hola",
+      "language": "es",
+      "dateFormat": "dmy",
+      "timeZone": null,
+      "avatar": {
+        "kind": "asset",
+        "assetId": "jaxFxk_nznHl_WJK9ndpgA"
+      },
+      "categories": [
+        {
+          "name": "Viajes",
+          "flower": "girasol"
+        },
+        {
+          "name": "Momentos",
+          "flower": "camelia"
+        },
+        {
+          "name": "Naturaleza",
+          "flower": "lavanda"
+        },
+        {
+          "name": "Citas",
+          "flower": "rosa"
+        }
+      ]
+    }
+  }
+}

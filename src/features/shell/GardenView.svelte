@@ -463,7 +463,7 @@
               class="chip"
               class:current={m === viewState.month.month}
               aria-current={m === viewState.month.month ? 'true' : undefined}
-              aria-label="{formatMonthYear(
+              aria-label="{label}, {formatMonthYear(
                 { year: viewState.month.year, month: m },
                 locale,
               )}, {nText(n)}"
@@ -530,8 +530,10 @@
                                     src={covers.urls[first.id] || null}
                                   /></span
                                 >
-                                {#if list.length > 1}<span class="plus">+{list.length - 1}</span
-                                  >{/if}
+                                {#if list.length > 1}<span
+                                    class="plus"
+                                    data-more="+{list.length - 1}"
+                                  ></span>{/if}
                               </span>
                             {/if}
                           </button>
@@ -893,6 +895,9 @@
     width: 100%;
     max-width: 1.9rem;
     margin-inline: auto;
+  }
+  .plus::after {
+    content: attr(data-more);
   }
   .plus {
     position: absolute;
