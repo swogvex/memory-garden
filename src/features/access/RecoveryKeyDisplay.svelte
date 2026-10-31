@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t, type Locale } from '@/lib/i18n';
-  import { recoveryKeyFileText } from './setup-model';
+  import { recoveryKeyFileName, recoveryKeyFileText } from './setup-model';
 
   let { locale, recoveryKey }: { locale: Locale; recoveryKey: string } = $props();
 
@@ -16,11 +16,13 @@
   }
 
   function download() {
-    const blob = new Blob([recoveryKeyFileText(recoveryKey)], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([recoveryKeyFileText(recoveryKey, locale)], {
+      type: 'text/plain;charset=utf-8',
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'memory-garden-clave-de-recuperacion.txt';
+    link.download = recoveryKeyFileName(locale);
     document.body.append(link);
     link.click();
     link.remove();

@@ -1,4 +1,5 @@
 import { monthOf, ymKey, type YearMonth } from '@/lib/dates';
+import { StorageError } from '@/lib/storage/errors';
 import type { MemoryPayload } from '@/lib/validation';
 
 /** Recuerdo ya descifrado y validado, listo para dibujar. */
@@ -23,7 +24,12 @@ export interface CreateMemoryResult {
   readonly memory: GardenMemory;
   /** Posiciones (0 = primera) de las fotos que no se pudieron subir; el recuerdo se guardó sin ellas. */
   readonly failedPhotos: readonly number[];
+  /** Otro dispositivo había cambiado este recuerdo: se ha guardado esta versión encima (D-188). */
+  readonly replacedRemote?: boolean;
 }
+
+/** Por qué no se pudo guardar un recuerdo (la pantalla elige el mensaje). */
+export type SaveFailure = 'offline' | 'remote_changed' | 'quota' | 'generic';
 
 /** Un hueco de foto en edición: una ya guardada o una recién procesada. El orden fija la portada. */
 export type PhotoSlot =
@@ -101,4 +107,19 @@ export function sortRecent(memories: readonly GardenMemory[]): GardenMemory[] {
 /** Número de días distintos con algún recuerdo. */
 export function daysWithMemories(memories: readonly GardenMemory[]): number {
   return new Set(memories.map((m) => m.date)).size;
+}
+
+/**
+ * Clasifica el fallo de un guardado para el mensaje (H8.4). Recorre la cadena de `cause`: la fuente envuelve el fallo real en
+ * `garden:save_failed`. Sin conexión gana a todo lo demás: es lo que la persona puede arreglar.
+ */
+export function saveFailureOf(error: unknown): SaveFailure {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return 'offline';
+  let e: unknown = error;
+  for (let depth = 0; depth < 5 && e instanceof Error; depth++) {
+    if (e.message === 'garden:remote_changed') return 'remote_changed';
+    if (e instanceof StorageError && (e.code === 'quota' || e.code === 'too_large')) return 'quota';
+    e = e.cause;
+  }
+  return 'generic';
 }

@@ -293,7 +293,9 @@
       notice = {
         key:
           failed === 0
-            ? 'memory.updated'
+            ? result.replacedRemote
+              ? 'memory.replaced'
+              : 'memory.updated'
             : failed === 1
               ? 'memory.saved.partial.one'
               : 'memory.saved.partial.many',

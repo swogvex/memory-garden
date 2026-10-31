@@ -10,6 +10,7 @@ import {
   normalizeRecoveryInput,
   type CommonPasswordData,
 } from '@/lib/crypto';
+import { t, type Locale } from '@/lib/i18n';
 
 export const RECOVERY_KEY_CHARS = 28;
 const CROCKFORD = /^[0-9A-HJKMNP-TV-Z]*$/;
@@ -126,15 +127,18 @@ export function recoveryInputState(input: string, expected?: string): RecoveryIn
 }
 
 /** Contenido del archivo de texto que se puede descargar. Nada más que la clave y cómo cuidarla. */
-export function recoveryKeyFileText(key: string): string {
+export function recoveryKeyFileText(key: string, locale: Locale = 'es'): string {
   return [
-    'Memory Garden - clave de recuperación',
+    t(locale, 'key.file.title'),
     '',
     key,
     '',
-    'Es la única forma de volver a entrar si olvidas tu contraseña.',
-    'Guárdala en papel y en un segundo sitio seguro, separada de tu contraseña.',
-    'Quien la tenga puede abrir tus recuerdos. Si pierdes la contraseña y esta clave, nadie puede recuperarlos.',
+    t(locale, 'key.file.line1'),
+    t(locale, 'key.file.line2'),
+    t(locale, 'key.file.line3'),
     '',
   ].join('\n');
 }
+
+/** Nombre del archivo de la clave de recuperación, en el idioma de la interfaz. */
+export const recoveryKeyFileName = (locale: Locale = 'es'): string => t(locale, 'key.file.name');

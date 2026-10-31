@@ -5,8 +5,10 @@
     CreateMemoryResult,
     GardenMemory,
     PhotoSlot,
+    SaveFailure,
     SaveMemoryInput,
   } from '@/features/calendar';
+  import { saveFailureOf } from '@/features/calendar';
   import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import {
     createBrowserCodec,
@@ -112,7 +114,13 @@
   let processing = $state(false);
   let progress = $state<{ current: number; total: number } | null>(null);
   let saving = $state(false);
-  let saveError = $state(false);
+  let saveError = $state<SaveFailure | null>(null);
+  const SAVE_ERROR_KEY: Record<SaveFailure, MessageKey> = {
+    offline: 'memory.error.offline',
+    remote_changed: 'memory.error.remote',
+    quota: 'memory.error.quota',
+    generic: 'memory.error.save',
+  };
   let confirming = $state(false);
 
   let dialogEl = $state<HTMLDialogElement>();
@@ -338,13 +346,13 @@
     );
     if (!result.ok) {
       errors = result.errors;
-      saveError = false;
+      saveError = null;
       void focusFirstError();
       return;
     }
     errors = {};
     saving = true; // síncrono: un segundo envío en el mismo instante ya no entra
-    saveError = false;
+    saveError = null;
     try {
       const slots: PhotoSlot[] = photos.map((p) =>
         p.kind === 'kept'
@@ -353,9 +361,9 @@
       );
       const outcome = await onSave({ fields: result.fields, photos: slots });
       close(outcome);
-    } catch {
+    } catch (error) {
       saving = false;
-      saveError = true;
+      saveError = saveFailureOf(error);
       await tick();
       saveErrEl?.focus();
     }
@@ -657,7 +665,7 @@
       {:else}
         {#if saveError}
           <p class="error grow" role="alert" tabindex="-1" bind:this={saveErrEl}>
-            {t(locale, 'memory.error.save')}
+            {t(locale, SAVE_ERROR_KEY[saveError])}
           </p>
         {/if}
         <button

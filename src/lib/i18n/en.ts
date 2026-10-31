@@ -594,4 +594,20 @@ export const en: Partial<Record<MessageKey, string>> = {
   'danger.error.word': 'Type the word exactly as shown.',
   'danger.error.retry':
     'It could not be completed. Part of it may already be deleted: try again to finish.',
+  'shell.offline':
+    'You are offline. What you can see stays here; saving changes needs a connection again.',
+  'memory.replaced':
+    'Memory saved. It had been changed on another device and your version has been saved.',
+  'memory.error.offline':
+    'You are offline: it could not be saved. Nothing you wrote was lost; try again when you are back online.',
+  'memory.error.remote':
+    'This memory was moved to the trash or deleted from another device, so it was not saved. If it is in the trash, you can restore it in Settings → Trash.',
+  'memory.error.quota':
+    "There is no space left or today's upload limit has been reached. Nothing you wrote was lost: try with fewer photos or try again later.",
+  'key.file.title': 'Memory Garden - recovery key',
+  'key.file.line1': 'It is the only way back in if you forget your password.',
+  'key.file.line2': 'Keep it on paper and in a second safe place, separate from your password.',
+  'key.file.line3':
+    'Whoever has it can open your memories. If you lose both your password and this key, nobody can recover them.',
+  'key.file.name': 'memory-garden-recovery-key.txt',
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GardenSource, MemoryFields } from '@/features/calendar';
+import { saveFailureOf, type GardenSource, type MemoryFields } from '@/features/calendar';
 import { beginSetup, readStatus, unlock } from '@/features/access/access-flow';
 import { createGardenSource } from '@/features/access/garden-source';
 import { currentSource, installSource, lockSession, onLock } from '@/features/access/session';
@@ -102,9 +102,18 @@ describe('fuente de datos remota', () => {
       const b = await openDevice(h);
       expect((await b.source.list()).map((m) => m.title)).toEqual(['Original']);
 
-      await a.source.update(created.memory.id, { fields: fields('Desde A'), photos: [] });
+      const fromA = await a.source.update(created.memory.id, {
+        fields: fields('Desde A'),
+        photos: [],
+      });
+      expect(fromA.replacedRemote).toBe(false);
       h.clock.now += 5;
-      await b.source.update(created.memory.id, { fields: fields('Desde B'), photos: [] }); // B tenía la revisión vieja
+      // B tenía la revisión vieja: se guarda encima y lo dice (H8.4, aviso `replaced_remote` de D-188).
+      const fromB = await b.source.update(created.memory.id, {
+        fields: fields('Desde B'),
+        photos: [],
+      });
+      expect(fromB.replacedRemote).toBe(true);
       expect((await a.source.list()).map((m) => m.title)).toEqual(['Desde B']);
     },
     TIMEOUT,
@@ -126,6 +135,7 @@ describe('fuente de datos remota', () => {
         error = e;
       }
       expect((error as Error).message).toBe('garden:save_failed');
+      expect(saveFailureOf(error)).toBe('remote_changed'); // la pantalla explica qué ha pasado (H8.4)
       expect(await a.source.list()).toEqual([]);
     },
     TIMEOUT,

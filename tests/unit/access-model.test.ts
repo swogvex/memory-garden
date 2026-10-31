@@ -5,6 +5,7 @@ import {
   passwordIssues,
   passwordLevel,
   recoveryInputState,
+  recoveryKeyFileName,
   recoveryKeyFileText,
 } from '@/features/access/setup-model';
 import { startIdleLock } from '@/features/access/idle-lock';
@@ -61,6 +62,16 @@ describe('clave de recuperación tecleada', () => {
     expect(text).toContain(k);
     expect(text).toContain('nadie puede recuperarlos');
     expect(text).not.toMatch(/contraseña:/i);
+  });
+
+  it('H8.4: en inglés, el archivo y su nombre van en inglés', () => {
+    const k = key();
+    const text = recoveryKeyFileText(k, 'en');
+    expect(text).toContain(k);
+    expect(text).toContain('recovery key');
+    expect(text).not.toMatch(/contraseña|recuperación/);
+    expect(recoveryKeyFileName('en')).toBe('memory-garden-recovery-key.txt');
+    expect(recoveryKeyFileName()).toBe('memory-garden-clave-de-recuperacion.txt');
   });
 });
 

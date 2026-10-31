@@ -115,14 +115,18 @@ export function createGardenSource(repo: Repository, keyring: Keyring): GardenSo
         mkVersion: keyring.mkVersion,
         assetIds: [...keep, ...staged],
       };
-      const { record } =
+      const { record, notice } =
         expected === null
-          ? { record: await repo.memories.put(input, null) }
+          ? { record: await repo.memories.put(input, null), notice: null }
           : await saveWithResolution(repo, input, expected);
       // Papelera o borrado desde otro dispositivo: no se resucita (D-188). La pantalla muestra su error de guardado.
       if (!record) throw new Error('garden:remote_changed');
       revisions.set(id, record.revision);
-      return { memory: { ...payload, id, updatedAt: record.updatedAt }, failedPhotos: failed };
+      return {
+        memory: { ...payload, id, updatedAt: record.updatedAt },
+        failedPhotos: failed,
+        replacedRemote: notice?.kind === 'replaced_remote',
+      };
     } catch (error) {
       for (const assetId of staged) await repo.assets.delete(assetId).catch(() => undefined);
       throw new Error('garden:save_failed', { cause: error });

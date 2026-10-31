@@ -21,6 +21,7 @@
     openTrashSource,
   } from './garden-data';
   import GardenView from './GardenView.svelte';
+  import OfflineNotice from './OfflineNotice.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
   import { NAV_LABEL_KEY, PATHS, VIEWS, viewFromPath, type View } from './router';
   import { viewState } from './view-state.svelte';
@@ -142,6 +143,7 @@
 {/snippet}
 
 <FlowerSprite />
+<OfflineNotice {locale} />
 <!-- Sin sesión solo se ve la pantalla de acceso (sin menú ni cabecera); con sesión, la aplicación. -->
 <AccessGate {locale} bypass={bypassAccess}>
   {#snippet footer()}
