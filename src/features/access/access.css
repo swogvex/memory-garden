@@ -237,12 +237,12 @@
   height: 1.5rem;
   accent-color: var(--color-primary);
 }
+/* Sin caja con desplazamiento propio: una zona que se desplaza tiene que poder recibir el foco con el teclado
+   (axe `scrollable-region-focusable`, WCAG 2.1.1). El aviso ocupa lo que necesita y se desplaza la página. */
 .ac-privacy {
   display: grid;
   gap: var(--space-3);
-  max-height: 22rem;
   padding: var(--space-3) var(--space-4);
-  overflow-y: auto;
   border: 1px solid var(--color-border-decor);
   border-radius: var(--radius-md);
   background: var(--color-bg);
