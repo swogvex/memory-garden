@@ -25,3 +25,6 @@ Thumbs.db
 # Copias y exportaciones (PS-35)
 *.mgx
 backup-*.sql
+
+# Espacio de referencia de pruebas (D-277): sí se versiona
+!tests/fixtures/compat-v1.mgx
