@@ -5,6 +5,10 @@ import type { MessageKey } from './es';
 export const en: Partial<Record<MessageKey, string>> = {
   'app.name': 'Memory Garden',
   'app.tagline': 'Small moments, big flowers.',
+  'app.description': 'A private space.',
+  'notfound.title': 'Page not found',
+  'notfound.body': 'This address does not exist.',
+  'notfound.back': 'Back to the start',
   'a11y.skipToContent': 'Skip to content',
   'nav.label': 'Main navigation',
   'nav.garden': 'Garden',

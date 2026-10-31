@@ -293,7 +293,10 @@ export async function applyTextSpacing(page: Page): Promise<void> {
   });
 }
 
-/** Texto recortado: elementos con `overflow` oculto cuyo contenido no cabe (tras `applyTextSpacing`). */
+/**
+ * Texto recortado tras `applyTextSpacing`: elementos con `overflow` oculto donde algún TEXTO visible queda fuera de
+ * su caja. Lo que sobresale y está en `aria-hidden` (adornos de las esquinas) no cuenta: está ahí a propósito.
+ */
 export async function clippedText(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     const out: string[] = [];
@@ -301,12 +304,28 @@ export async function clippedText(page: Page): Promise<string[]> {
       if (el.closest('[aria-hidden="true"], svg')) continue;
       const cs = getComputedStyle(el);
       if (!/(hidden|clip)/.test(cs.overflowX + cs.overflowY)) continue;
-      if (!el.textContent?.trim()) continue;
-      const h = el as HTMLElement;
-      if (h.scrollWidth > h.clientWidth + 1 || h.scrollHeight > h.clientHeight + 1)
-        out.push(
-          `${el.tagName.toLowerCase()}.${(el.getAttribute('class') ?? '').split(' ')[0]} «${h.textContent!.trim().slice(0, 40)}»`,
-        );
+      const box = el.getBoundingClientRect();
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const text = n.textContent?.trim();
+        const parent = n.parentElement;
+        if (!text || !parent || parent.closest('[aria-hidden="true"]')) continue;
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        const r = range.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue;
+        if (
+          r.right > box.right + 1 ||
+          r.bottom > box.bottom + 1 ||
+          r.left < box.left - 1 ||
+          r.top < box.top - 1
+        ) {
+          out.push(
+            `${el.tagName.toLowerCase()}.${(el.getAttribute('class') ?? '').split(' ')[0]} «${text.slice(0, 40)}»`,
+          );
+          break;
+        }
+      }
     }
     return out.slice(0, 20);
   });

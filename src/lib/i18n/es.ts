@@ -2,6 +2,10 @@
 export const es = {
   'app.name': 'Memory Garden',
   'app.tagline': 'Pequeños momentos, grandes flores.',
+  'app.description': 'Un espacio privado.',
+  'notfound.title': 'Página no encontrada',
+  'notfound.body': 'Esta dirección no existe.',
+  'notfound.back': 'Volver al inicio',
   'a11y.skipToContent': 'Saltar al contenido',
   'nav.label': 'Navegación principal',
   'nav.garden': 'Jardín',
