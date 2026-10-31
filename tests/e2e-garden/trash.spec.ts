@@ -4,7 +4,7 @@ import { expectNoA11yViolations } from '../a11y/axe';
 import { expect, test } from './fixtures';
 
 /**
- * H8.3b · Papelera en Configuración (`astro dev`, espacio de pruebas en memoria). Se manda un recuerdo a la papelera
+ * Papelera en Configuración (`astro dev`, espacio de pruebas en memoria). Se manda un recuerdo a la papelera
  * desde el Jardín y, sin recargar (los datos de prueba viven en memoria), se restaura o se borra para siempre.
  * La zona de peligro solo aparece con el acceso real: sus flujos los cubren `tests/unit/danger-flow.test.ts` y
  * `tests/unit/server/danger.test.ts`.

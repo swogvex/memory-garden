@@ -79,7 +79,7 @@
     startIdle();
   }
 
-  // H9.5 (D-266): el marco floral está en el HTML prerenderizado (`AccessDecor.astro`), fuera de la isla, para que
+  // D-266: el marco floral está en el HTML prerenderizado (`AccessDecor.astro`), fuera de la isla, para que
   // se pinte sin esperar al JS (era el elemento LCP). Se oculta mientras se ve la aplicación con sesión.
   $effect(() => {
     const root = document.documentElement;
@@ -109,7 +109,7 @@
   <main id="contenido" class="ac-page" tabindex="-1">
     <!-- Sin nombre: no es un punto de referencia aparte (el principal es `main`; la tarjeta, si se desplaza, es la región). -->
     <section class="ac">
-      <!-- El marco floral (H7.5) no está aquí: va en el HTML de la página, fuera de la isla (H9.5, D-266). -->
+      <!-- El marco floral no está aquí: va en el HTML de la página, fuera de la isla (D-266). -->
       <!-- La tarjeta se desplaza por dentro (las flores de las esquinas siguen a la vista); si lo hace, se puede enfocar. -->
       <div class="ac-card" use:scrollRegion={'ac-brand'}>
         <span class="ac-mark" aria-hidden="true"></span>

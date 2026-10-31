@@ -1,7 +1,7 @@
 import { expect, test } from './fixtures';
 
 /**
- * H9.5 (D-266) · El marco floral del acceso está en el HTML de todas las vistas (fuera de la isla).
+ * D-266: El marco floral del acceso está en el HTML de todas las vistas (fuera de la isla).
  * Con la aplicación a la vista (aquí, datos de prueba sin acceso) tiene que ocultarse.
  */
 test.use({ timezoneId: 'Europe/Madrid', locale: 'es-ES' });

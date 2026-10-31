@@ -1,7 +1,7 @@
 import type { Action } from 'svelte/action';
 
 /**
- * H9.2 · Acción de Svelte para zonas con desplazamiento propio (tarjeta de acceso, cuerpo de un recuerdo).
+ * Acción de Svelte para zonas con desplazamiento propio (tarjeta de acceso, cuerpo de un recuerdo).
  *
  * Una zona que se desplaza tiene que poder alcanzarse con el teclado para moverla con las flechas
  * (WCAG 2.1.1; axe `scrollable-region-focusable`). Mientras su contenido no cabe, la acción le pone

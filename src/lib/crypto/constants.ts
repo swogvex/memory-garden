@@ -44,7 +44,7 @@ export const MIN_PASSWORD_LENGTH = 14;
 export interface KdfPolicy {
   /** Suelo: por debajo, el cliente aborta antes de enviar nada (PS-11). */
   readonly minIter: number;
-  /** Techo: evita que un servidor hostil congele el cliente (añadido en H3). */
+  /** Techo: evita que un servidor hostil congele el cliente (D-115). */
   readonly maxIter: number;
   /** Valor con el que se crean/actualizan los espacios. */
   readonly targetIter: number;

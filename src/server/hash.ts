@@ -12,7 +12,7 @@ export async function hmacSha256(
   return new Uint8Array(await crypto.subtle.sign('HMAC', k, data));
 }
 
-export async function sha256(data: Uint8Array<ArrayBuffer>): Promise<Bytes> {
+async function sha256(data: Uint8Array<ArrayBuffer>): Promise<Bytes> {
   return new Uint8Array(await crypto.subtle.digest('SHA-256', data));
 }
 

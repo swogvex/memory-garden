@@ -12,7 +12,7 @@
   import type { Status } from './messages';
   import { loadPrefs } from './prefs.svelte';
 
-  // «Tus datos» (H8.3): copia cifrada `.mgx` y continuar una restauración que se quedó a medias (D-100).
+  // «Tus datos»: copia cifrada `.mgx` y continuar una restauración que se quedó a medias (D-100).
   let { locale, openBackup }: { locale: Locale; openBackup: () => Promise<BackupSource> } =
     $props();
   const uid = $props.id();

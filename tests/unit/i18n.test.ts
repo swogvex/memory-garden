@@ -15,7 +15,7 @@ describe('i18n', () => {
   });
 
   it('cae al español si falta la traducción', () => {
-    // `en` está completo desde H7.5: se borra una clave un momento para probar la caída al español.
+    // `en` está completo: se borra una clave un momento para probar la caída al español.
     const saved = en['app.tagline'];
     delete en['app.tagline'];
     try {

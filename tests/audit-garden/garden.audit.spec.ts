@@ -14,7 +14,7 @@ import {
 import { expect, test } from '../e2e-garden/fixtures';
 
 /**
- * H9.1 · Auditoría de la app con sesión contra `astro dev` y la semilla (proyecto `audit-garden`).
+ * Auditoría de la app con sesión contra `astro dev` y la semilla (proyecto `audit-garden`).
  * Solo con `npm run test:audit`. Recorre pantallas y modales a varios anchos y tres flujos solo con teclado.
  * Chromium únicamente: el WebKit de Playwright no lleva el foco a los enlaces con Tab (D-121).
  */

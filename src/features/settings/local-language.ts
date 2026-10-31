@@ -6,7 +6,7 @@ import { isLocale, type Locale } from '@/lib/i18n';
  * leer los ajustes cifrados, así que sin esto la pantalla de acceso no sabría en qué idioma mostrarse.
  * Puede fallar (modo privado, almacenamiento bloqueado o borrado por Safari a los 7 días): entonces se usa el español.
  */
-export const LOCAL_LANGUAGE_KEY = 'mg.lang';
+const LOCAL_LANGUAGE_KEY = 'mg.lang';
 
 export function readLocalLanguage(): Locale | null {
   try {

@@ -57,7 +57,7 @@ function toBackupError(error: unknown): BackupError {
 }
 
 /** `memory-garden-AAAA-MM-DD.mgx` con la fecha del dispositivo. */
-export function exportFileName(now: Date): string {
+function exportFileName(now: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `memory-garden-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.mgx`;
 }

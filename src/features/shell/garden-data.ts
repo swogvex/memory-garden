@@ -20,7 +20,7 @@ interface Space {
 let pending: Promise<Space> | null = null;
 
 /**
- * H9.3 (D-262) · Últimos recuerdos descifrados de la sesión, para no volver a mostrar «Abriendo tu jardín…» en cada
+ * D-262: Últimos recuerdos descifrados de la sesión, para no volver a mostrar «Abriendo tu jardín…» en cada
  * cambio de sección: las vistas los enseñan al instante y los refrescan en segundo plano. Solo en memoria, ligados a
  * la fuente que los descifró (otra sesión = otra fuente = no valen) y se olvidan al bloquear o salir (D-054).
  */
@@ -56,7 +56,7 @@ function devSpace(): Promise<Space> {
 }
 
 /**
- * La fuente real aparece cuando el acceso desbloquea (H7.3): es la de `features/access`, con las claves en memoria.
+ * La fuente real aparece cuando el acceso desbloquea: es la de `features/access`, con las claves en memoria.
  * Se consulta en cada llamada para no devolver nunca una fuente ya bloqueada tras volver a entrar.
  */
 export function openGardenSource(): Promise<GardenSource> {
@@ -65,21 +65,21 @@ export function openGardenSource(): Promise<GardenSource> {
   return devSpace().then((space) => space.garden);
 }
 
-/** Fuente de Configuración (H8.1): la misma sesión y las mismas claves que el Jardín. */
+/** Fuente de Configuración: la misma sesión y las mismas claves que el Jardín. */
 export function openSettingsSource(): Promise<SettingsSource> {
   const unlocked = currentSettingsSource();
   if (unlocked) return Promise.resolve(unlocked);
   return devSpace().then((space) => space.settings);
 }
 
-/** Copia cifrada (H8.3): exportar y continuar una restauración, con las mismas claves. */
+/** Copia cifrada: exportar y continuar una restauración, con las mismas claves. */
 export function openBackupSource(): Promise<BackupSource> {
   const unlocked = currentBackupSource();
   if (unlocked) return Promise.resolve(unlocked);
   return devSpace().then((space) => space.backup);
 }
 
-/** Papelera (H8.3b): restaurar o borrar para siempre, con las mismas claves. */
+/** Papelera: restaurar o borrar para siempre, con las mismas claves. */
 export function openTrashSource(): Promise<TrashSource> {
   const unlocked = currentTrashSource();
   if (unlocked) return Promise.resolve(unlocked);

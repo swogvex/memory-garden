@@ -1,5 +1,5 @@
 /**
- * Fuente de datos de Configuración sobre cualquier `Repository` y un `Keyring` (H8.1). Cifra, valida y descifra aquí:
+ * Fuente de datos de Configuración sobre cualquier `Repository` y un `Keyring`. Cifra, valida y descifra aquí:
  * el repositorio (y el servidor) solo ven el sobre cifrado de los ajustes y el avatar cifrado.
  *
  * AAD de los ajustes: `mg1|settings|<vault_id>|<revisión nueva>` (crypto-spec §5.3). Un sobre copiado de otra revisión

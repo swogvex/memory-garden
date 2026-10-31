@@ -57,7 +57,7 @@ export function formatShortDate(date: CalendarDate, locale: string): string {
   }).format(utcDate(date.year, date.month, date.day));
 }
 
-/** Orden de las fechas cortas elegido en Configuración (H8.1). Mismos valores que `DATE_FORMATS` de lib/validation. */
+/** Orden de las fechas cortas elegido en Configuración. Mismos valores que `DATE_FORMATS` de lib/validation. */
 export type DateOrder = 'dmy' | 'mdy' | 'ymd';
 
 /**

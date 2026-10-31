@@ -1,5 +1,5 @@
 /**
- * Modelo de los ajustes (H8.1). Funciones puras: sin red, sin DOM, sin claves. Las pantallas y la fuente de datos las usan.
+ * Modelo de los ajustes. Funciones puras: sin red, sin DOM, sin claves. Las pantallas y la fuente de datos las usan.
  * El documento cifrado tiene la forma de `SettingsSchema` (lib/validation); aquí solo hay valores por defecto y reglas.
  */
 import type { Locale, MessageKey } from '@/lib/i18n';
@@ -8,7 +8,6 @@ import { FLOWERS, LIMITS, MAX_CATEGORIES, isCleanText, type Settings } from '@/l
 export type Flower = (typeof FLOWERS)[number];
 export type Category = Settings['categories'][number];
 export type DateFormat = Settings['dateFormat'];
-export type Avatar = Settings['avatar'];
 
 /** Lo guardado en el servidor: `settings = null` si el espacio aún no ha guardado ajustes (revisión 0). */
 export interface StoredSettings {
@@ -63,7 +62,7 @@ const DEFAULT_CATEGORY_FLOWERS: readonly [Flower, Flower, Flower, Flower] = [
   'rosa',
 ];
 
-export function defaultCategories(language: Locale): Category[] {
+function defaultCategories(language: Locale): Category[] {
   return DEFAULT_CATEGORY_NAMES[language].map((name, i) => ({
     name,
     flower: DEFAULT_CATEGORY_FLOWERS[i] ?? 'margarita',
@@ -93,7 +92,7 @@ export function withCategories(settings: Settings): Settings {
 // Categorías
 
 /** Comparación sin mayúsculas ni espacios de más: «Viajes» y « viajes » son la misma categoría. */
-export const sameName = (a: string, b: string): boolean =>
+const sameName = (a: string, b: string): boolean =>
   a.trim().toLocaleLowerCase() === b.trim().toLocaleLowerCase();
 
 /** Mismas reglas que el esquema (línea limpia, 1–40 caracteres) más no repetir nombre. `null` = válido. */

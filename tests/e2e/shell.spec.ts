@@ -3,7 +3,7 @@ import { es } from '../../src/lib/i18n/es';
 import { expectNoA11yViolations } from '../a11y/axe';
 
 /**
- * Compilación de producción sin sesión (H7.5): solo se ve la pantalla de acceso, a página completa,
+ * Compilación de producción sin sesión: solo se ve la pantalla de acceso, a página completa,
  * sin menú ni cabecera. La navegación de la aplicación con sesión se prueba en
  * `tests/e2e-garden/shell.spec.ts` (servidor de desarrollo con datos de prueba).
  */

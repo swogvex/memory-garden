@@ -28,9 +28,9 @@ const LEAVES: Record<LeafKind, { d: string; half: string; rib: string; veins: st
   },
 };
 
-export const LEAF_LENGTH: Record<LeafKind, number> = { lance: 40, broad: 42, strap: 62 };
+const LEAF_LENGTH: Record<LeafKind, number> = { lance: 40, broad: 42, strap: 62 };
 
-/** Verdes salvia suavizados hacia el papel (pastel, H7.5). */
+/** Verdes salvia suavizados hacia el papel (pastel). */
 const PAPER = '#fbf8f2';
 const softGreen = (c: string, t: number) => mix(c, PAPER, t);
 const GREENS: readonly (readonly [string, string, string])[] = [
@@ -46,7 +46,7 @@ const GREENS: readonly (readonly [string, string, string])[] = [
     ] as const,
 );
 
-export const STEM_COLOR = '#74896b';
+const STEM_COLOR = '#74896b';
 
 function leafGradient(defs: Defs, tone: number): string {
   const g = GREENS[tone % 3] as readonly [string, string, string];

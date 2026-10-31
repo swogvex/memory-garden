@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import * as publicCrypto from '../../src/lib/crypto';
 
 /**
- * Reglas estáticas (PS-16, PS-28 y las reglas de H3 sobre claves y almacenamiento).
+ * Reglas estáticas (PS-16, PS-28 y las reglas del núcleo criptográfico sobre claves y almacenamiento).
  * Son pruebas de «escaneo del código fuente» y complementan, no sustituyen, a una regla de ESLint.
  * Se ejecutan desde la raíz del proyecto (cwd de Vitest).
  */
@@ -39,7 +39,7 @@ function offenders(list: string[], re: RegExp): string[] {
 }
 
 describe('el escaneo funciona (si no encuentra archivos, las demás pruebas no valdrían nada)', () => {
-  it('encuentra los módulos de H3', () => {
+  it('encuentra los módulos del núcleo criptográfico', () => {
     expect(inLib(['crypto']).length).toBeGreaterThanOrEqual(10);
     expect(inLib(['storage']).length).toBeGreaterThanOrEqual(4);
     expect(inLib(['validation']).length).toBeGreaterThanOrEqual(3);
@@ -66,10 +66,10 @@ describe('PS-16: aleatoriedad y fuentes prohibidas en lib/crypto', () => {
   });
 });
 
-describe('reglas de H3: claves, almacenamiento y registros', () => {
+describe('reglas del núcleo criptográfico: claves, almacenamiento y registros', () => {
   const guarded = inLib(['crypto', 'storage', 'validation']);
 
-  it('ningún módulo de H3 usa localStorage, sessionStorage, IndexedDB, Cache API, cookies ', () => {
+  it('ningún módulo del núcleo criptográfico usa localStorage, sessionStorage, IndexedDB, Cache API, cookies ', () => {
     expect(
       offenders(
         guarded,
@@ -77,10 +77,10 @@ describe('reglas de H3: claves, almacenamiento y registros', () => {
       ),
     ).toEqual([]);
   });
-  it('ningún módulo de H3 escribe en consola', () => {
+  it('ningún módulo del núcleo criptográfico escribe en consola', () => {
     expect(offenders(guarded, /\bconsole\s*\./)).toEqual([]);
   });
-  it('ningún módulo de H3 usa eval, new Function ni importa dinámicamente', () => {
+  it('ningún módulo del núcleo criptográfico usa eval, new Function ni importa dinámicamente', () => {
     expect(offenders(guarded, /\beval\s*\(|new\s+Function\s*\(|\bimport\s*\(/)).toEqual([]);
   });
   it('las claves nunca se exportan: sin exportKey/wrapKey/generateKey y todas las importaciones y derivaciones son no extraíbles', () => {

@@ -42,10 +42,11 @@ interface Report {
 }
 
 async function loadModule(page: Page): Promise<void> {
-  await page.goto('/dev/componentes', { waitUntil: 'domcontentloaded' });
+  await page.goto('/404', { waitUntil: 'domcontentloaded' });
   await page.addScriptTag({
     type: 'module',
-    content: "import * as m from '/src/lib/photos/index.ts'; window.__photos = m;",
+    content:
+      "import * as a from '/src/lib/photos/index.ts'; import * as b from '/src/lib/photos/process.ts'; import * as c from '/src/lib/photos/jpeg.ts'; window.__photos = { ...a, ...b, ...c };",
   });
   await page.waitForFunction(() => '__photos' in window, undefined, { timeout: 90_000 });
 }

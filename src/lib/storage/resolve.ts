@@ -1,11 +1,11 @@
 /**
- * Sincronización entre dispositivos y conflictos simples (H7.2b, D-178). Funciona con CUALQUIER `Repository`
+ * Sincronización entre dispositivos y conflictos simples (D-178). Funciona con CUALQUIER `Repository`
  * (el de desarrollo o el remoto) y no toca la red ni el almacenamiento: solo usa la interfaz.
  */
 import { StorageError } from './errors';
 import type { MemoryRecord, PutMemoryInput, Repository } from './types';
 
-export type SaveNotice =
+type SaveNotice =
   /** Otro dispositivo había guardado antes: se ha guardado esta versión (la más reciente por `updated_at`). `replaced` permite ofrecer «deshacer». */
   | { readonly kind: 'replaced_remote'; readonly replaced: MemoryRecord }
   /** El recuerdo se movió a la papelera desde otro dispositivo: NO se sobrescribe; la pantalla decide (restaurar o descartar). */

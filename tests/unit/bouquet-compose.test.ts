@@ -45,12 +45,12 @@ describe('composición determinista del ramo', () => {
   });
 
   it('instantánea: composición fija de un mes de referencia (8 recuerdos, 3 con foto)', () => {
-    // Valor calculado con esta implementación en H7.5 (rediseño del ramo; antes, '0b1ddc67' de H6.1).
+    // Valor fijado con la composición actual (D-151): si la composición cambia a propósito, se actualiza.
     // Si cambia, la composición de los ramos ya creados cambiaría: hay que decidirlo a propósito
     // (y anotarlo en DECISIONES). La semilla no cambia: solo depende del mes y de los ids.
     const layout = compose(memories(8, 3, 'ref'));
     expect(layout.seed).toBe('75aa568b');
-    // Cambia tras H8 porque las hojas se colocan de otra forma (no se amontonan sobre el lazo).
+    // Cambió con D-253 porque las hojas se colocan de otra forma (no se amontonan sobre el lazo).
     expect(pin(layout)).toBe('4b24f19b');
   });
 
@@ -219,7 +219,7 @@ describe('equilibrio y límites del lienzo', () => {
             const a = layout.flowers[i];
             const b = layout.flowers[j];
             if (!a || !b) continue;
-            // Una espiga (lavanda) puede quedar algo más metida detrás de otra flor (H7.5).
+            // Una espiga (lavanda) puede quedar algo más metida detrás de otra flor.
             const spike =
               FLOWER_INFO[a.flower].role === 'spike' || FLOWER_INFO[b.flower].role === 'spike';
             const ratio = Math.hypot(a.x - b.x, a.y - b.y) / (a.radius + b.radius);

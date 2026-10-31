@@ -234,7 +234,7 @@ describe('migración 0001', () => {
   });
 });
 
-describe('migración 0002 (H8.3b)', () => {
+describe('migración 0002', () => {
   it('añade `setup_lock` sobre 0001 y solo admite huellas de 43 caracteres', () => {
     const { raw } = createD1(false);
     raw.exec(migrationSql('0001_init.sql'));

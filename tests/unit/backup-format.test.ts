@@ -8,7 +8,7 @@ import {
   type BackupManifest,
 } from '@/lib/backup/format';
 
-/** H8.3 · estructura del `.mgx` (D-100): prefijo, versión y coherencia del manifiesto. */
+/** Estructura del `.mgx` (D-100): prefijo, versión y coherencia del manifiesto. */
 const code = (fn: () => unknown): string => {
   try {
     fn();

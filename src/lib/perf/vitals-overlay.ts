@@ -1,5 +1,5 @@
 /**
- * H9.3 (D-260) · Medidor de Web Vitals en pantalla para medir en el iPhone sin Mac ni herramientas externas.
+ * D-260: Medidor de Web Vitals en pantalla para medir en el iPhone sin Mac ni herramientas externas.
  *
  * Solo se carga si la URL lleva `?medir` (import dinámico desde AppShell): no pesa en la carga normal.
  * No guarda ni envía nada: lee la Performance API del propio navegador y pinta un recuadro.

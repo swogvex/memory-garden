@@ -2,7 +2,7 @@ import { Defs, f, jitter, makeRng, mix, type Detail, type Rng } from '@/lib/flow
 import type { PlacedFiller } from './model';
 
 /**
- * Relleno decorativo del ramo (decisión C de H7.5): espigas lilas, florecillas blancas, ramas
+ * Relleno decorativo del ramo (D-204): espigas lilas, florecillas blancas, ramas
  * verdes y capullos del mes vacío. No es un recuerdo: no es interactivo y va dentro de un grupo
  * `aria-hidden`. Se dibuja más pequeño y más pálido que las flores de los recuerdos, para que la
  * espiga lila no se confunda con la lavanda ni las florecillas con la margarita.

@@ -44,7 +44,7 @@ function encodeChars(ikm: Uint8Array): string {
   return out;
 }
 
-export function formatRecoveryKey(chars: string): string {
+function formatRecoveryKey(chars: string): string {
   return chars.match(/.{4}/g)!.join('-');
 }
 

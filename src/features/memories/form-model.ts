@@ -96,7 +96,7 @@ function messageFor(head: string, rule: string, fields: MemoryFields): MessageKe
   }
 }
 
-/** Valida con los esquemas de H3 (única fuente de verdad); los errores salen asociados a su campo. */
+/** Valida con los esquemas de `lib/validation` (única fuente de verdad); los errores salen asociados a su campo. */
 export function validateFields(f: FormFields, alts: readonly string[]): Validation {
   const fields = normalizeFields(f);
   try {

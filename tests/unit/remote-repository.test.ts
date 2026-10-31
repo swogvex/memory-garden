@@ -17,7 +17,7 @@ import {
 } from './server/_support';
 
 /**
- * H7.2b · adaptador remoto contra el SERVIDOR REAL (src/server, D1 y R2 simulados): la «red» es una función `fetch` que
+ * Adaptador remoto contra el SERVIDOR REAL (src/server, D1 y R2 simulados): la «red» es una función `fetch` que
  * entrega la petición a `handleApi`, con interruptores para cortar la red, perder respuestas o cortar descargas.
  * Cubre el contrato del repositorio, los errores, la conexión perdida y dos dispositivos con la misma cuenta.
  */
@@ -480,7 +480,7 @@ describe('red y sesión', () => {
     expect(await code(a.repo.vault.replaceKeys({}, 1))).toBe('unavailable');
   });
 
-  it('H8.3: `vault.get` lee el registro cifrado tal cual (para la exportación)', async () => {
+  it('`vault.get` lee el registro cifrado tal cual (para la exportación)', async () => {
     const { a, h } = await ready();
     const v = await a.repo.vault.get();
     const row = rows<{ id: string; wrapped_mk_rec: string; kdf: string }>(
@@ -498,7 +498,7 @@ describe('red y sesión', () => {
   });
 });
 
-describe('ajustes cifrados (H8.1)', () => {
+describe('ajustes cifrados', () => {
   it('leer, guardar con revisión y ver lo guardado desde otro dispositivo', async () => {
     const { a, h, cookie } = await ready();
     const b = connect(h, cookie);

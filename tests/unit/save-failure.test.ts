@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { saveFailureOf } from '@/features/calendar';
 import { StorageError } from '@/lib/storage/errors';
 
-/** H8.4 · el mensaje de un guardado fallido según la causa real (envuelta en `garden:save_failed`). */
+/** El mensaje de un guardado fallido según la causa real (envuelta en `garden:save_failed`). */
 const wrapped = (cause: unknown) => new Error('garden:save_failed', { cause });
 const setOnline = (value: boolean) =>
   Object.defineProperty(globalThis, 'navigator', {

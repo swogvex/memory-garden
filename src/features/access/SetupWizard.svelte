@@ -20,7 +20,7 @@
     locale: Locale;
     client: AuthClient;
     onDone: (keyring: Keyring) => void;
-    /** Restaurar desde una copia `.mgx` en lugar de crear un espacio nuevo (H8.3). */
+    /** Restaurar desde una copia `.mgx` en lugar de crear un espacio nuevo. */
     onRestore?: () => void;
   } = $props();
 

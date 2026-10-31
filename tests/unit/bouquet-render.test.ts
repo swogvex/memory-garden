@@ -209,13 +209,13 @@ describe('renderizado del ramo', () => {
   });
 });
 
-describe('peso del ramo (presupuesto D-157, revisado tras H8 con las flores nuevas)', () => {
+describe('peso del ramo (presupuesto D-254)', () => {
   const doc = (n: number, detail: 'full' | 'lite') =>
     renderBouquet(layoutOf(n, 5), options({ detail }));
   const elements = (svg: string) => count(svg, /<[a-zA-Z]/g);
 
   it('21 flores a detalle completo: ≤ 240 KiB y ≤ 2.900 elementos (medido ~179 KiB y ~2.250)', () => {
-    // Las flores nuevas reutilizan cada pétalo con <use>: pesan menos que las de H7.5 (~319 KiB).
+    // Las flores nuevas reutilizan cada pétalo con <use>: pesan menos que las anteriores (~319 KiB).
     const svg = doc(21, 'full');
     expect(svg.length).toBeLessThan(240 * 1024);
     expect(elements(svg)).toBeLessThan(2900);

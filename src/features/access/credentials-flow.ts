@@ -1,5 +1,5 @@
 /**
- * Seguridad desde Configuración (H8.2): cambiar la contraseña y generar una clave de recuperación nueva
+ * Seguridad desde Configuración: cambiar la contraseña y generar una clave de recuperación nueva
  * (crypto-spec.md §8.3 y §8.5). Ninguno de los dos vuelve a cifrar los recuerdos: la clave maestra no cambia, solo cambia
  * la «envoltura» con la que se abre. Por eso los datos siguen abriéndose igual y no hay nada que migrar.
  *

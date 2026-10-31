@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { rows } from './_d1';
 import { T0, doSetup, fakePayload, makeHarness } from './_support';
 
-/** H8.1 · ajustes cifrados: el servidor guarda un sobre opaco con revisión optimista (PS-03, PS-04). */
+/** Ajustes cifrados: el servidor guarda un sobre opaco con revisión optimista (PS-03, PS-04). */
 async function ready() {
   const h = makeHarness();
   const { cookie } = await doSetup(h);

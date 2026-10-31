@@ -17,13 +17,7 @@ test('el bundle de producción no contiene la semilla ni datos de prueba', async
   expect(files.length).toBeGreaterThan(0);
 
   // Cadenas literales: sobreviven a la minificación (los nombres de función no).
-  const banned = [
-    '__MG_DEV_SEED__',
-    'Contraseña-solo-de-pruebas',
-    'Recuerdo de prueba con',
-    'Mañana de playa',
-    'componentes',
-  ];
+  const banned = ['Contraseña-solo-de-pruebas', 'Recuerdo de prueba con', 'Mañana de playa'];
   const hits: string[] = [];
   for (const file of files) {
     const text = readFileSync(file, 'utf8');

@@ -26,7 +26,7 @@
   } from './restore-flow';
   import { passwordIssues, recoveryInputState } from './setup-model';
 
-  // Restaurar desde una copia `.mgx` en un espacio vacío (H8.3). Se lee y se comprueba aquí; nada sale hasta «Restaurar».
+  // Restaurar desde una copia `.mgx` en un espacio vacío. Se lee y se comprueba aquí; nada sale hasta «Restaurar».
   let {
     locale,
     client,

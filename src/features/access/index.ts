@@ -9,6 +9,4 @@ export {
   currentSource,
   currentTrashSource,
   lockSession,
-  onLock,
-  type LockReason,
 } from './session';

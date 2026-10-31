@@ -16,7 +16,7 @@ export function isCalendarDate(s: unknown): s is string {
   return d <= dim;
 }
 
-export const MAX_LINK_LENGTH = LIMITS.link;
+const MAX_LINK_LENGTH = LIMITS.link;
 
 /**
  * Enlace externo: solo http(s) con `//` explícito, sin espacios ni controles, con host y SIN credenciales

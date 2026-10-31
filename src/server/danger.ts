@@ -6,7 +6,7 @@ import { clearCookie } from './sessions';
 import { secretBytes } from './validate';
 
 /**
- * Operaciones irreversibles de Configuración (H8.3b; data-model.md §7.4, privacy-and-backups.md §9). Las dos exigen sesión
+ * Operaciones irreversibles de Configuración (data-model.md §7.4, privacy-and-backups.md §9). Las dos exigen sesión
  * completa Y la contraseña actual (`current_auth_pw`, con el límite de intentos del acceso).
  *
  * Trabajan por tandas para no pasar de los límites de una invocación del Worker (consultas a D1 y operaciones de R2):

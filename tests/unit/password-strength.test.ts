@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { estimatePasswordBits, passwordIssues, passwordLevel } from '@/features/access/setup-model';
 import { checkPasswordPolicy, normalizeForList, type CommonPasswordData } from '@/lib/crypto';
 
-/** H8.2 · lista de contraseñas comunes (D-122) y medidor de fortaleza estimada. */
+/** Lista de contraseñas comunes (D-122) y medidor de fortaleza estimada. */
 const DATA: CommonPasswordData = {
   long: new Set(['thequickbrownfox', 'iloveyousomuch!']),
   base: new Set(['barcelona', 'superman', 'princesa', 'contraseña']),

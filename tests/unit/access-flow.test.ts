@@ -12,7 +12,7 @@ import { SETUP_CODE, makeHarness, type Harness } from './server/_support';
 import { FAST, bridge } from './_access-helpers';
 
 /**
- * Flujos de acceso del cliente (lib/crypto real) contra el Worker real con D1 simulada (H7.3b).
+ * Flujos de acceso del cliente (lib/crypto real) contra el Worker real con D1 simulada.
  * Usa el mínimo de iteraciones que acepta el servidor (600.000): cada derivación tarda unas décimas de segundo.
  */
 const PASSWORD = 'correcto caballo bateria grapa 2026';

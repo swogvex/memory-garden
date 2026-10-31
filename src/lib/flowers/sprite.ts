@@ -5,7 +5,7 @@ import { makeRng } from './rng';
 import { Defs } from './svg';
 
 /** Radio del recuadro de una cabeza suelta (mismo que `renderFlower`). */
-export const SPRITE_RADIUS = 56;
+const SPRITE_RADIUS = 56;
 /** `viewBox` para mostrar una cabeza del sprite sola. */
 export const SPRITE_VIEWBOX = `${-SPRITE_RADIUS} ${-SPRITE_RADIUS} ${2 * SPRITE_RADIUS} ${2 * SPRITE_RADIUS}`;
 

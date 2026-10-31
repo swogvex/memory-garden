@@ -16,8 +16,8 @@ import { SETUP_CODE, makeHarness, type Harness } from './server/_support';
 import { FAST, bridge } from './_access-helpers';
 
 /**
- * H8.2 · cambiar la contraseña y generar una clave de recuperación nueva desde Configuración, contra el Worker real
- * (D1 y R2 simulados). Criterio de aceptación de H8: «cambiar contraseña no obliga a recifrar datos y los datos siguen
+ * Cambiar la contraseña y generar una clave de recuperación nueva desde Configuración, contra el Worker real
+ * (D1 y R2 simulados). Criterio de aceptación: «cambiar contraseña no obliga a recifrar datos y los datos siguen
  * abriéndose».
  */
 const PASSWORD = 'correcto caballo bateria grapa 2026';

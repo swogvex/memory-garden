@@ -1,10 +1,10 @@
 /**
  * Interfaz de repositorio (CONTEXTO §4, data-model.md). Solo maneja datos CIFRADOS u opacos:
  * ningún método recibe ni devuelve texto en claro. Las pantallas dependen de esta interfaz,
- * no de si detrás hay un adaptador de pruebas o la API real (H7).
+ * no de si detrás hay un adaptador de pruebas o la API real.
  */
 export type AssetKind = 'photo' | 'thumb' | 'avatar';
-export type AssetState = 'pending' | 'ready' | 'deleting';
+type AssetState = 'pending' | 'ready' | 'deleting';
 
 export interface VaultRecord {
   readonly id: string;
@@ -90,7 +90,7 @@ export interface VaultRepository {
   putSettings(payload: string, expectedRevision: number): Promise<{ readonly revision: number }>;
 }
 
-export interface MemoryRepository {
+interface MemoryRepository {
   /** `since`: solo los cambiados después (updated_at > since). Por defecto excluye la papelera. */
   list(opts?: { since?: number; includeTrashed?: boolean }): Promise<MemoryRecord[]>;
   get(id: string): Promise<MemoryRecord | null>;
@@ -102,7 +102,7 @@ export interface MemoryRepository {
   purge(id: string): Promise<void>;
 }
 
-export interface AssetRepository {
+interface AssetRepository {
   /** 409 (`conflict`) si el id existe: nunca se sobrescribe. Queda `pending` hasta ligarse a un recuerdo. */
   put(input: PutAssetInput): Promise<AssetRecord>;
   /** Solo recursos `ready`. */

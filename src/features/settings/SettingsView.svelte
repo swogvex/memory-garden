@@ -26,15 +26,15 @@
     locale: Locale;
     /** Fuente del Jardín: hace falta para cambiar la categoría de los recuerdos al renombrar o eliminar. */
     openGarden: () => Promise<GardenSource>;
-    /** Copia cifrada (H8.3): exportar y continuar una restauración. */
+    /** Copia cifrada: exportar y continuar una restauración. */
     openBackup: () => Promise<BackupSource>;
-    /** Papelera (H8.3b). */
+    /** Papelera. */
     openTrash: () => Promise<TrashSource>;
     /** Cierre de sesión (lo pone la capa que conoce el acceso). */
     session?: Snippet;
-    /** Contraseña y clave de recuperación (H8.2; las pone la capa que conoce el acceso). */
+    /** Contraseña y clave de recuperación (las pone la capa que conoce el acceso). */
     security?: Snippet;
-    /** Borrar todos los recuerdos y eliminar el espacio (H8.3b; las pone la capa que conoce el acceso). */
+    /** Borrar todos los recuerdos y eliminar el espacio (las pone la capa que conoce el acceso). */
     danger?: Snippet;
   } = $props();
 </script>

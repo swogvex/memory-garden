@@ -58,7 +58,7 @@ export const HTML_CSP = [
 export const HTML_PATHS = ['/', '/jardin*', '/ramos*', '/explorar*', '/configuracion*'] as const;
 
 /**
- * Adornos y texturas de `public/` (H9.3, D-261). No llevan hash en el nombre (los de `/_astro/*` sí y son inmutables):
+ * Adornos y texturas de `public/` (D-261). No llevan hash en el nombre (los de `/_astro/*` sí y son inmutables):
  * caché de un día. Antes (sin regla) Cloudflare los servía con `max-age=0, must-revalidate` y cada visita hacía una
  * petición por archivo. Si se regeneran, pueden tardar hasta un día en verse en un navegador que ya los tenga.
  */

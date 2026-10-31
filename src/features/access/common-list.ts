@@ -6,7 +6,7 @@ import type { CommonPasswordData } from '@/lib/crypto';
 
 let pending: Promise<CommonPasswordData> | null = null;
 
-export function loadCommonPasswords(): Promise<CommonPasswordData> {
+function loadCommonPasswords(): Promise<CommonPasswordData> {
   pending ??= import('@/lib/crypto/common-passwords')
     .then((m) => ({ long: new Set(m.COMMON_LONG), base: new Set(m.COMMON_BASE) }))
     .catch((error: unknown) => {

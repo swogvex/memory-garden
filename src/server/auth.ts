@@ -98,7 +98,7 @@ export async function setupLockHash(pepper: Bytes, code: string): Promise<string
 }
 
 /**
- * Prueba de la contraseña actual para operaciones irreversibles (H8.3b): `current_auth_pw` en el cuerpo, con el mismo
+ * Prueba de la contraseña actual para operaciones irreversibles: `current_auth_pw` en el cuerpo, con el mismo
  * límite de intentos que el acceso. Devuelve `null` si es correcta, o la respuesta de error (genérica) si no.
  */
 export async function provePassword(ctx: Ctx): Promise<ApiResult | null> {
@@ -140,7 +140,7 @@ export const setup: Handler = async (ctx) => {
   ]);
   const codeOk = ctx.cfg.setupCode !== null && constantTimeEqual(a, b);
   const exists = await ctx.db.prepare('SELECT 1 AS x FROM account LIMIT 1').first();
-  // H8.3b: un código ya gastado al eliminar el espacio no vuelve a valer. Se consulta SIEMPRE (mismo trabajo con cualquier código).
+  // Un código ya gastado al eliminar el espacio no vuelve a valer. Se consulta SIEMPRE (mismo trabajo con cualquier código).
   const locked = await ctx.db
     .prepare('SELECT 1 AS x FROM setup_lock WHERE code_hash = ?1')
     .bind(await setupLockHash(ctx.cfg.pepper, provided))

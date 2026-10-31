@@ -1,6 +1,6 @@
 import type { MessageKey } from './es';
 
-// Completo desde H7.5: mismas claves que `es`. `Partial` se mantiene para que una clave nueva sin
+// Completo: mismas claves que `es`. `Partial` se mantiene para que una clave nueva sin
 // traducir caiga al español en lugar de romper la compilación; la prueba de i18n avisa si falta alguna.
 export const en: Partial<Record<MessageKey, string>> = {
   'app.name': 'Memory Garden',
@@ -21,7 +21,6 @@ export const en: Partial<Record<MessageKey, string>> = {
   'shell.avatar': 'Profile and settings',
   'shell.eyebrow': 'Your garden · {year}',
   'shell.noscript': 'Memory Garden needs JavaScript to work.',
-  'view.soon.bouquets': 'Your monthly bouquets will appear here.',
   'view.soon.explore': 'You will be able to search your memories here.',
   'view.soon.note': 'This section arrives in an upcoming milestone.',
   'garden.loading': 'Opening your garden…',
@@ -31,7 +30,6 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.count.none': 'No memories this month',
   'garden.count.one': '1 memory this month',
   'garden.count.many': '{count} memories this month',
-  'garden.provisional': 'Provisional view of the month: the calendar arrives in the next delivery.',
   'garden.nav.prev': 'Previous month',
   'garden.nav.next': 'Next month',
   'garden.months.label': 'Months of {year}',
@@ -41,7 +39,6 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.n.many': '{count} memories',
   'garden.empty': 'This month has no memories yet.',
   'garden.add': 'Add memory',
-  'garden.add.soon': 'Coming soon: creating memories arrives in the next phase.',
   'memory.new': 'New memory',
   'memory.close': 'Close the form',
   'memory.cancel': 'Cancel',
@@ -135,25 +132,9 @@ export const en: Partial<Record<MessageKey, string>> = {
   'garden.aside.recent': 'Recent memories',
   'garden.aside.recent.none': 'No memories yet.',
   'garden.aside.bouquet': "See this month's bouquet",
-  'dev.title': 'Components',
-  'dev.heading': 'Tokens and typography',
-  'dev.intro': 'Development-only page: it does not exist in production.',
   'dev.sample': 'Every memory is a flower.',
   'dev.greeting': 'Hello, {name}.',
-  'dev.language': 'Test language',
-  'dev.langEs': 'Español',
-  'dev.langEn': 'English',
-  'dev.section.colors': 'Colours',
-  'dev.section.fonts': 'Fonts',
-  'dev.section.spacing': 'Spacing',
-  'dev.section.radii': 'Radii',
-  'dev.section.shadows': 'Shadows',
-  'dev.section.motion': 'Motion',
-  'dev.fontTitle': 'Playfair Display: headings',
-  'dev.fontBody': 'Inter: text and forms',
-  'dev.fontHand': 'Caveat: decorative phrases',
-  'dev.motionNote': 'Turned off with prefers-reduced-motion.',
-  // Access: first access, sign-in and recovery (H7.3b).
+  // Access: first access, sign-in and recovery.
   'access.checking': 'Checking your space…',
   'access.unavailable.title': 'Could not connect',
   'access.unavailable.body':
@@ -212,7 +193,6 @@ export const en: Partial<Record<MessageKey, string>> = {
   'key.error.checksum': 'There is a typo; check the characters.',
   'key.error.mismatch': 'This key does not match the one you were shown. Check it.',
   'key.ok': 'The key is correct.',
-  'setup.title': 'Welcome to your garden',
   'setup.privacy.title': 'How Memory Garden looks after your memories',
   'setup.privacy.p1':
     'What you write and your photos are encrypted on your device before they leave it. Whoever stores the data (the app developer and the hosting provider, Cloudflare) only receives encrypted text that cannot be read without your password or your recovery key.',
@@ -266,7 +246,7 @@ export const en: Partial<Record<MessageKey, string>> = {
   'recover.back': 'Back to sign in',
   'shell.signout': 'Sign out',
   'shell.signout.working': 'Signing out…',
-  // Flower catalogue (H6.1).
+  // Flower catalogue.
   'catalog.flower.lavanda.name': 'Lavender',
   'catalog.flower.lavanda.meaning': 'Peace and calm',
   'catalog.flower.lavanda.alt':
@@ -324,7 +304,7 @@ export const en: Partial<Record<MessageKey, string>> = {
     'The image is saved unencrypted on your device and includes the photos shown in the bouquet.',
   'bouquets.export.caption.one': '{month} · 1 memory',
   'bouquets.export.caption.many': '{month} · {count} memories',
-  // Configuración y privacidad (H8.1).
+  // Configuración y privacidad.
   'shell.eyebrow.named': "{name}'s garden · {year}",
   'access.language': 'Language',
   'language.es': 'Español',
@@ -445,7 +425,7 @@ export const en: Partial<Record<MessageKey, string>> = {
   'privacy.code.title': 'Something you should know',
   'privacy.code.body':
     'The app’s code is delivered by the server every time you open the page. So your security depends on the developer and their accounts not being compromised. Everything possible is done to prevent it (two-step verification, manual deployments), but it cannot be proven from your browser.',
-  // Seguridad: contraseña y clave de recuperación (H8.2).
+  // Seguridad: contraseña y clave de recuperación.
   'security.password.title': 'Password',
   'security.password.intro':
     'Changing it does not re-encrypt your memories: it only changes the key that opens them. When you change it, your other devices will be signed out.',

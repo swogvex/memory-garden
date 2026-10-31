@@ -10,7 +10,7 @@ import {
 
 /**
  * D-122 · la lista grande debe estar generada con scripts/build-common-passwords.mjs (no la provisional vacía) y tener
- * la forma que espera la política. Si esta prueba falla, falta ejecutar el script (ver la entrega de H8.2).
+ * la forma que espera la política. Si esta prueba falla, falta ejecutar el script (`node scripts/build-common-passwords.mjs`).
  */
 describe('lista de contraseñas comunes generada', () => {
   it('tiene origen, licencia y huella del archivo, y suficientes entradas', () => {

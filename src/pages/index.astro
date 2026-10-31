@@ -4,13 +4,13 @@ import { AppShell, NAV_LABEL_KEY } from '@/features/shell';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { DEFAULT_LOCALE, t } from '@/lib/i18n';
 
-// La portada es la propia app (H7.5): sin sesión muestra el acceso y, tras entrar, el Jardín
+// La portada es la propia app: sin sesión muestra el acceso y, tras entrar, el Jardín
 // (`AppShell` trata `/` como `garden`). Así basta con escribir memorygarden.date.
 const locale = DEFAULT_LOCALE;
 ---
 
 <BaseLayout title={t(locale, NAV_LABEL_KEY.garden)} locale={locale} shell>
-  {/* H9.5 (D-266): el marco del acceso va en el HTML, no en la isla, para pintarse sin esperar al JS. */}
+  {/* D-266: el marco del acceso va en el HTML, no en la isla, para pintarse sin esperar al JS. */}
   <AccessDecor />
   <AppShell client:only="svelte">
     <p slot="fallback" role="status">

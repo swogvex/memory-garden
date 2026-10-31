@@ -1,7 +1,7 @@
 import { PhotoError } from './errors';
 import { asciiAt } from './sniff';
 
-export interface JpegSegment {
+interface JpegSegment {
   readonly marker: number;
   /** Posición del 0xFF que abre el marcador. */
   readonly start: number;

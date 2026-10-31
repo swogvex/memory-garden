@@ -3,7 +3,7 @@ import { createVault, disposeMaterial, preparePassword, unwrapWithPassword } fro
 import { SETUP_CODE, makeHarness, type Harness } from './_support';
 
 /**
- * Cliente real (`lib/crypto`, H3) contra el servidor real (`src/server`, H7.1) con D1 simulada.
+ * Cliente real (`lib/crypto`) contra el servidor real (`src/server`) con D1 simulada.
  * Comprueba dos cosas que las pruebas con cargas sintéticas no pueden: que el formato que produce el cliente
  * lo acepta la validación del servidor, y que el servidor nunca recibe la contraseña ni la clave de recuperación.
  * Usa la política de producción del KDF (≈ 0,4 s por derivación en un PC): por eso hay pocas pruebas y tiempo ampliado.
@@ -26,7 +26,7 @@ interface Created {
   recoveryKey: string;
 }
 
-/** Cuerpo exacto que H7 enviaría en el primer acceso, a partir de lo que devuelve `createVault`. */
+/** Cuerpo exacto que el cliente envía en el primer acceso, a partir de lo que devuelve `createVault`. */
 function setupPayload(c: Created): Record<string, unknown> {
   return {
     setup_code: SETUP_CODE,

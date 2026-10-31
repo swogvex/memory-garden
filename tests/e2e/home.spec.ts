@@ -21,7 +21,7 @@ test('la portada es la app: sin sesión solo el acceso; privada, accesible y sin
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page).toHaveTitle(/Memory Garden/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-  // H7.5: ya no hay portada provisional. `/` abre la app y, sin sesión, solo se ve el acceso.
+  // Ya no hay portada provisional. `/` abre la app y, sin sesión, solo se ve el acceso.
   await expect(page.getByRole('heading', { level: 1, name: es['app.name'] })).toBeVisible();
   await expect(page.getByRole('navigation', { name: es['nav.label'] })).toHaveCount(0);
   await expect(page.locator('main#contenido')).toHaveCount(1);
@@ -40,7 +40,7 @@ test('la portada es la app: sin sesión solo el acceso; privada, accesible y sin
   expect(external).toEqual([]);
 });
 
-test('la página de componentes no existe en la compilación', async ({ request }) => {
+test('no hay rutas de desarrollo en la compilación (PS-06)', async ({ request }) => {
   const response = await request.get('/dev/componentes');
   expect(response.status()).toBe(404);
 });

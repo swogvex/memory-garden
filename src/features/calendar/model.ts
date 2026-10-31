@@ -9,7 +9,7 @@ export type GardenMemory = MemoryPayload & { readonly id: string; readonly updat
 export type MemoryFields = Omit<MemoryPayload, 'photos'>;
 
 /** Foto ya procesada en el cliente (JPEG sin metadatos), todavía sin cifrar. */
-export interface NewPhoto {
+interface NewPhoto {
   readonly photo: Uint8Array;
   readonly thumb: Uint8Array;
   readonly alt: string;
@@ -45,7 +45,7 @@ export interface SaveMemoryInput {
   readonly photos: readonly PhotoSlot[];
 }
 
-/** Puerto de datos del Jardín: lo implementa la capa de composición (adaptador de pruebas hoy, API en H7). */
+/** Puerto de datos del Jardín: lo implementa la capa de composición (adaptador remoto en producción, en memoria en desarrollo). */
 export interface GardenSource {
   list(): Promise<GardenMemory[]>;
   create(input: CreateMemoryInput): Promise<CreateMemoryResult>;
@@ -110,7 +110,7 @@ export function daysWithMemories(memories: readonly GardenMemory[]): number {
 }
 
 /**
- * Clasifica el fallo de un guardado para el mensaje (H8.4). Recorre la cadena de `cause`: la fuente envuelve el fallo real en
+ * Clasifica el fallo de un guardado para el mensaje. Recorre la cadena de `cause`: la fuente envuelve el fallo real en
  * `garden:save_failed`. Sin conexión gana a todo lo demás: es lo que la persona puede arreglar.
  */
 export function saveFailureOf(error: unknown): SaveFailure {

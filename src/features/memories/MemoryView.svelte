@@ -131,7 +131,7 @@
       </button>
     </div>
 
-    <!-- H9.2: si el cuerpo se desplaza (p. ej. con la confirmación de papelera), se puede enfocar (WCAG 2.1.1). -->
+    <!-- Si el cuerpo se desplaza (p. ej. con la confirmación de papelera), se puede enfocar (WCAG 2.1.1). -->
     <div class="body" use:scrollRegion={id('title')}>
       <p class="when">{longDate}</p>
       <dl class="meta">
@@ -369,7 +369,7 @@
     z-index: -1;
     left: 0;
     bottom: 0;
-    /* H9.2: alto fijo (el de la barra con un botón). Con `100%` el ramillete crecía al abrir la confirmación. */
+    /* Alto fijo (el de la barra con un botón). Con `100%` el ramillete crecía al abrir la confirmación. */
     height: calc(var(--tap-min) + 2 * var(--space-3));
     aspect-ratio: 1;
     background: url('/decor/k1.svg') no-repeat left bottom / contain;

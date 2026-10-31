@@ -15,7 +15,7 @@ import {
 } from './_support';
 
 /**
- * H8.3b · borrar todos los recuerdos y eliminar el espacio (data-model.md §7.4, PS-44). Contra el Worker real con D1 y R2
+ * Borrar todos los recuerdos y eliminar el espacio (data-model.md §7.4, PS-44). Contra el Worker real con D1 y R2
  * simulados: exigen la contraseña actual, no dejan objetos ni filas huérfanas y el código de configuración queda gastado.
  */
 async function filled(h: Harness) {

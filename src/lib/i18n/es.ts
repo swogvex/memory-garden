@@ -1,4 +1,3 @@
-// Textos provisionales; los definitivos se cierran en H8 (pregunta abierta 3).
 export const es = {
   'app.name': 'Memory Garden',
   'app.tagline': 'Pequeños momentos, grandes flores.',
@@ -18,7 +17,6 @@ export const es = {
   'shell.avatar': 'Perfil y configuración',
   'shell.eyebrow': 'Tu jardín · {year}',
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',
-  'view.soon.bouquets': 'Aquí aparecerán tus ramos mensuales.',
   'view.soon.explore': 'Aquí podrás buscar entre tus recuerdos.',
   'view.soon.note': 'Esta sección llegará en un próximo hito.',
   'garden.loading': 'Abriendo tu jardín…',
@@ -28,7 +26,6 @@ export const es = {
   'garden.count.none': 'Ningún recuerdo este mes',
   'garden.count.one': '1 recuerdo este mes',
   'garden.count.many': '{count} recuerdos este mes',
-  'garden.provisional': 'Vista provisional del mes: el calendario llega en la siguiente entrega.',
   'garden.nav.prev': 'Mes anterior',
   'garden.nav.next': 'Mes siguiente',
   'garden.months.label': 'Meses de {year}',
@@ -38,7 +35,6 @@ export const es = {
   'garden.n.many': '{count} recuerdos',
   'garden.empty': 'Este mes aún no tiene recuerdos.',
   'garden.add': 'Añadir recuerdo',
-  'garden.add.soon': 'Disponible pronto: crear recuerdos llega en la siguiente fase.',
   'memory.new': 'Nuevo recuerdo',
   'memory.close': 'Cerrar el formulario',
   'memory.cancel': 'Cancelar',
@@ -134,25 +130,9 @@ export const es = {
   'garden.aside.recent': 'Recuerdos recientes',
   'garden.aside.recent.none': 'Todavía no hay recuerdos.',
   'garden.aside.bouquet': 'Ver el ramo del mes',
-  'dev.title': 'Componentes',
-  'dev.heading': 'Tokens y tipografía',
-  'dev.intro': 'Página solo de desarrollo: no existe en producción.',
   'dev.sample': 'Cada recuerdo es una flor.',
   'dev.greeting': 'Hola, {name}.',
-  'dev.language': 'Idioma de prueba',
-  'dev.langEs': 'Español',
-  'dev.langEn': 'English',
-  'dev.section.colors': 'Colores',
-  'dev.section.fonts': 'Fuentes',
-  'dev.section.spacing': 'Espaciado',
-  'dev.section.radii': 'Radios',
-  'dev.section.shadows': 'Sombras',
-  'dev.section.motion': 'Movimiento',
-  'dev.fontTitle': 'Playfair Display: títulos',
-  'dev.fontBody': 'Inter: texto y formularios',
-  'dev.fontHand': 'Caveat: frases decorativas',
-  'dev.motionNote': 'Se desactiva con prefers-reduced-motion.',
-  // Acceso: primer acceso, entrada y recuperación (H7.3b). Textos provisionales; los definitivos se cierran en H8.
+  // Acceso: primer acceso, entrada y recuperación.
   'access.checking': 'Comprobando tu espacio…',
   'access.unavailable.title': 'No se pudo conectar',
   'access.unavailable.body':
@@ -211,7 +191,6 @@ export const es = {
   'key.error.checksum': 'Hay un error de tecleo; revisa los caracteres.',
   'key.error.mismatch': 'Esta clave no coincide con la que se te mostró. Revísala.',
   'key.ok': 'La clave es correcta.',
-  'setup.title': 'Bienvenida a tu jardín',
   'setup.privacy.title': 'Cómo cuida Memory Garden tus recuerdos',
   'setup.privacy.p1':
     'Lo que escribes y tus fotos se cifran en tu dispositivo antes de salir. Quien guarda los datos (el desarrollador de la app y el proveedor de alojamiento, Cloudflare) solo recibe texto cifrado que no puede leer sin tu contraseña o tu clave de recuperación.',
@@ -266,7 +245,7 @@ export const es = {
   'recover.back': 'Volver a entrar',
   'shell.signout': 'Cerrar sesión',
   'shell.signout.working': 'Cerrando sesión…',
-  // Catálogo de flores (H6.1).
+  // Catálogo de flores.
   'catalog.flower.lavanda.name': 'Lavanda',
   'catalog.flower.lavanda.meaning': 'Paz y calma',
   'catalog.flower.lavanda.alt':
@@ -326,7 +305,7 @@ export const es = {
     'La imagen se guarda sin cifrar en tu dispositivo e incluye las fotos que se ven en el ramo.',
   'bouquets.export.caption.one': '{month} · 1 recuerdo',
   'bouquets.export.caption.many': '{month} · {count} recuerdos',
-  // Configuración y privacidad (H8.1).
+  // Configuración y privacidad.
   'shell.eyebrow.named': 'El jardín de {name} · {year}',
   'access.language': 'Idioma',
   'language.es': 'Español',
@@ -450,7 +429,7 @@ export const es = {
   'privacy.code.title': 'Algo que debes saber',
   'privacy.code.body':
     'El código de la aplicación lo entrega el servidor cada vez que abres la página. Por eso tu seguridad depende de que el desarrollador y sus cuentas no estén comprometidos. Se hace lo posible para evitarlo (verificación en dos pasos, despliegues manuales), pero no se puede demostrar desde tu navegador.',
-  // Seguridad: contraseña y clave de recuperación (H8.2).
+  // Seguridad: contraseña y clave de recuperación.
   'security.password.title': 'Contraseña',
   'security.password.intro':
     'Cambiarla no vuelve a cifrar tus recuerdos: solo cambia la llave con la que se abren. Al cambiarla se cerrará la sesión en tus otros dispositivos.',

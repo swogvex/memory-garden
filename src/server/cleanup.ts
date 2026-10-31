@@ -31,12 +31,7 @@ export async function removeAssets(db: D1Like, r2: R2Like, rows: AssetRow[]): Pr
 }
 
 /** Borra los recursos `deleting` y las subidas `pending` abandonadas (> 1 h). Devuelve cuántos. */
-export async function sweepAssets(
-  db: D1Like,
-  r2: R2Like,
-  vaultId: string,
-  now: number,
-): Promise<number> {
+async function sweepAssets(db: D1Like, r2: R2Like, vaultId: string, now: number): Promise<number> {
   const { results } = await db
     .prepare(
       "SELECT id, r2_key FROM asset WHERE vault_id = ?1 AND (state = 'deleting' OR (state = 'pending' AND created_at < ?2)) ORDER BY created_at LIMIT ?3",
@@ -74,12 +69,7 @@ export async function purgeMemory(
 }
 
 /** Papelera caducada (> 30 días): se purga de forma perezosa, unos pocos por petición. */
-export async function sweepTrash(
-  db: D1Like,
-  r2: R2Like,
-  vaultId: string,
-  now: number,
-): Promise<number> {
+async function sweepTrash(db: D1Like, r2: R2Like, vaultId: string, now: number): Promise<number> {
   const { results } = await db
     .prepare(
       'SELECT id FROM memory WHERE vault_id = ?1 AND deleted_at IS NOT NULL AND deleted_at < ?2 ORDER BY deleted_at LIMIT ?3',

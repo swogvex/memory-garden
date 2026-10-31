@@ -36,7 +36,7 @@
   import type { View } from './router';
   import { viewState } from './view-state.svelte';
 
-  /** Texturas del ramo grande y del PNG (H7.5, decisión A). Archivos propios en `public/textures/`. */
+  /** Texturas del ramo grande y del PNG (decisión A). Archivos propios en `public/textures/`. */
   const TEXTURES = { paper: '/textures/paper.webp', wash: '/textures/wash.webp' } as const;
 
   let { locale, onNavigate }: { locale: Locale; onNavigate: (view: View) => void } = $props();
@@ -50,9 +50,9 @@
 
   let load = $state<LoadState>({ status: 'loading' });
   let source: GardenSource | null = null;
-  // H9.3 (D-262): «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
+  // D-262: «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
   let slowLoad = $state(false);
-  // H9.3 (D-264): el ramo abierto se apunta en el historial; «Atrás» vuelve a la cuadrícula de meses.
+  // D-264: el ramo abierto se apunta en el historial; «Atrás» vuelve a la cuadrícula de meses.
   const HISTORY_KEY = 'mgBouquet';
   const historyMonth = (): string | null => {
     const value = (history.state as Record<string, unknown> | null)?.[HISTORY_KEY];
@@ -153,7 +153,7 @@
           : '',
   );
 
-  // Imagen PNG del ramo (método y límites: docs/ramos-exportacion.md).
+  // Imagen PNG del ramo (método y límites: D-156).
   async function exportPng() {
     const l = layout;
     const key = openKey;

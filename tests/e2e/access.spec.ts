@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * Pantalla de acceso (H7.3b) contra la compilación de producción, con la API simulada (`page.route`).
+ * Pantalla de acceso contra la compilación de producción, con la API simulada (`page.route`).
  * No hay criptografía real aquí (eso lo cubren las pruebas unitarias contra el servidor real): se comprueba
  * qué pantalla aparece en cada estado del servidor, los mensajes genéricos y la espera tras el 429.
  */

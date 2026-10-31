@@ -2,7 +2,7 @@
  * Bloqueo por inactividad (sessions-and-limits.md §3): tras 30 min sin interacción se sueltan las claves.
  * El temporizador y el reloj son inyectables para probarlo sin esperar. Escribir en un formulario cuenta como actividad.
  */
-export const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
 export interface IdleLockOptions {
   readonly timeoutMs?: number;

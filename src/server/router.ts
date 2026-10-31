@@ -34,8 +34,8 @@ import { isRecord } from './validate';
  * una ruta que no esté en `API_ROUTES` no existe; una ruta con `auth` ≠ 'none' no llega a su manejador sin sesión válida.
  * Cada manejador se registra con su exigencia de sesión y la prueba recorre esta tabla entera.
  */
-export type RouteAuth = 'none' | 'any' | 'full' | 'recovery';
-export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type RouteAuth = 'none' | 'any' | 'full' | 'recovery';
+type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export interface Route {
   method: Method;
@@ -93,7 +93,7 @@ export const API_ROUTES: readonly Route[] = [
 ];
 
 /** Casa `/api/memories/:id` con `/api/memories/abc`; devuelve los segmentos `:nombre` o `null`. */
-export function matchPath(pattern: string, path: string): Record<string, string> | null {
+function matchPath(pattern: string, path: string): Record<string, string> | null {
   const a = pattern.split('/');
   const b = path.split('/');
   if (a.length !== b.length) return null;

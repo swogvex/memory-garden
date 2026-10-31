@@ -26,7 +26,7 @@ function fillerThumb(fi: PlacedFiller): string {
  * Miniatura de un ramo para la cuadrícula de meses. Reutiliza las cabezas del sprite (`<use>`), así que
  * 12 miniaturas pesan unos KiB cada una en lugar de cientos. Es decorativa (`aria-hidden`): el botón que
  * la contiene lleva el nombre accesible. Requiere que el sprite (`renderFlowerSprite`) esté en la página.
- * Sin texturas ni acuarela (decisión A de H7.5).
+ * Sin texturas ni acuarela (D-204).
  */
 export function renderBouquetThumb(layout: BouquetLayout): string {
   const base = layout.base;

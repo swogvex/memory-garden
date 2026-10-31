@@ -12,7 +12,7 @@ import {
 } from '@/lib/crypto';
 import { t, type Locale } from '@/lib/i18n';
 
-export const RECOVERY_KEY_CHARS = 28;
+const RECOVERY_KEY_CHARS = 28;
 const CROCKFORD = /^[0-9A-HJKMNP-TV-Z]*$/;
 
 export type PasswordIssue = 'too_short' | 'common' | 'low_variety' | 'mismatch';
@@ -40,7 +40,7 @@ const WORD_BITS = 16;
 const COMMON_WORD_BITS = 10;
 
 /**
- * Estimación ORIENTATIVA de bits de entropía (H8.2). Trocea en palabras, números y símbolos y puntúa cada trozo de forma
+ * Estimación ORIENTATIVA de bits de entropía. Trocea en palabras, números y símbolos y puntúa cada trozo de forma
  * conservadora: una palabra en minúsculas o con mayúscula inicial vale como una palabra de diccionario (≤ 16 bits),
  * un año 7 bits, una secuencia «1234» 4 bits, un trozo repetido 2 bits. No es criptografía: solo guía al elegir.
  * No sabe si la contraseña se ha filtrado ni conoce tus datos personales.

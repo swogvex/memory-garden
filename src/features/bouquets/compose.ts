@@ -1,4 +1,4 @@
-import { FLOWER_INFO, between, fnv1a, jitter, mulberry32, type FlowerId } from '@/lib/flowers';
+import { FLOWER_INFO, between, fnv1a, jitter, mulberry32 } from '@/lib/flowers';
 import type {
   BouquetInput,
   BouquetLayout,
@@ -47,7 +47,7 @@ interface Dome {
 /**
  * Compone el ramo de un mes. Es una función pura y determinista: la misma entrada da siempre
  * el mismo resultado, sin azar real, sin reloj y sin depender del orden de la lista.
- * Algoritmo (H7.5): copa en abanico sobre el lazo, tallos que convergen en él, hojas sobre los
+ * Algoritmo: copa en abanico sobre el lazo, tallos que convergen en él, hojas sobre los
  * tallos, relleno decorativo alrededor de la copa y Polaroids prendidas en el borde.
  */
 export function composeBouquet(input: BouquetInput): BouquetLayout {
@@ -474,7 +474,7 @@ interface LeafCandidate {
 }
 
 /**
- * Hojas sobre los tallos (H7.5, revisado tras H8). Antes todas caían en la franja estrecha
+ * Hojas sobre los tallos (D-253). Antes todas caían en la franja estrecha
  * sobre el lazo, donde los tallos convergen, y se amontonaban. Ahora:
  * 1. Se generan candidatas a lo largo de todo el tramo visible de cada tallo, hacia fuera.
  * 2. Se puntúan: mejor si la punta asoma fuera de las flores, si el tallo es de los exteriores
@@ -682,5 +682,3 @@ function placePolaroids(
     };
   });
 }
-
-export type { FlowerId };
