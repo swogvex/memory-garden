@@ -3,54 +3,83 @@ import { f, mix } from '../svg';
 import { jitter } from '../rng';
 
 const PALETTES = pastelSet([
-  { dark: '#6f4fae', mid: '#9b7fd1', light: '#cdbdf0', edge: '#4f3584' },
-  { dark: '#5b5bb0', mid: '#8a8fdc', light: '#c7caf3', edge: '#3f3f86' },
-  { dark: '#8a4fa8', mid: '#b88ad6', light: '#e4cdf3', edge: '#65377f' },
+  { dark: '#6f4fae', mid: '#9b7fd1', light: '#d4c4f2', edge: '#4f3584' },
+  { dark: '#5b5bb0', mid: '#8a8fdc', light: '#cbcef5', edge: '#3f3f86' },
+  { dark: '#8a4fa8', mid: '#b88ad6', light: '#e7d2f5', edge: '#65377f' },
 ]);
 
-const FLORET = 'M0 0C-3.5-2-4.5-8 0-11C4.5-8 3.5-2 0 0Z';
+/** Florecilla de lavanda: un tubito redondeado, más ancho arriba. */
+const BUD =
+  'M0 0C-1.9-0.6-2.6-3.6-2.4-6.4C-2.2-8.6-1.1-9.6 0-9.5C1.1-9.6 2.2-8.6 2.4-6.4C2.6-3.6 1.9-0.6 0 0Z';
+/** Cáliz gris verdoso bajo cada verticilo. */
+const CALYX = 'M-3.2 0.6C-1.8 2.2 1.8 2.2 3.2 0.6C1.6 1.4-1.6 1.4-3.2 0.6Z';
 
-function spike(o: DrawOptions, p: Palette, levels: number, lengthScale: number): string {
-  const { rng, defs } = o;
-  const top = -48 * lengthScale;
-  const step = (46 - top) / levels - 0.4;
-  const icon = o.detail === 'icon';
-  let out = `<path d="M0 46L0 ${f(top + 6)}" stroke="#6b8a62" stroke-width="${icon ? 3 : 1.6}" stroke-linecap="round"/>`;
-  const detailBoost = o.detail === 'icon' ? 0 : 1;
-  for (let i = 0; i < levels; i++) {
-    const y = top + 8 + i * step;
-    // En miniatura los capullos son más gruesos: la espiga tiene que leerse a 20 px.
-    const k = (0.78 + (0.55 * i) / levels) * (icon ? 1.45 : 1);
-    const key = `lavanda-${o.tone}-${Math.min(3, Math.floor((i / levels) * 4))}`;
-    for (const side of [-1, 1]) {
-      const a = side * (32 + jitter(rng, 8));
-      out += `<use href="${defs.use('lavanda-floret')}" transform="translate(${f(side * (icon ? 2.4 : 1.4))} ${f(y + jitter(rng, 1))}) rotate(${f(a)}) scale(${f(k)})" fill="${defs.ref(key)}" stroke="${p.edge}" stroke-opacity=".35" stroke-width="${f(0.8 / k)}"/>`;
-    }
-    if (detailBoost && i % 2 === 0) {
-      out += `<use href="${defs.use('lavanda-floret')}" transform="translate(0 ${f(y - 2)}) rotate(${f(jitter(rng, 10))}) scale(${f(k * 0.9)})" fill="${defs.ref(key)}" stroke="${p.edge}" stroke-opacity=".35" stroke-width="${f(0.8 / k)}"/>`;
-    }
+/**
+ * Una espiga: verticilos (anillos de florecillas) separados abajo y cada vez más juntos y
+ * pequeños hacia la punta, como la lavanda de verdad. `len` = largo de la espiga en unidades.
+ */
+/** Verticilo completo (dos florecillas detrás, tres delante y el cáliz) definido una vez por color. */
+function whorlDef(o: DrawOptions, p: Palette, shade: number): string {
+  const t = o.tone % 3;
+  const key = `lavanda-${t}-w${shade}`;
+  const bud = o.defs.use('lavanda-bud');
+  const stroke = `stroke="${p.edge}" stroke-opacity=".3" stroke-width=".55"`;
+  let inner = '';
+  if (o.detail !== 'icon') {
+    inner += `<g fill="${o.defs.ref(`lavanda-${t}-back`)}" ${stroke}><use href="${bud}" transform="rotate(-62) scale(.9)"/><use href="${bud}" transform="rotate(62) scale(.9)"/></g>`;
   }
-  out += `<use href="${defs.use('lavanda-floret')}" transform="translate(0 ${f(top + 4)}) scale(.6)" fill="${defs.ref(`lavanda-${o.tone}-3`)}"/>`;
+  const front = o.detail === 'icon' ? [-30, 30] : [-34, 0, 34];
+  inner += `<g fill="${o.defs.ref(`lavanda-${t}-${shade}`)}" ${stroke}>${front.map((a) => `<use href="${bud}" transform="translate(0 1) rotate(${a})"/>`).join('')}</g>`;
+  if (o.detail !== 'icon' && shade < 3) {
+    inner += `<use href="${o.defs.use('lavanda-calyx')}" transform="translate(0 1.2)" fill="#8c9a86" fill-opacity=".8"/>`;
+  }
+  o.defs.group(key, inner);
+  return key;
+}
+
+/**
+ * Una espiga: verticilos separados abajo y cada vez más juntos y pequeños hacia la punta,
+ * como la lavanda de verdad. `len` = largo de la espiga en unidades.
+ */
+function spike(o: DrawOptions, p: Palette, whorls: number, len: number): string {
+  const { rng, defs } = o;
+  const icon = o.detail === 'icon';
+  const top = 46 - len;
+  let out = `<path d="M0 46L0 ${f(top + 4)}" stroke="#7d9a6e" stroke-width="${icon ? 2.6 : 1.5}" stroke-linecap="round"/>`;
+  for (let i = 0; i < whorls; i++) {
+    const u = i / (whorls - 1); // 0 = abajo, 1 = punta
+    const y = 36 - (len - 14) * (1 - Math.pow(1 - u, 2.1));
+    const k = (0.92 - u * 0.3) * (icon ? 1.45 : 1);
+    const key = whorlDef(o, p, Math.min(3, Math.floor(u * 4)));
+    out += `<use href="${defs.use(key)}" transform="translate(${f(jitter(rng, 0.4))} ${f(y)}) rotate(${f(jitter(rng, 8))}) scale(${f(k)})"/>`;
+  }
+  out += `<use href="${defs.use('lavanda-bud')}" transform="translate(0 ${f(top + 6)}) scale(${icon ? 0.9 : 0.62})" fill="${defs.ref(`lavanda-${o.tone % 3}-3`)}"/>`;
   return out;
 }
 
 export const drawLavanda: HeadDrawer = (o) => {
   const p = PALETTES[o.tone % 3] as Palette;
-  o.defs.shape('lavanda-floret', FLORET);
+  const t = o.tone % 3;
+  o.defs.shape('lavanda-bud', BUD);
+  o.defs.shape('lavanda-calyx', CALYX);
   for (let i = 0; i < 4; i++) {
-    const t = i / 3;
-    o.defs.radial(`lavanda-${o.tone}-${i}`, [
-      [0, mix(p.dark, p.mid, 1 - t * 0.6)],
-      [0.55, mix(p.mid, p.light, 0.2 + t * 0.4)],
-      [1, mix(p.light, WHITE, 0.2 + t * 0.4)],
+    const u = i / 3;
+    o.defs.radial(`lavanda-${t}-${i}`, [
+      [0, mix(p.dark, p.mid, u * 0.5)],
+      [0.6, mix(p.mid, p.light, 0.15 + u * 0.4)],
+      [1, mix(p.light, WHITE, 0.25 + u * 0.35)],
     ]);
   }
-  const levels = o.detail === 'icon' ? 6 : 10;
-  // Tres espigas también en miniatura (antes, una sola: a 20 px era una raya).
-  const sides =
-    o.detail === 'icon'
-      ? `<g transform="translate(-12 10) rotate(-15)">${spike(o, p, 4, 0.7)}</g><g transform="translate(12 10) rotate(15)">${spike(o, p, 4, 0.74)}</g>`
-      : `<g transform="translate(-6 8) rotate(-13)">${spike(o, p, levels - 1, 0.82)}</g><g transform="translate(6 8) rotate(13)">${spike(o, p, levels - 1, 0.86)}</g>`;
-  const body = `${sides}${spike(o, p, levels, 1)}`;
+  o.defs.radial(`lavanda-${t}-back`, [
+    [0, mix(p.dark, '#2e1f55', 0.2)],
+    [1, p.mid],
+  ]);
+  const icon = o.detail === 'icon';
+  const whorls = icon ? 5 : o.detail === 'lite' ? 9 : 11;
+  // Tres espigas, la del centro más alta (en miniatura también: una sola se ve como una raya).
+  const sides = icon
+    ? `<g transform="translate(-11 10) rotate(-16)">${spike(o, p, whorls - 1, 64)}</g><g transform="translate(11 10) rotate(16)">${spike(o, p, whorls - 1, 66)}</g>`
+    : `<g transform="translate(-6 8) rotate(-13)">${spike(o, p, whorls - 2, 72)}</g><g transform="translate(6 8) rotate(13)">${spike(o, p, whorls - 1, 78)}</g>`;
+  const body = `${sides}${spike(o, p, whorls, icon ? 84 : 92)}`;
   return { body, radius: 36, attach: { x: 0, y: 46 }, leaf: 'strap' };
 };

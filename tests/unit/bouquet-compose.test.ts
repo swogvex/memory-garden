@@ -50,7 +50,8 @@ describe('composición determinista del ramo', () => {
     // (y anotarlo en DECISIONES). La semilla no cambia: solo depende del mes y de los ids.
     const layout = compose(memories(8, 3, 'ref'));
     expect(layout.seed).toBe('75aa568b');
-    expect(pin(layout)).toBe('f4409364');
+    // Cambia tras H8 porque las hojas se colocan de otra forma (no se amontonan sobre el lazo).
+    expect(pin(layout)).toBe('4b24f19b');
   });
 
   it('la semilla cambia con el mes y con el conjunto de recuerdos', () => {
@@ -161,6 +162,25 @@ describe('crecimiento y tope visual', () => {
           const p = stemPoint(owner.stem, l.t);
           expect(Math.hypot(p.x - l.x, p.y - l.y)).toBeLessThan(0.5);
         }
+      }
+    }
+  });
+
+  it('las hojas no se amontonan: bases separadas y como mucho cuatro junto al lazo', () => {
+    for (const n of [0, 1, 3, 8, 21, 100]) {
+      for (let k = 0; k < 10; k++) {
+        const layout = compose(memories(n, 0, `monton${k}`));
+        const leaves = layout.leaves;
+        for (let i = 0; i < leaves.length; i++) {
+          for (let j = i + 1; j < leaves.length; j++) {
+            const a = leaves[i] as (typeof leaves)[number];
+            const b = leaves[j] as (typeof leaves)[number];
+            expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(18);
+          }
+        }
+        // Antes de este cambio caían ~9 por ramo en la franja estrecha sobre el lazo.
+        expect(leaves.filter((l) => l.y > layout.base.y - 95).length).toBeLessThanOrEqual(4);
+        for (const l of leaves) expect(l.y).toBeLessThan(layout.base.y - 30);
       }
     }
   });

@@ -104,10 +104,11 @@ describe('dibujo de las cabezas', () => {
     }
   });
 
-  it('presupuesto: las 8 cabezas a detalle completo caben en 130 KiB sin comprimir', () => {
-    // Medido en Node al cerrar H6.1: ~103 KiB (tono 0). El tope deja margen y avisa de regresiones.
+  it('presupuesto: las 8 cabezas a detalle completo caben en 80 KiB sin comprimir', () => {
+    // Medido en Node tras rehacer las flores (después de H8): ~57 KiB (tono 0); en H6.1 eran ~103 KiB.
+    // Los pétalos se definen una vez y se repiten con <use>. El tope deja margen y avisa de regresiones.
     const total = FLOWER_IDS.reduce((sum, id) => sum + draw(id, 'x', 'full', 0).doc.length, 0);
-    expect(total).toBeLessThan(130 * 1024);
+    expect(total).toBeLessThan(80 * 1024);
   });
 });
 

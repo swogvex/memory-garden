@@ -144,6 +144,85 @@ export function sepals(o: DrawOptions, y: number, count = 5, spread = 26): strin
   return out;
 }
 
+/** Estilo de un pétalo reutilizable: se define una vez como grupo y se repite con `<use>`. */
+export interface PetalStyle {
+  /** Clave de la forma (ya registrada con `defs.shape`). */
+  readonly shape: string;
+  readonly fill: string;
+  readonly edge: string;
+  readonly edgeOpacity?: number;
+  readonly edgeWidth?: number;
+  /** Media hoja en sombra (pliegue central), en coordenadas del pétalo. */
+  readonly fold?: string;
+  readonly foldColor?: string;
+  readonly foldOpacity?: number;
+  /** Nervio o surco central; solo con detalle completo. */
+  readonly vein?: string;
+  readonly veinColor?: string;
+  /** Brillo en el borde (luz desde arriba a la izquierda); no en miniatura. */
+  readonly shine?: string;
+  readonly shineOpacity?: number;
+}
+
+/**
+ * Registra un pétalo como grupo (`key` ya incluye flor, tono y capa) y devuelve su clave.
+ * Repetirlo con `<use>` pesa muy poco: es lo que permite dibujar flores con muchos pétalos.
+ */
+export function petalDef(o: DrawOptions, key: string, s: PetalStyle): string {
+  // En miniatura el contorno es más marcado: a 20 px, una flor blanca sobre papel no se vería.
+  const icon = o.detail === 'icon';
+  const opacity = icon ? Math.max(0.75, s.edgeOpacity ?? 0.45) : (s.edgeOpacity ?? 0.45);
+  const width = (s.edgeWidth ?? 0.9) * (icon ? 1.9 : 1);
+  let inner = `<use href="${o.defs.use(s.shape)}" fill="${s.fill}" stroke="${s.edge}" stroke-opacity="${f(opacity)}" stroke-width="${f(width)}" stroke-linejoin="round"/>`;
+  if (s.fold && o.detail !== 'icon') {
+    inner += `<path d="${s.fold}" fill="${s.foldColor ?? s.edge}" fill-opacity="${f(s.foldOpacity ?? 0.16)}"/>`;
+  }
+  if (s.vein && o.detail === 'full') {
+    inner += `<path d="${s.vein}" fill="none" stroke="${s.veinColor ?? s.edge}" stroke-opacity=".22" stroke-width=".7" stroke-linecap="round"/>`;
+  }
+  if (s.shine && o.detail !== 'icon') {
+    inner += `<path d="${s.shine}" fill="none" stroke="#fff" stroke-opacity="${f(s.shineOpacity ?? 0.6)}" stroke-width="1.4" stroke-linecap="round"/>`;
+  }
+  o.defs.group(key, inner);
+  return key;
+}
+
+/** Anillo regular de `n` pétalos ya definidos, con muy poca variación (flores ordenadas, no caóticas). */
+export function petalRing(
+  o: DrawOptions,
+  key: string,
+  n: number,
+  offset: number,
+  scale: number,
+  wobble = 3,
+  cx = 0,
+  cy = 0,
+): string {
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const a = offset + (360 / n) * i + jitter(o.rng, wobble);
+    const k = scale * (1 + jitter(o.rng, 0.035));
+    out += `<use href="${o.defs.use(key)}" transform="translate(${f(cx)} ${f(cy)}) rotate(${f(a)}) scale(${f(k)})"/>`;
+  }
+  return out;
+}
+
+/** Degradado de un pétalo: de la base (`base`) a la punta (`tip`), con un tono medio. */
+export function petalGradient(
+  o: DrawOptions,
+  key: string,
+  base: string,
+  middle: string,
+  tip: string,
+): string {
+  o.defs.radial(key, [
+    [0, base],
+    [0.5, middle],
+    [1, tip],
+  ]);
+  return o.defs.ref(key);
+}
+
 /** Papel cálido hacia el que se suavizan los colores (pastel acuarela, decisión B de H7.5). */
 export const PAPER = '#fbf8f2';
 

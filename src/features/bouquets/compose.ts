@@ -435,95 +435,148 @@ function leafOn(
   length: number,
   kind: PlacedLeaf['kind'],
   owner: PlacedLeaf['owner'],
-  rng: Rng,
+  open: number,
+  tone: number,
 ): PlacedLeaf {
   const p = stemPoint(stem, t);
   const tan = stemTangent(stem, t);
-  // La tangente va hacia el lazo; la hoja crece hacia arriba y se abre a un lado.
+  // La tangente va hacia el lazo; la hoja crece hacia arriba y se abre `open` grados a un lado.
   const up = headingDeg({ x: -tan.x, y: -tan.y });
   return {
     x: round1(p.x),
     y: round1(p.y),
-    rot: round1(up + side * between(rng, 38, 58)),
+    rot: round1(up + side * open),
     length: round1(length),
     kind,
-    tone: Math.floor(rng() * 3),
+    tone,
     owner,
     t: round1(t * 1000) / 1000,
   };
 }
 
+/** Punta de una hoja colocada (la hoja apunta en la dirección de `rot`). */
+const leafTip = (l: PlacedLeaf) => ({
+  x: l.x + Math.sin(rad(l.rot)) * l.length,
+  y: l.y - Math.cos(rad(l.rot)) * l.length,
+});
+
+interface LeafCandidate {
+  stem: StemCurve;
+  owner: PlacedLeaf['owner'];
+  kind: PlacedLeaf['kind'];
+  t: number;
+  side: -1 | 1;
+  length: number;
+  open: number;
+  tone: number;
+  score: number;
+  leaf: PlacedLeaf;
+}
+
+/**
+ * Hojas sobre los tallos (H7.5, revisado tras H8). Antes todas caían en la franja estrecha
+ * sobre el lazo, donde los tallos convergen, y se amontonaban. Ahora:
+ * 1. Se generan candidatas a lo largo de todo el tramo visible de cada tallo, hacia fuera.
+ * 2. Se puntúan: mejor si la punta asoma fuera de las flores, si el tallo es de los exteriores
+ *    y si queda a media altura; peor cuanto más cerca del lazo.
+ * 3. Se eligen de mejor a peor respetando una distancia mínima entre bases y entre puntas, con
+ *    como mucho una hoja por lado junto al lazo. Todo es determinista.
+ */
 function placeLeaves(
   flowers: readonly PlacedFlower[],
   filler: readonly PlacedFiller[],
   m: number,
   rng: Rng,
 ): PlacedLeaf[] {
-  const out: PlacedLeaf[] = [];
-  if (m === 0) {
-    // Mes vacío: una hoja a cada lado de dos capullos.
-    filler.forEach((fl, index) => {
-      if (fl.kind !== 'bud' || out.length >= 4) return;
-      const t = tAtY(fl.stem, BOW.y - 70, 0.3, 0.85);
-      out.push(leafOn(fl.stem, t, index % 2 ? 1 : -1, 46, 'lance', { kind: 'filler', index }, rng));
-      out.push(
-        leafOn(
-          fl.stem,
-          Math.min(0.9, t + 0.12),
-          index % 2 ? -1 : 1,
-          40,
-          'lance',
-          { kind: 'filler', index },
-          rng,
-        ),
-      );
+  const target = m === 0 ? 4 : m === 1 ? 4 : m <= 3 ? 6 : m <= 8 ? 9 : m <= 13 ? 11 : 13;
+  const scale = m === 0 ? 1.1 : m === 1 ? 1.45 : m <= 3 ? 1.3 : m <= 8 ? 1.2 : 1.15;
+  const heads = flowers.map((fl) => ({ x: fl.x, y: fl.y, r: fl.radius * 0.88 }));
+  const covered = (x: number, y: number) =>
+    heads.some((h) => (h.x - x) ** 2 + (h.y - y) ** 2 < h.r * h.r);
+
+  const sources: {
+    stem: StemCurve;
+    owner: PlacedLeaf['owner'];
+    kind: PlacedLeaf['kind'];
+    top: number;
+    x: number;
+  }[] = [];
+  flowers.forEach((fl, index) => {
+    if (FLOWER_INFO[fl.flower].role === 'spike' && m > 3) return;
+    sources.push({
+      stem: fl.stem,
+      owner: { kind: 'flower', index },
+      kind: FLOWER_INFO[fl.flower].leaf,
+      top: fl.y + fl.radius * 0.75,
+      x: fl.x,
     });
-    return out;
-  }
-  // Las hojas van en el tramo visible del tallo: entre el borde inferior de la copa y el lazo.
-  const lowest = Math.max(...flowers.map((fl) => fl.y + fl.radius * 0.7));
-  const yTop = Math.min(lowest + 8, BOW.y - 46);
-  const perFlower = m <= 3 ? 2 : 1;
-  const cap = m <= 3 ? 6 : m <= 8 ? 9 : 12;
-  const scale = m === 1 ? 1.6 : m <= 3 ? 1.3 : 1.05;
-  const ranked = flowers
-    .map((fl, index) => ({ fl, index, key: rng() }))
-    .filter(({ fl }) => FLOWER_INFO[fl.flower].role !== 'spike' || m <= 3)
-    .sort((a, b) => Math.abs(a.fl.x - BOW.x) - Math.abs(b.fl.x - BOW.x) || a.key - b.key);
-  for (const { fl, index } of ranked) {
-    if (out.length >= cap) break;
-    const info = FLOWER_INFO[fl.flower];
-    const kind = info.leaf;
-    const base = (kind === 'strap' ? 58 : 44) * scale;
-    const outward: -1 | 1 = fl.x < BOW.x ? -1 : fl.x > BOW.x ? 1 : index % 2 ? 1 : -1;
-    for (let k = 0; k < perFlower && out.length < cap; k++) {
-      const yy =
-        yTop + (BOW.y - 30 - yTop) * (k === 0 ? between(rng, 0.15, 0.45) : between(rng, 0.55, 0.8));
-      const t = tAtY(fl.stem, yy, 0.25, 0.92);
-      const side: -1 | 1 = k === 0 ? outward : (-outward as -1 | 1);
-      out.push(
-        leafOn(
-          fl.stem,
-          t,
-          side,
-          base * between(rng, 0.85, 1.1),
-          kind,
-          { kind: 'flower', index },
-          rng,
-        ),
-      );
+  });
+  filler.forEach((fi, index) => {
+    if (fi.kind !== 'greens' && fi.kind !== 'bud') return;
+    sources.push({
+      stem: fi.stem,
+      owner: { kind: 'filler', index },
+      kind: 'lance',
+      top: fi.y + (fi.kind === 'bud' ? fi.length * 0.25 : fi.length * 0.1),
+      x: fi.x,
+    });
+  });
+
+  const candidates: LeafCandidate[] = [];
+  for (const src of sources) {
+    const tTop = tAtY(src.stem, Math.min(src.top, BOW.y - 60), 0.02, 0.9);
+    const steps = 6;
+    for (let i = 0; i <= steps; i++) {
+      const t = tTop + ((0.9 - tTop) * i) / steps;
+      if (t <= 0 || t >= 0.95) continue;
+      const p = stemPoint(src.stem, t);
+      if (p.y > BOW.y - 30) continue;
+      const outward: -1 | 1 = p.x < BOW.x - 2 ? -1 : p.x > BOW.x + 2 ? 1 : i % 2 ? 1 : -1;
+      for (const side of [outward, -outward as -1 | 1]) {
+        const base = src.kind === 'strap' ? 54 : src.kind === 'broad' ? 42 : 40;
+        const length = base * scale * between(rng, 0.88, 1.08);
+        const open = between(rng, 36, 54);
+        const tone = Math.floor(rng() * 3);
+        const leaf = leafOn(src.stem, t, side, length, src.kind, src.owner, open, tone);
+        const tip = leafTip(leaf);
+        if (tip.x < 14 || tip.x > CANVAS_WIDTH - 14 || tip.y < 14) continue;
+        // Una hoja que queda entera detrás de una flor no se ve: no se coloca.
+        if (covered(leaf.x, leaf.y) && covered(tip.x, tip.y)) continue;
+        // Se prefieren las hojas que se ven: punta fuera de las flores y base en el tramo libre
+        // del tallo, hacia fuera y en los tallos exteriores. Justo encima del lazo, no.
+        if (p.y > BOW.y - 42) continue;
+        const score =
+          (covered(tip.x, tip.y) ? 0 : 2.2) +
+          (covered(leaf.x, leaf.y) ? 0 : 1) +
+          (side === outward ? 1.2 : 0) +
+          Math.min(1, Math.abs(src.x - BOW.x) / 120) +
+          rng() * 0.6;
+        candidates.push({ ...src, t, side, length, open, tone, score, leaf });
+      }
     }
   }
-  // Ramos grandes: unas pocas hojas más en los tallos del relleno verde, a la altura del lazo.
-  if (m > 3) {
-    filler.forEach((fi, index) => {
-      if (fi.kind !== 'greens' || out.length >= cap + 3) return;
-      const t = tAtY(fi.stem, BOW.y - 52, 0.3, 0.9);
-      const side: -1 | 1 = fi.x < BOW.x ? -1 : 1;
-      out.push(
-        leafOn(fi.stem, t, side, between(rng, 40, 52), 'lance', { kind: 'filler', index }, rng),
-      );
-    });
+  candidates.sort((a, b) => b.score - a.score || a.leaf.y - b.leaf.y || a.leaf.x - b.leaf.x);
+
+  const out: PlacedLeaf[] = [];
+  const tips: { x: number; y: number }[] = [];
+  let bowLeft = 0;
+  let bowRight = 0;
+  for (const c of candidates) {
+    if (out.length >= target) break;
+    const l = c.leaf;
+    const tip = leafTip(l);
+    const minBase = Math.max(18, l.length * 0.55);
+    const minTip = Math.max(22, l.length * 0.7);
+    if (out.some((o) => Math.hypot(o.x - l.x, o.y - l.y) < minBase)) continue;
+    if (tips.some((q) => Math.hypot(q.x - tip.x, q.y - tip.y) < minTip)) continue;
+    // Cerca del lazo, donde los tallos se juntan, como mucho dos hojas por lado.
+    if (l.y > BOW.y - 95) {
+      if (tip.x < BOW.x ? bowLeft >= 2 : bowRight >= 2) continue;
+      if (tip.x < BOW.x) bowLeft++;
+      else bowRight++;
+    }
+    out.push(l);
+    tips.push(tip);
   }
   return out;
 }

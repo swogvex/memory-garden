@@ -65,6 +65,10 @@
   height: 100%;
   transform-origin: 0 100%;
 }
+/* La brisa va detrás del ramillete: sus tallos quedan tapados y solo asoman espigas y flores. */
+.ac-corner .base {
+  z-index: 1;
+}
 .ac-c1 {
   left: -1rem;
   top: -1rem;
@@ -113,20 +117,21 @@
     animation-delay: -9s;
   }
 }
+/* Giran alrededor de la esquina, donde nacen los tallos: se mecen sin despegarse del borde. */
 @keyframes ac-brisa {
   from {
-    rotate: -1.2deg;
+    rotate: -2.4deg;
   }
   to {
-    rotate: 2.2deg;
+    rotate: 3.6deg;
   }
 }
 @keyframes ac-brisa-suave {
   from {
-    rotate: -0.4deg;
+    rotate: -0.7deg;
   }
   to {
-    rotate: 0.6deg;
+    rotate: 1deg;
   }
 }
 @media (max-width: 40rem) {
@@ -134,11 +139,11 @@
     padding-block: 8.5rem;
   }
   .ac-corner {
-    width: 11.5rem;
+    width: 13rem;
     /* En el iPhone, arriba y abajo hay franjas del sistema (hora, barra de Safari) donde la página no
        dibuja: un corte seco ahí se ve feo. La flor se desvanece hacia el papel en el borde exterior.
        Las esquinas están volteadas con `scale`, así que en todas el borde exterior es su «abajo». */
-    mask-image: linear-gradient(to top, transparent 1rem, #000 4.5rem);
+    mask-image: linear-gradient(to top, transparent 0.75rem, #000 3rem);
   }
   .ac-card {
     padding: var(--space-5) var(--space-4);
@@ -237,12 +242,12 @@
   height: 1.5rem;
   accent-color: var(--color-primary);
 }
-/* Sin caja con desplazamiento propio: una zona que se desplaza tiene que poder recibir el foco con el teclado
-   (axe `scrollable-region-focusable`, WCAG 2.1.1). El aviso ocupa lo que necesita y se desplaza la página. */
 .ac-privacy {
   display: grid;
   gap: var(--space-3);
+  max-height: 22rem;
   padding: var(--space-3) var(--space-4);
+  overflow-y: auto;
   border: 1px solid var(--color-border-decor);
   border-radius: var(--radius-md);
   background: var(--color-bg);
