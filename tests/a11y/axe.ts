@@ -4,7 +4,7 @@ import { expect, type Page } from '@playwright/test';
 // Si axe mide a mitad de un fundido (p. ej. la hoja inferior al abrirse), ve colores intermedios y
 // da contrastes falsos. Se espera a que acaben las animaciones y transiciones finitas; las infinitas
 // (el balanceo de los adornos) no terminan nunca ni cambian el color, así que se ignoran. Límite: 5 s.
-async function settleAnimations(page: Page): Promise<void> {
+export async function settleAnimations(page: Page): Promise<void> {
   await page.evaluate(async () => {
     const finite = document
       .getAnimations()

@@ -3,6 +3,27 @@ import { defineConfig, devices } from '@playwright/test';
 const PREVIEW = 'http://127.0.0.1:4321'; // compilación real
 const DEV = 'http://127.0.0.1:4322'; // `astro dev` con datos de prueba (D-123)
 
+// H9.1: auditoría de accesibilidad, solo con `npm run test:audit` (que pone MG_AUDIT=1). Fuera de `validate`
+// y del CI para no alargarlos (D-248). Solo Chromium: el WebKit de Playwright no tabula enlaces (D-121).
+const AUDIT = process.env.MG_AUDIT === '1';
+const auditProjects = [
+  {
+    name: 'audit',
+    testDir: 'tests/audit',
+    testMatch: '**/*.audit.spec.ts',
+    timeout: 90_000,
+    use: { ...devices['Desktop Chrome'] },
+  },
+  {
+    name: 'audit-garden',
+    testDir: 'tests/audit-garden',
+    testMatch: '**/*.audit.spec.ts',
+    timeout: 120_000,
+    expect: { timeout: 15_000 },
+    use: { ...devices['Desktop Chrome'], baseURL: DEV },
+  },
+];
+
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
@@ -30,6 +51,7 @@ export default defineConfig({
       expect: { timeout: 15_000 },
       use: { ...devices['Desktop Safari'], baseURL: DEV },
     },
+    ...(AUDIT ? auditProjects : []),
   ],
   webServer: [
     {
