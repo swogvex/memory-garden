@@ -419,13 +419,13 @@ export const en: Partial<Record<MessageKey, string>> = {
   'privacy.intro': 'How Memory Garden looks after your data, in a few words.',
   'privacy.encrypted.title': 'What is encrypted on your device',
   'privacy.encrypted.body':
-    'Your memories (title, date, category, text, link and flower), your photos, your avatar and these settings (name, welcome message, language, date format, time zone and categories) are encrypted on your device before they leave it. Neither the app developer nor Cloudflare, the hosting provider, can read them without your password or your recovery key.',
+    'Your memories (title, date, category, season, text, link, flower and photo descriptions), your photos, your avatar and these settings (name, welcome message, language, date format, time zone and categories) are encrypted on your device before they leave it. Neither the app’s developer nor Cloudflare, the hosting provider, can read them without your password or your recovery key.',
   'privacy.server.title': 'What the server does see',
   'privacy.server.body':
-    'How many memories and photos you have, their approximate size, when they are created, changed or deleted, and when you sign in. Your IP address is not stored: to slow down sign-in attempts a temporary fingerprint is used and deleted after 24 hours.',
+    'How many memories and photos you have, their approximate size, and when they are created, changed or deleted. It also records, without your IP address, when you sign in, change your password or use your recovery key, and keeps that for 180 days. The app does not store your IP address: to slow down sign-in attempts it uses a temporary fingerprint that is deleted after 24 hours. Cloudflare does see your IP address when it serves the site, like any hosting provider.',
   'privacy.cookies.title': 'Cookies and storage in your browser',
   'privacy.cookies.body':
-    'A single technical cookie keeps your session open: it stops working when you sign out, after 30 minutes of inactivity or, at most, after 12 hours. Your browser also remembers the language (es or en) to show the sign-in screen in your language; it is the only thing stored unencrypted on your device. There are no analytics, ads or tracking cookies, and the app loads nothing from other sites: that is why you do not see a cookie banner.',
+    'A single technical cookie keeps your session open: it stops working when you sign out, after 30 minutes of inactivity or, at most, after 12 hours. Your browser also remembers the language (es or en) so the sign-in screen appears in your language. Apart from the cookie, that is the only thing the app stores in your browser, and it is not personal data. There are no analytics, ads or tracking cookies, and the app loads nothing from other sites: that is why you see no cookie banner.',
   'privacy.png.title': 'The bouquet image',
   'privacy.png.body':
     'If you download a bouquet as an image, that file is saved unencrypted on your device, with the photos shown in it.',

@@ -423,13 +423,13 @@ export const es = {
   'privacy.intro': 'Cómo cuida Memory Garden tus datos, en pocas palabras.',
   'privacy.encrypted.title': 'Lo que se cifra en tu dispositivo',
   'privacy.encrypted.body':
-    'Tus recuerdos (título, fecha, categoría, texto, enlace y flor), tus fotos, tu avatar y estos ajustes (nombre, mensaje de bienvenida, idioma, formato de fecha, zona horaria y categorías) se cifran en tu dispositivo antes de salir. Ni el desarrollador de la app ni Cloudflare, el proveedor de alojamiento, pueden leerlos sin tu contraseña o tu clave de recuperación.',
+    'Tus recuerdos (título, fecha, categoría, temporada, texto, enlace, flor y descripciones de las fotos), tus fotos, tu avatar y estos ajustes (nombre, mensaje de bienvenida, idioma, formato de fecha, zona horaria y categorías) se cifran en tu dispositivo antes de salir. Ni el desarrollador de la app ni Cloudflare, el proveedor de alojamiento, pueden leerlos sin tu contraseña o tu clave de recuperación.',
   'privacy.server.title': 'Lo que sí ve el servidor',
   'privacy.server.body':
-    'Cuántos recuerdos y fotos tienes, su tamaño aproximado, cuándo se crean, se cambian o se borran, y cuándo entras en la aplicación. Tu dirección IP no se guarda: para frenar intentos de acceso se usa una huella temporal que se borra a las 24 horas.',
+    'Cuántos recuerdos y fotos tienes, su tamaño aproximado y cuándo se crean, se cambian o se borran. También anota, sin tu dirección IP, cuándo entras, cambias la contraseña o usas la clave de recuperación, y lo conserva 180 días. La app no guarda tu dirección IP: para frenar intentos de acceso usa una huella temporal que se borra a las 24 horas. Cloudflare sí ve tu IP al servir la web, como cualquier proveedor de alojamiento.',
   'privacy.cookies.title': 'Cookies y almacenamiento en tu navegador',
   'privacy.cookies.body':
-    'Una única cookie técnica mantiene tu sesión abierta: deja de valer al cerrar sesión, tras 30 minutos sin actividad o, como mucho, a las 12 horas. Además, tu navegador recuerda el idioma (es o en) para mostrar la pantalla de acceso en tu idioma; es lo único que se guarda sin cifrar en tu dispositivo. No hay analíticas, anuncios ni cookies de seguimiento, y la app no carga nada de otras páginas: por eso no ves un aviso de cookies.',
+    'Una única cookie técnica mantiene tu sesión abierta: deja de valer al cerrar sesión, tras 30 minutos sin actividad o, como mucho, a las 12 horas. Además, tu navegador recuerda el idioma (es o en) para mostrar la pantalla de acceso en tu idioma. Aparte de la cookie, es lo único que la app guarda en tu navegador, y no es un dato personal. No hay analíticas, anuncios ni cookies de seguimiento, y la app no carga nada de otras páginas: por eso no ves un aviso de cookies.',
   'privacy.png.title': 'La imagen del ramo',
   'privacy.png.body':
     'Si descargas un ramo como imagen, ese archivo se guarda sin cifrar en tu dispositivo, con las fotos que se ven en él.',
