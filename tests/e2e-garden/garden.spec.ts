@@ -41,7 +41,7 @@ test('varios recuerdos en un día: foto de portada y contador +N', async ({ page
   await open(page);
   const d12 = day(page, '2026-10-12');
   await expect(d12).toHaveAttribute('aria-label', /lunes, 12 de octubre de 2026, 3 recuerdos/);
-  await expect(d12.locator('.plus')).toHaveText('+2');
+  await expect(d12.locator('.plus')).toHaveAttribute('data-more', '+2');
   await expect(day(page, '2026-10-05').locator('.plus')).toHaveCount(0);
   await expect(day(page, '2026-10-05').locator('.polaroid')).toHaveCount(1);
   await expect(day(page, '2026-10-06').locator('.polaroid')).toHaveCount(0);
@@ -65,7 +65,7 @@ test('las celdas con recuerdos mantienen una altura razonable y la miniatura es 
 
 test('31 de diciembre y 1 de enero caen en su día (2025/2026)', async ({ page }) => {
   await open(page);
-  await chip(page, /^enero de 2026/i).click();
+  await chip(page, /enero de 2026/i).click();
   await expect(title(page)).toHaveText(/enero de 2026/i);
   await expect(day(page, '2026-01-01')).toHaveAttribute(
     'aria-label',
@@ -83,7 +83,7 @@ test('31 de diciembre y 1 de enero caen en su día (2025/2026)', async ({ page }
 
 test('31 de diciembre y 1 de enero caen en su día (2026/2027)', async ({ page }) => {
   await open(page);
-  await chip(page, /^diciembre de 2026/i).click();
+  await chip(page, /diciembre de 2026/i).click();
   await expect(day(page, '2026-12-31')).toHaveAttribute(
     'aria-label',
     /jueves, 31 de diciembre de 2026, 1 recuerdo/,
@@ -105,12 +105,12 @@ test('mes anterior, siguiente, chips, mes vacío y mes denso', async ({ page }) 
   await prev(page).click();
   await expect(title(page)).toHaveText(/septiembre de 2026/i);
 
-  await chip(page, /^marzo de 2026/i).click();
+  await chip(page, /marzo de 2026/i).click();
   await expect(page.getByText(t('es', 'garden.empty'))).toBeVisible();
   await expect(page.locator('button[data-iso] .polaroid')).toHaveCount(0);
   await expectNoA11yViolations(page);
 
-  await chip(page, /^mayo de 2026/i).click();
+  await chip(page, /mayo de 2026/i).click();
   await expect(page.getByText(t('es', 'garden.count.many', { count: 31 }))).toBeVisible();
   await expect(page.locator('button[data-iso] .polaroid')).toHaveCount(31);
   await expectNoA11yViolations(page);
@@ -243,7 +243,7 @@ test.describe('320 px', () => {
   for (const month of ['octubre', 'mayo', 'marzo']) {
     test(`${month}: sin desbordamiento horizontal y objetivos táctiles`, async ({ page }) => {
       await open(page);
-      if (month !== 'octubre') await chip(page, new RegExp(`^${month} de 2026`, 'i')).click();
+      if (month !== 'octubre') await chip(page, new RegExp(`${month} de 2026`, 'i')).click();
       await expect(title(page)).toHaveText(new RegExp(`${month} de 2026`, 'i'));
 
       const overflow = await page.evaluate(
@@ -262,7 +262,7 @@ test.describe('320 px', () => {
         expect(box!.width).toBeGreaterThanOrEqual(44);
         expect(box!.height).toBeGreaterThanOrEqual(44);
       }
-      const chipBox = await chip(page, /^enero/i).boundingBox();
+      const chipBox = await chip(page, /enero/i).boundingBox();
       expect(chipBox!.height).toBeGreaterThanOrEqual(44);
       await expectNoA11yViolations(page);
     });

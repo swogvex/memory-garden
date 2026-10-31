@@ -125,16 +125,6 @@
     });
   });
 
-  const monthLabel = (index: number) => {
-    const m = months[index];
-    if (!m) return '';
-    const month = capitalize(formatMonthYear(m.ym, locale));
-    return m.count === 0
-      ? t(locale, 'bouquets.month.none', { month })
-      : m.count === 1
-        ? t(locale, 'bouquets.month.one', { month })
-        : t(locale, 'bouquets.month.many', { month, count: m.count });
-  };
   const countText = $derived(
     list.length === 0
       ? t(locale, 'bouquets.detail.count.none')
@@ -426,7 +416,10 @@
             class="month"
             class:empty={m.count === 0}
             data-key={m.key}
-            aria-label={monthLabel(i)}
+            aria-label={t(locale, m.count === 1 ? 'bouquets.month.one' : 'bouquets.month.many', {
+              month: capitalize(labels[i] ?? ''),
+              count: m.count,
+            })}
             onclick={() => void openMonth(m.key)}
           >
             <span class="thumb" aria-hidden="true" use:mountSvg={thumbs[i] ?? ''}></span>
