@@ -1,4 +1,5 @@
 ---
+import AccessDecor from '@/components/ui/AccessDecor.astro';
 import { AppShell } from '@/features/shell';
 import { NAV_LABEL_KEY, VIEW_SLUGS, viewFromPath } from '@/features/shell';
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -13,6 +14,8 @@ const view = viewFromPath(`/${Astro.params.view}`) ?? 'garden';
 ---
 
 <BaseLayout title={t(locale, NAV_LABEL_KEY[view])} locale={locale} shell>
+  {/* H9.5 (D-266): el marco del acceso va en el HTML, no en la isla, para pintarse sin esperar al JS. */}
+  <AccessDecor />
   <AppShell client:only="svelte">
     <p slot="fallback" role="status">
       {t(locale, 'shell.loading')}

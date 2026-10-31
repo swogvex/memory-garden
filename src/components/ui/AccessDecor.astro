@@ -1,0 +1,23 @@
+---
+/**
+ * H9.5 (D-266) · Marco floral de la pantalla de acceso (las 4 esquinas, H7.5), en el HTML prerenderizado.
+ *
+ * Antes lo pintaba `AccessGate` dentro de la isla (`client:only`), así que el navegador no veía las imágenes hasta
+ * descargar y ejecutar el JS. Una esquina es el elemento LCP del acceso: con red y CPU lentas eso eran 3,9 s
+ * (Lighthouse móvil). Aquí se descubre en el HTML y se pinta en cuanto llegan el CSS y el SVG.
+ *
+ * Es decoración: `aria-hidden`, `alt` vacío y sin clics. Los estilos están en `features/access/access.css`
+ * (enlazado en la página). `AccessGate` lo oculta con `<html data-unlocked>` mientras se ve la app con sesión.
+ * Solo la capa base de cada esquina lleva prioridad alta: es la que se pinta como LCP; la de «brisa» va normal.
+ */
+const corners = ['c1', 'c2', 'c3', 'c4'] as const;
+---
+
+<div class="ac-decor" aria-hidden="true">
+  {corners.map((c) => (
+    <span class={`ac-corner ac-${c}`}>
+      <img class="base" src={`/decor/${c}-base.svg`} alt="" fetchpriority="high" />
+      <img class="sway" src={`/decor/${c}-sway.svg`} alt="" />
+    </span>
+  ))}
+</div>

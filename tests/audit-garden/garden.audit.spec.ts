@@ -117,13 +117,18 @@ test.describe('auditoría · paneles y modales', () => {
   });
 
   test('ramos: detalle, flor abierta y PNG', async ({ page }, testInfo) => {
-    for (const w of [WIDTHS[1]!, WIDTHS[3]!]) {
-      await page.setViewportSize({ width: w.width, height: w.height });
-      await go(page, '/ramos');
-      await page.locator(`button[data-key="${MONTH}"]`).click();
-      await expect(page.locator('.mg-fl').first()).toBeVisible();
-      await auditState(page, testInfo, `Ramos · detalle ${w.label}`);
-    }
+    await page.setViewportSize({ width: WIDTHS[1]!.width, height: WIDTHS[1]!.height });
+    await go(page, '/ramos');
+    await page.locator(`button[data-key="${MONTH}"]`).click();
+    await expect(page.locator('.mg-fl').first()).toBeVisible();
+    await auditState(page, testInfo, 'Ramos · detalle 390');
+
+    // D-264: recargar con un ramo abierto lo vuelve a abrir (history.state se conserva). Por eso el
+    // segundo ancho se audita sobre el mismo ramo, sin volver a cargar /ramos.
+    await page.setViewportSize({ width: WIDTHS[3]!.width, height: WIDTHS[3]!.height });
+    await expect(page.locator('.mg-fl').first()).toBeVisible();
+    await auditState(page, testInfo, 'Ramos · detalle 1280');
+
     await page.locator('.mg-fl').first().click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await auditState(page, testInfo, 'Ramos · recuerdo desde una flor');

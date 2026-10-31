@@ -101,12 +101,19 @@
 
 /* Marco floral: 4 esquinas distintas (c1–c4), cada una con 2 capas SVG propias. La capa «brisa» se
    mece y la base apenas; solo se anima `rotate`. Decorativas (aria-hidden, alt vacío, sin clics) y
-   siempre detrás de la tarjeta. Con prefers-reduced-motion se quedan quietas. */
+   siempre detrás de la tarjeta. Con prefers-reduced-motion se quedan quietas.
+   H9.5 (D-266): el marco está en el HTML de la página (`AccessDecor.astro`), antes de la isla, así que se
+   pinta sin esperar al JS. Va fijo a la pantalla; la isla va después en el documento y queda encima.
+   Se oculta mientras se ve la aplicación con sesión (`AccessGate` marca `<html data-unlocked>`). */
 .ac-decor {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
   pointer-events: none;
+}
+:root[data-unlocked] .ac-decor {
+  display: none;
 }
 .ac-corner {
   position: absolute;
