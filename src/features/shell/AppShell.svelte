@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import FlowerSprite from '@/components/ui/FlowerSprite.svelte';
-  import { AccessGate, SecuritySection, SignOut } from '@/features/access';
+  import { AccessGate, DangerSection, SecuritySection, SignOut } from '@/features/access';
   import {
     AvatarBadge,
     LanguageSwitch,
@@ -18,6 +18,7 @@
     openBackupSource,
     openGardenSource,
     openSettingsSource,
+    openTrashSource,
   } from './garden-data';
   import GardenView from './GardenView.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
@@ -136,6 +137,10 @@
   <SecuritySection {locale} />
 {/snippet}
 
+{#snippet danger()}
+  <DangerSection {locale} />
+{/snippet}
+
 <FlowerSprite />
 <!-- Sin sesión solo se ve la pantalla de acceso (sin menú ni cabecera); con sesión, la aplicación. -->
 <AccessGate {locale} bypass={bypassAccess}>
@@ -196,8 +201,10 @@
             {locale}
             openGarden={openGardenSource}
             openBackup={openBackupSource}
+            openTrash={openTrashSource}
             session={bypassAccess ? undefined : signOut}
             security={bypassAccess ? undefined : security}
+            danger={bypassAccess ? undefined : danger}
           />
         {/if}
       </main>

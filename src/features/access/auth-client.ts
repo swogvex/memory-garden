@@ -105,6 +105,10 @@ export interface AuthClient {
   changePassword(request: PasswordChangeRequest): Promise<{ readonly keyRevision: number }>;
   /** Clave de recuperación nueva (crypto-spec §8.5): la anterior deja de valer al confirmarse. */
   regenerateRecoveryKey(request: RecoveryKeyRequest): Promise<{ readonly keyRevision: number }>;
+  /** H8.3b: borra para siempre todos los recuerdos. `done = false`: queda trabajo, repetir la misma petición. */
+  purgeAllMemories(currentAuthPw: string): Promise<{ readonly done: boolean }>;
+  /** H8.3b: elimina el espacio entero y gasta el código de configuración. Igual que el anterior con `done`. */
+  deleteSpace(currentAuthPw: string): Promise<{ readonly done: boolean }>;
   /** Mejor esfuerzo: nunca lanza. */
   logout(): Promise<void>;
 }
@@ -279,6 +283,16 @@ export function createAuthClient(options: AuthClientOptions = {}): AuthClient {
         expected_key_revision: r.expectedKeyRevision,
       });
       return isInt(b.key_revision) ? { keyRevision: b.key_revision } : bad();
+    },
+
+    async purgeAllMemories(currentAuthPw) {
+      const b = await call('POST', '/api/vault/purge-memories', { current_auth_pw: currentAuthPw });
+      return typeof b.done === 'boolean' ? { done: b.done } : bad();
+    },
+
+    async deleteSpace(currentAuthPw) {
+      const b = await call('POST', '/api/vault/delete', { current_auth_pw: currentAuthPw });
+      return typeof b.done === 'boolean' ? { done: b.done } : bad();
     },
 
     async logout() {

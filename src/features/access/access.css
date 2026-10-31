@@ -322,6 +322,11 @@
   background: var(--color-card);
   color: var(--color-primary);
 }
+/* Acción irreversible (H8.3b): blanco sobre #9b2c3f, contraste ≈ 9:1. */
+.ac-btn-danger {
+  background: var(--color-error);
+  color: var(--color-on-primary);
+}
 .ac-btn-link {
   padding: 0 var(--space-2);
   background: none;

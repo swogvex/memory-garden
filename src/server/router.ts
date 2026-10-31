@@ -12,6 +12,7 @@ import {
   type Handler,
 } from './auth';
 import { deleteAsset, getAsset, putAsset } from './assets';
+import { deleteSpace, purgeAllMemories } from './danger';
 import { MAX_BODY_BYTES } from './config';
 import {
   getMemory,
@@ -57,6 +58,8 @@ export const API_ROUTES: readonly Route[] = [
   { method: 'PUT', path: '/api/vault/recovery-key', auth: 'full', handler: regenerateRecoveryKey },
   { method: 'PUT', path: '/api/vault/kdf', auth: 'full', handler: upgradeKdf },
   { method: 'PUT', path: '/api/vault/recovery-reset', auth: 'recovery', handler: recoveryReset },
+  { method: 'POST', path: '/api/vault/purge-memories', auth: 'full', handler: purgeAllMemories },
+  { method: 'POST', path: '/api/vault/delete', auth: 'full', handler: deleteSpace },
   { method: 'GET', path: '/api/vault', auth: 'full', handler: getVault, body: 'none' },
   { method: 'GET', path: '/api/vault/settings', auth: 'full', handler: getSettings, body: 'none' },
   {

@@ -2,16 +2,19 @@ import {
   currentBackupSource,
   currentSettingsSource,
   currentSource,
+  currentTrashSource,
   lockSession,
 } from '@/features/access';
 import { GardenUnavailableError, type GardenSource } from '@/features/calendar';
 import type { BackupSource } from '@/lib/backup';
 import type { SettingsSource } from '@/lib/settings';
+import type { TrashSource } from '@/lib/trash';
 
 interface Space {
   readonly garden: GardenSource;
   readonly settings: SettingsSource;
   readonly backup: BackupSource;
+  readonly trash: TrashSource;
 }
 
 let pending: Promise<Space> | null = null;
@@ -55,6 +58,13 @@ export function openBackupSource(): Promise<BackupSource> {
   const unlocked = currentBackupSource();
   if (unlocked) return Promise.resolve(unlocked);
   return devSpace().then((space) => space.backup);
+}
+
+/** Papelera (H8.3b): restaurar o borrar para siempre, con las mismas claves. */
+export function openTrashSource(): Promise<TrashSource> {
+  const unlocked = currentTrashSource();
+  if (unlocked) return Promise.resolve(unlocked);
+  return devSpace().then((space) => space.trash);
 }
 
 /** Suelta las claves y fuerza a reabrir la próxima vez (D-082). */
