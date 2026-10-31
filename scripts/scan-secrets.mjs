@@ -19,13 +19,15 @@ const STRONG = [
 const GENERIC_NAME = 'asignación sospechosa (secreto/token/contraseña = "…")';
 const GENERIC =
   /(?:secret|token|passw(?:or)?d|api[_-]?key|pepper|setup[_-]?code)["']?\s*[:=]\s*["'][^"'\s]{12,}["']/i;
+// La contraseña de la semilla de desarrollo es inventada y no llega a producción (PS-06).
 const genericExempt = (/** @type {string} */ file) =>
-  file.startsWith('tests/') || file === 'package-lock.json';
+  file.startsWith('tests/') || file === 'package-lock.json' || file === 'src/dev/seed.ts';
 
 // Archivos que no deben estar versionados (las migraciones .sql sí).
 const FORBIDDEN =
   /(?:^|\/)(?:\.env(?:\.(?!example$)[^/]*)?|\.dev\.vars(?:\.(?!example$)[^/]*)?|[^/]*\.(?:mgx|pem|key|p12|pfx|sql))$/;
-const ALLOWED = /^migrations\//;
+// Migraciones de D1 y la copia de referencia sin datos reales (D-277).
+const ALLOWED = /^(?:migrations\/|tests\/fixtures\/compat-v1\.mgx$)/;
 
 const git = (/** @type {string[]} */ args) =>
   execFileSync('git', args, { encoding: 'utf8', maxBuffer: 512 * 1024 * 1024 });
