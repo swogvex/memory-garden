@@ -12,10 +12,14 @@ const field = (dialog: Locator, key: MessageKey) => dialog.getByLabel(tt(key), {
 const addButton = (page: Page) => page.getByRole('button', { name: tt('garden.add'), exact: true });
 const panelOf = (page: Page, text: RegExp) => page.getByRole('region', { name: text });
 
+// La primera carga crea y cifra el espacio de prueba en el navegador (CPU). Con varios workers
+// procesando fotos a la vez puede pasar de 15 s; lo que se prueba empieza después.
+const FIRST_LOAD_TIMEOUT = 45_000;
+
 async function open(page: Page) {
   await page.clock.setFixedTime(new Date('2026-10-20T10:00:00+02:00'));
   await page.goto('/jardin');
-  await expect(page.getByRole('grid')).toBeVisible();
+  await expect(page.getByRole('grid')).toBeVisible({ timeout: FIRST_LOAD_TIMEOUT });
 }
 
 async function createMemory(

@@ -79,6 +79,14 @@
     startIdle();
   }
 
+  // H9.5 (D-266): el marco floral está en el HTML prerenderizado (`AccessDecor.astro`), fuera de la isla, para que
+  // se pinte sin esperar al JS (era el elemento LCP). Se oculta mientras se ve la aplicación con sesión.
+  $effect(() => {
+    const root = document.documentElement;
+    if (screen === 'ready') root.setAttribute('data-unlocked', '');
+    else root.removeAttribute('data-unlocked');
+  });
+
   onMount(() => {
     if (bypass) return;
     stopLockWatch = onLock((reason) => {
@@ -101,37 +109,7 @@
   <main id="contenido" class="ac-page" tabindex="-1">
     <!-- Sin nombre: no es un punto de referencia aparte (el principal es `main`; la tarjeta, si se desplaza, es la región). -->
     <section class="ac">
-      <!-- Marco floral decorativo (H7.5): oculto a lectores de pantalla y sin clics. -->
-      <div class="ac-decor" aria-hidden="true">
-        <span class="ac-corner ac-c1"
-          ><img class="base" src="/decor/c1-base.svg" alt="" /><img
-            class="sway"
-            src="/decor/c1-sway.svg"
-            alt=""
-          /></span
-        >
-        <span class="ac-corner ac-c2"
-          ><img class="base" src="/decor/c2-base.svg" alt="" /><img
-            class="sway"
-            src="/decor/c2-sway.svg"
-            alt=""
-          /></span
-        >
-        <span class="ac-corner ac-c3"
-          ><img class="base" src="/decor/c3-base.svg" alt="" /><img
-            class="sway"
-            src="/decor/c3-sway.svg"
-            alt=""
-          /></span
-        >
-        <span class="ac-corner ac-c4"
-          ><img class="base" src="/decor/c4-base.svg" alt="" /><img
-            class="sway"
-            src="/decor/c4-sway.svg"
-            alt=""
-          /></span
-        >
-      </div>
+      <!-- El marco floral (H7.5) no está aquí: va en el HTML de la página, fuera de la isla (H9.5, D-266). -->
       <!-- La tarjeta se desplaza por dentro (las flores de las esquinas siguen a la vista); si lo hace, se puede enfocar. -->
       <div class="ac-card" use:scrollRegion={'ac-brand'}>
         <span class="ac-mark" aria-hidden="true"></span>
