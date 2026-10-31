@@ -209,18 +209,19 @@ describe('renderizado del ramo', () => {
   });
 });
 
-describe('peso del ramo (presupuesto D-157, revisado en H7.5 por el relleno decorativo)', () => {
+describe('peso del ramo (presupuesto D-157, revisado tras H8 con las flores nuevas)', () => {
   const doc = (n: number, detail: 'full' | 'lite') =>
     renderBouquet(layoutOf(n, 5), options({ detail }));
   const elements = (svg: string) => count(svg, /<[a-zA-Z]/g);
 
-  it('21 flores a detalle completo: ≤ 340 KiB y ≤ 3.600 elementos (medido ~319 KiB y ~3.390)', () => {
+  it('21 flores a detalle completo: ≤ 240 KiB y ≤ 2.900 elementos (medido ~179 KiB y ~2.250)', () => {
+    // Las flores nuevas reutilizan cada pétalo con <use>: pesan menos que las de H7.5 (~319 KiB).
     const svg = doc(21, 'full');
-    expect(svg.length).toBeLessThan(340 * 1024);
-    expect(elements(svg)).toBeLessThan(3600);
+    expect(svg.length).toBeLessThan(240 * 1024);
+    expect(elements(svg)).toBeLessThan(2900);
   });
 
-  it('21 flores a detalle reducido: ≤ 190 KiB y ≤ 2.200 elementos (medido ~176 KiB y ~2.030)', () => {
+  it('21 flores a detalle reducido: ≤ 190 KiB y ≤ 2.200 elementos (medido ~143 KiB y ~1.710)', () => {
     const svg = doc(21, 'lite');
     expect(svg.length).toBeLessThan(190 * 1024);
     expect(elements(svg)).toBeLessThan(2200);
@@ -233,8 +234,10 @@ describe('peso del ramo (presupuesto D-157, revisado en H7.5 por el relleno deco
     expect(elements(svg)).toBeLessThan(520);
   });
 
-  it('con 100 recuerdos pesa lo mismo que con 21: el tope visual acota el peso', () => {
-    expect(doc(100, 'full').length).toBeLessThan(doc(21, 'full').length * 1.1);
+  it('con 100 recuerdos pesa casi lo mismo que con 21: el tope visual acota el peso', () => {
+    // Margen del 25 %: cada flor pesa distinto (el tulipán ~2 KiB, la dalia ~10 KiB) y la muestra de
+    // 21 flores cambia con el mes. Sin el tope, 100 recuerdos pesarían unas cinco veces más.
+    expect(doc(100, 'full').length).toBeLessThan(doc(21, 'full').length * 1.25);
   });
 
   it('componer más el render de un ramo de 21 flores cabe de sobra en un fotograma de prueba', () => {

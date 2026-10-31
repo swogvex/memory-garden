@@ -96,6 +96,20 @@ export class Defs {
     );
   }
 
+  /** Degradado lineal de (x1, y1) a (x2, y2), en porcentaje de la caja del elemento. */
+  linear(key: string, stops: readonly Stop[], x1 = 0, y1 = 0, x2 = 0, y2 = 100): void {
+    const body = stops
+      .map(([offset, color, opacity]) => {
+        const extra = opacity === undefined ? '' : ` stop-opacity="${f(opacity)}"`;
+        return `<stop offset="${f(offset)}" stop-color="${esc(color)}"${extra}/>`;
+      })
+      .join('');
+    this.put(
+      key,
+      `<linearGradient id="${this.id(key)}" x1="${f(x1)}%" y1="${f(y1)}%" x2="${f(x2)}%" y2="${f(y2)}%">${body}</linearGradient>`,
+    );
+  }
+
   /** Número de definiciones registradas. */
   get size(): number {
     return this.items.size;

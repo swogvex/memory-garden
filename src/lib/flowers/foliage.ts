@@ -1,21 +1,29 @@
 import type { LeafKind } from './draw/common';
 import { Defs, f, mix, type Detail } from './svg';
 
-/** Hojas apuntando hacia arriba (−y), con la base en el origen. Longitud nominal en el comentario. */
-const LEAVES: Record<LeafKind, { d: string; rib: string; veins: string }> = {
+/**
+ * Hojas apuntando hacia arriba (−y), con la base en el origen y la punta algo curvada.
+ * `half` es la mitad en sombra (da volumen a lo largo del nervio). Longitud nominal en el comentario.
+ */
+const LEAVES: Record<LeafKind, { d: string; half: string; rib: string; veins: string }> = {
   /* 40 */ lance: {
-    d: 'M0 0C-8-8-11-24-2-40C9-26 8-8 0 0Z',
-    rib: 'M0-2C-1-14-1-26-2-37',
-    veins: 'M-1-10L-6-17M-1-17L5-23M-1.5-23L-6-29M-1.5-29L3-33',
+    d: 'M0 0C-7-6-10-18-6-30C-4-35-1.5-38 1-40C5-31 7-18 4-9C3-5 1.5-2 0 0Z',
+    half: 'M0 0C-7-6-10-18-6-30C-4-35-1.5-38 1-40C0.5-27 0.3-13 0 0Z',
+    rib: 'M0-1.5C0.4-13 0.7-26 0.9-37',
+    veins:
+      'M0.2-9L-4.5-14M0.4-16L-4.6-21.5M0.6-23L-3.6-28M0.3-11L3.8-15M0.5-18L4.2-22.5M0.7-25L3.3-29',
   },
   /* 42 */ broad: {
-    d: 'M0 0C-17-6-23-26-4-42C15-30 19-8 0 0Z',
-    rib: 'M0-2C-1-16-2-30-4-39',
-    veins: 'M-1-10L-10-16M-1-10L8-15M-2-20L-11-26M-2-20L9-25M-3-29L-9-34M-3-29L5-33',
+    d: 'M0 0C-14-4-21-17-17-29C-14-37-6-41 1-42C9-36 16-26 14-14C12-5 6-1 0 0Z',
+    half: 'M0 0C-14-4-21-17-17-29C-14-37-6-41 1-42C0.6-28 0.3-14 0 0Z',
+    rib: 'M0-2C0.3-15 0.6-28 0.9-39',
+    veins:
+      'M0.2-8L-9-13M0.4-16L-11-21M0.6-24L-9-29M0.7-31L-5-35M0.2-10L8-14M0.4-18L10-22M0.6-26L8-30',
   },
   /* 62 */ strap: {
-    d: 'M0 0C-5-12-4-36 1-62C6-36 5-12 0 0Z',
-    rib: 'M0-3C0-20 1-40 1-58',
+    d: 'M0 0C-5-12-5-34-1-55C0-59 1-62 2-62C5-40 5-14 0 0Z',
+    half: 'M0 0C-5-12-5-34-1-55C0-59 1-62 2-62C1.3-40 0.6-20 0 0Z',
+    rib: 'M0-3C0.5-20 1.2-40 1.8-58',
     veins: '',
   },
 };
@@ -65,8 +73,9 @@ export function leaf(
   const spec = LEAVES[kind];
   defs.shape(`leaf-${kind}`, spec.d);
   const k = length / LEAF_LENGTH[kind];
-  let inner = `<use href="${defs.use(`leaf-${kind}`)}" fill="${leafGradient(defs, tone)}" stroke="#2f4a2e" stroke-opacity=".4" stroke-width="${f(0.8 / k)}"/>`;
+  let inner = `<use href="${defs.use(`leaf-${kind}`)}" fill="${leafGradient(defs, tone)}" stroke="#2f4a2e" stroke-opacity=".38" stroke-width="${f(0.8 / k)}" stroke-linejoin="round"/>`;
   if (detail !== 'icon') {
+    inner += `<path d="${spec.half}" fill="#2f4a2e" fill-opacity=".12"/>`;
     inner += `<path d="${spec.rib}" fill="none" stroke="#e1ead9" stroke-opacity=".7" stroke-width="${f(1 / k)}" stroke-linecap="round"/>`;
   }
   if (detail === 'full' && spec.veins) {
