@@ -478,4 +478,69 @@ export const en: Partial<Record<MessageKey, string>> = {
     'Your keys were changed from another device. Nothing has been changed here: try again.',
   'security.error.expired': 'Your session has expired. Sign in again and try again.',
   'security.error.generic': 'It could not be completed. Nothing has been changed: try again.',
+  'restore.link': 'I have a backup file (.mgx)',
+  'restore.title': 'Restore from a backup',
+  'restore.file.intro':
+    'Choose the .mgx file you exported from Settings. It is read and checked on this device: nothing is sent until the last step, and it can only be restored into an empty space.',
+  'restore.file.label': 'Backup file (.mgx)',
+  'restore.credential.title': 'Open the backup',
+  'restore.credential.intro':
+    'Use the password or the recovery key your space had when you made the backup.',
+  'restore.credential.mode': 'How do you want to open it',
+  'restore.credential.password': 'With the password',
+  'restore.credential.key': 'With the recovery key',
+  'restore.opening': 'Opening the backup on your device…',
+  'restore.checking': 'Checking the backup… {done} of {total}',
+  'restore.uploading': 'Uploading your memories… {done} of {total}',
+  'restore.found': 'Backup checked. Memories: {memories} · Photos: {photos}',
+  'restore.newpassword.title': 'Choose a new password',
+  'restore.newpassword.intro':
+    'You opened the backup with the recovery key: for safety, your restored space will get a new password and a new recovery key.',
+  'restore.key.intro':
+    'This will be the recovery key of your restored space. It is shown only once. The previous key will still open the backup, but it will not sign you in to the space.',
+  'restore.code.title': 'Restore your garden',
+  'restore.code.body':
+    'Enter the setup code. Restoring creates the space again with your data: it only works if none exists yet.',
+  'restore.submit': 'Restore',
+  'restore.creating': 'Creating your space…',
+  'restore.done.title': 'Your garden is restored',
+  'restore.done.body': 'Restored. Memories: {restored} · Photos: {photos}',
+  'restore.enter': 'Enter the garden',
+  'restore.partial':
+    'The restore has stopped. What was already uploaded is safe. You can retry now, or enter and continue later from Settings → Your data with the same file.',
+  'restore.partial.quota':
+    "Today's upload limit has been reached. Enter and continue tomorrow from Settings → Your data with the same file.",
+  'restore.retry': 'Retry',
+  'restore.later': 'Enter and continue later',
+  'backup.error.format': 'This file is not a Memory Garden backup, or it is damaged.',
+  'backup.error.version': 'This backup was made with a newer version of the app.',
+  'backup.error.credentials':
+    'These details do not open the backup. Use the password or key the space had when you made it.',
+  'backup.error.corrupt': 'The backup is damaged or has been modified. Nothing has been restored.',
+  'backup.error.other_space':
+    'This backup belongs to another space. Here you can only continue with a backup of this garden.',
+  'backup.error.quota':
+    "The storage limit or today's upload limit has been reached. Try again later.",
+  'backup.error.unavailable': 'Could not connect. Try again.',
+  'settings.data.title': 'Your data',
+  'settings.data.intro':
+    'Download an encrypted backup of your whole garden: memories, photos and settings. It is prepared on this device; the server does not see it.',
+  'settings.data.note1':
+    "It opens with the password or recovery key you have today. If you change your password later, this backup will still open with today's.",
+  'settings.data.note2': 'Keep it in two places, one of them offline (for example, a USB drive).',
+  'settings.data.note3': 'Memories in the trash are not included.',
+  'settings.data.export': 'Export encrypted backup',
+  'settings.data.preparing': 'Preparing the backup…',
+  'settings.data.exporting': 'Preparing the backup… photos: {done} of {total}',
+  'settings.data.done': 'Backup ready. Memories: {memories} · Photos: {photos} · Size: {size}',
+  'settings.data.download': 'Download again',
+  'settings.data.missing':
+    'Photos that were no longer available and are not in the backup: {count}',
+  'settings.data.unreadable':
+    'Memories that could not be opened (included as they are, without photos): {count}',
+  'settings.data.continue.title': 'Continue a restore',
+  'settings.data.continue.intro':
+    'If a restore stopped halfway, choose the same file: whatever is missing is uploaded and what is already there is left alone.',
+  'settings.data.continue.start': 'Continue',
+  'settings.data.continue.done': 'Done. Added: {restored} · Already there: {skipped}',
 };

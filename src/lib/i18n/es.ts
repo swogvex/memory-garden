@@ -484,6 +484,71 @@ export const es = {
     'Tus claves cambiaron desde otro dispositivo. No se ha cambiado nada aquí: vuelve a intentarlo.',
   'security.error.expired': 'Tu sesión ha caducado. Vuelve a entrar e inténtalo de nuevo.',
   'security.error.generic': 'No se pudo completar. No se ha cambiado nada: inténtalo de nuevo.',
+  'restore.link': 'Tengo una copia de seguridad (.mgx)',
+  'restore.title': 'Restaurar desde una copia',
+  'restore.file.intro':
+    'Elige el archivo .mgx que exportaste desde Configuración. Se lee y se comprueba en este dispositivo: no se envía nada hasta el último paso, y solo se puede restaurar en un espacio vacío.',
+  'restore.file.label': 'Archivo de copia (.mgx)',
+  'restore.credential.title': 'Abre la copia',
+  'restore.credential.intro':
+    'Usa la contraseña o la clave de recuperación que tenía tu espacio cuando hiciste la copia.',
+  'restore.credential.mode': 'Cómo quieres abrirla',
+  'restore.credential.password': 'Con la contraseña',
+  'restore.credential.key': 'Con la clave de recuperación',
+  'restore.opening': 'Abriendo la copia en tu dispositivo…',
+  'restore.checking': 'Comprobando la copia… {done} de {total}',
+  'restore.uploading': 'Subiendo tus recuerdos… {done} de {total}',
+  'restore.found': 'Copia comprobada. Recuerdos: {memories} · Fotos: {photos}',
+  'restore.newpassword.title': 'Elige una contraseña nueva',
+  'restore.newpassword.intro':
+    'Has abierto la copia con la clave de recuperación: por seguridad, tu espacio restaurado tendrá una contraseña nueva y una clave de recuperación nueva.',
+  'restore.key.intro':
+    'Esta será la clave de recuperación de tu espacio restaurado. Se muestra una sola vez. La clave anterior seguirá abriendo la copia, pero no servirá para entrar en el espacio.',
+  'restore.code.title': 'Restaurar tu jardín',
+  'restore.code.body':
+    'Escribe el código de configuración. Restaurar crea el espacio de nuevo con tus datos: solo funciona si todavía no existe ninguno.',
+  'restore.submit': 'Restaurar',
+  'restore.creating': 'Creando tu espacio…',
+  'restore.done.title': 'Tu jardín está restaurado',
+  'restore.done.body': 'Restaurado. Recuerdos: {restored} · Fotos: {photos}',
+  'restore.enter': 'Entrar en el jardín',
+  'restore.partial':
+    'La restauración se ha detenido. Lo que ya se subió está a salvo. Puedes reintentarlo ahora o entrar y continuar más tarde desde Configuración → Tus datos con el mismo archivo.',
+  'restore.partial.quota':
+    'Se ha alcanzado el límite de subidas de hoy. Entra y continúa mañana desde Configuración → Tus datos con el mismo archivo.',
+  'restore.retry': 'Reintentar',
+  'restore.later': 'Entrar y continuar más tarde',
+  'backup.error.format': 'Este archivo no es una copia de Memory Garden o está dañado.',
+  'backup.error.version': 'Esta copia se hizo con una versión más nueva de la aplicación.',
+  'backup.error.credentials':
+    'Estos datos no abren la copia. Usa la contraseña o la clave que tenía el espacio cuando la hiciste.',
+  'backup.error.corrupt': 'La copia está dañada o se ha modificado. No se ha restaurado nada.',
+  'backup.error.other_space':
+    'Esta copia es de otro espacio. Aquí solo se puede continuar con una copia de este jardín.',
+  'backup.error.quota':
+    'Se ha alcanzado el límite de almacenamiento o de subidas de hoy. Inténtalo más tarde.',
+  'backup.error.unavailable': 'No se pudo conectar. Inténtalo de nuevo.',
+  'settings.data.title': 'Tus datos',
+  'settings.data.intro':
+    'Descarga una copia cifrada de todo tu jardín: recuerdos, fotos y ajustes. Se prepara en este dispositivo; el servidor no la ve.',
+  'settings.data.note1':
+    'Se abre con la contraseña o la clave de recuperación que tengas hoy. Si después cambias la contraseña, esta copia seguirá abriéndose con la de hoy.',
+  'settings.data.note2':
+    'Guárdala en dos sitios, uno de ellos sin conexión (por ejemplo, un disco USB).',
+  'settings.data.note3': 'Los recuerdos de la papelera no se incluyen.',
+  'settings.data.export': 'Exportar copia cifrada',
+  'settings.data.preparing': 'Preparando la copia…',
+  'settings.data.exporting': 'Preparando la copia… fotos: {done} de {total}',
+  'settings.data.done': 'Copia lista. Recuerdos: {memories} · Fotos: {photos} · Tamaño: {size}',
+  'settings.data.download': 'Descargar otra vez',
+  'settings.data.missing': 'Fotos que ya no estaban disponibles y no van en la copia: {count}',
+  'settings.data.unreadable':
+    'Recuerdos que no se pudieron abrir (van tal cual, sin fotos): {count}',
+  'settings.data.continue.title': 'Continuar una restauración',
+  'settings.data.continue.intro':
+    'Si una restauración se quedó a medias, elige el mismo archivo: se sube lo que falte y lo que ya está no se toca.',
+  'settings.data.continue.start': 'Continuar',
+  'settings.data.continue.done': 'Listo. Añadidos: {restored} · Ya estaban: {skipped}',
 } as const;
 
 export type MessageKey = keyof typeof es;

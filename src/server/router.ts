@@ -23,7 +23,7 @@ import {
   MEMORY_BODY_LIMIT,
 } from './memories';
 import { loadConfig, type ApiEnv, type Config } from './env';
-import { getSettings, putSettings, SETTINGS_BODY_LIMIT } from './settings';
+import { getSettings, getVault, putSettings, SETTINGS_BODY_LIMIT } from './settings';
 import { problem, readBodyLimited, toResponse, type ApiResult } from './http';
 import { cookieSpec, findSession, readCookie, type Session } from './sessions';
 import { isRecord } from './validate';
@@ -57,6 +57,7 @@ export const API_ROUTES: readonly Route[] = [
   { method: 'PUT', path: '/api/vault/recovery-key', auth: 'full', handler: regenerateRecoveryKey },
   { method: 'PUT', path: '/api/vault/kdf', auth: 'full', handler: upgradeKdf },
   { method: 'PUT', path: '/api/vault/recovery-reset', auth: 'recovery', handler: recoveryReset },
+  { method: 'GET', path: '/api/vault', auth: 'full', handler: getVault, body: 'none' },
   { method: 'GET', path: '/api/vault/settings', auth: 'full', handler: getSettings, body: 'none' },
   {
     method: 'PUT',

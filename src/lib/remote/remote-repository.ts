@@ -7,7 +7,8 @@
  *   (la sesión caducó: hay que volver a pedir la contraseña) y se devuelve como `unavailable`.
  * - Red caída o lenta: `unavailable` (tiempo máximo por petición). La subida de recuerdos reintenta UNA vez si la
  *   respuesta se perdió y reconoce que su propio guardado ya se había aplicado (reintento idempotente).
- * - `vault`: las claves (get/create/replaceKeys) van por el cliente de autenticación (`features/access`), no por aquí.
+ * - `vault`: las claves (create/replaceKeys) van por el cliente de autenticación (`features/access`), no por aquí;
+ *   `get` (H8.3) solo LEE el registro cifrado para la exportación.
  *   Los ajustes cifrados (H8.1) sí: `getSettings`/`putSettings`, con el mismo reintento idempotente que los recuerdos.
  */
 import { StorageError, type StorageErrorCode } from '@/lib/storage/errors';
@@ -18,6 +19,7 @@ import type {
   PutAssetInput,
   PutMemoryInput,
   Repository,
+  VaultRecord,
   VaultRepository,
 } from '@/lib/storage/types';
 
@@ -112,6 +114,43 @@ function asMemory(v: unknown): WireMemory {
   return v as unknown as WireMemory;
 }
 
+const isCount = (v: unknown): v is number => Number.isSafeInteger(v) && (v as number) >= 0;
+
+function asVault(v: unknown): VaultRecord {
+  if (
+    !isObject(v) ||
+    typeof v.id !== 'string' ||
+    typeof v.kdf !== 'string' ||
+    typeof v.wrapped_mk_pw !== 'string' ||
+    typeof v.rec_salt !== 'string' ||
+    typeof v.wrapped_mk_rec !== 'string' ||
+    (v.settings_payload !== null && typeof v.settings_payload !== 'string') ||
+    ![
+      v.schema_version,
+      v.mk_version,
+      v.key_revision,
+      v.settings_revision,
+      v.created_at,
+      v.updated_at,
+    ].every(isCount)
+  )
+    throw new StorageError('unavailable');
+  return {
+    id: v.id,
+    schemaVersion: v.schema_version as number,
+    mkVersion: v.mk_version as number,
+    keyRevision: v.key_revision as number,
+    kdf: v.kdf,
+    wrappedMkPw: v.wrapped_mk_pw,
+    recSalt: v.rec_salt,
+    wrappedMkRec: v.wrapped_mk_rec,
+    settingsPayload: v.settings_payload as string | null,
+    settingsRevision: v.settings_revision as number,
+    createdAt: v.created_at as number,
+    updatedAt: v.updated_at as number,
+  };
+}
+
 function errorFor(reply: Reply, context: 'memory-write' | 'other'): StorageError {
   const { status } = reply;
   let code: StorageErrorCode;
@@ -194,7 +233,13 @@ export function createRemoteRepository(options: RemoteOptions = {}): Repository 
   }
 
   const vault: VaultRepository = {
-    get: () => Promise.reject(new StorageError('unavailable')),
+    // H8.3: lo usa la exportación cifrada. 404 = no hay espacio (no debería ocurrir con sesión).
+    async get() {
+      const reply = await json('GET', '/api/vault');
+      if (reply.status === 404) return null;
+      if (reply.status !== 200) throw errorFor(reply, 'other');
+      return asVault(reply.body);
+    },
     create: () => Promise.reject(new StorageError('unavailable')),
     replaceKeys: () => Promise.reject(new StorageError('unavailable')),
 

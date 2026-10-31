@@ -4,6 +4,7 @@ import { pullChanges, saveWithResolution } from '@/lib/storage/resolve';
 import { StorageError, type PutMemoryInput, type Repository } from '@/lib/storage';
 import { createDevMemoryRepository } from '@/lib/storage/dev-memory-adapter';
 import { handleApi } from '@/server';
+import { rows } from './server/_d1';
 import {
   ORIGIN,
   T0,
@@ -474,10 +475,26 @@ describe('red y sesión', () => {
     expect(calls).toEqual([]);
   });
 
-  it('las claves del `vault` no van por aquí (las lleva el cliente de autenticación): `unavailable`', async () => {
+  it('cambiar las claves del `vault` no va por aquí (lo lleva el cliente de autenticación): `unavailable`', async () => {
     const { a } = await ready();
-    expect(await code(a.repo.vault.get())).toBe('unavailable');
     expect(await code(a.repo.vault.replaceKeys({}, 1))).toBe('unavailable');
+  });
+
+  it('H8.3: `vault.get` lee el registro cifrado tal cual (para la exportación)', async () => {
+    const { a, h } = await ready();
+    const v = await a.repo.vault.get();
+    const row = rows<{ id: string; wrapped_mk_rec: string; kdf: string }>(
+      h.raw,
+      'SELECT id, wrapped_mk_rec, kdf FROM vault',
+    )[0];
+    expect(v).toMatchObject({
+      id: row?.id,
+      wrappedMkRec: row?.wrapped_mk_rec,
+      kdf: row?.kdf,
+      settingsPayload: null,
+      settingsRevision: 0,
+      keyRevision: 1,
+    });
   });
 });
 
