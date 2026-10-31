@@ -38,6 +38,37 @@ export const getSettings: Handler = async (ctx) => {
   return ok(view(row));
 };
 
+interface VaultRow {
+  id: string;
+  schema_version: number;
+  mk_version: number;
+  key_revision: number;
+  kdf: string;
+  wrapped_mk_pw: string;
+  rec_salt: string;
+  wrapped_mk_rec: string;
+  settings_payload: string | null;
+  settings_revision: number;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * GET /api/vault (H8.3) → el registro del espacio TAL CUAL: envolturas de la clave maestra, parámetros y ajustes cifrados.
+ * Lo usa la exportación cifrada (D-100): el archivo lleva las dos envolturas para que la contraseña o la clave de recuperación
+ * lo abran. Solo con sesión completa; no revela nada que esa sesión no tenga ya (todo son sobres cifrados o datos públicos).
+ */
+export const getVault: Handler = async (ctx) => {
+  const row = await ctx.db
+    .prepare(
+      'SELECT id, schema_version, mk_version, key_revision, kdf, wrapped_mk_pw, rec_salt, wrapped_mk_rec, settings_payload, settings_revision, created_at, updated_at FROM vault WHERE account_id = ?1',
+    )
+    .bind(ctx.session!.accountId)
+    .first<VaultRow>();
+  if (!row) return problem('not_found');
+  return ok({ ...row });
+};
+
 /**
  * PUT /api/vault/settings `{ payload, expected_revision }` → `{ revision }`.
  * 409 con `current` si otra petición guardó antes. La actualización lleva la revisión en el `WHERE`: de dos guardados

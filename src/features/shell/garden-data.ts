@@ -1,10 +1,17 @@
-import { currentSettingsSource, currentSource, lockSession } from '@/features/access';
+import {
+  currentBackupSource,
+  currentSettingsSource,
+  currentSource,
+  lockSession,
+} from '@/features/access';
 import { GardenUnavailableError, type GardenSource } from '@/features/calendar';
+import type { BackupSource } from '@/lib/backup';
 import type { SettingsSource } from '@/lib/settings';
 
 interface Space {
   readonly garden: GardenSource;
   readonly settings: SettingsSource;
+  readonly backup: BackupSource;
 }
 
 let pending: Promise<Space> | null = null;
@@ -41,6 +48,13 @@ export function openSettingsSource(): Promise<SettingsSource> {
   const unlocked = currentSettingsSource();
   if (unlocked) return Promise.resolve(unlocked);
   return devSpace().then((space) => space.settings);
+}
+
+/** Copia cifrada (H8.3): exportar y continuar una restauración, con las mismas claves. */
+export function openBackupSource(): Promise<BackupSource> {
+  const unlocked = currentBackupSource();
+  if (unlocked) return Promise.resolve(unlocked);
+  return devSpace().then((space) => space.backup);
 }
 
 /** Suelta las claves y fuerza a reabrir la próxima vez (D-082). */

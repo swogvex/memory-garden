@@ -15,7 +15,14 @@
     locale,
     client,
     onDone,
-  }: { locale: Locale; client: AuthClient; onDone: (keyring: Keyring) => void } = $props();
+    onRestore,
+  }: {
+    locale: Locale;
+    client: AuthClient;
+    onDone: (keyring: Keyring) => void;
+    /** Restaurar desde una copia `.mgx` en lugar de crear un espacio nuevo (H8.3). */
+    onRestore?: () => void;
+  } = $props();
 
   type Step = 'privacy' | 'password' | 'key' | 'verify' | 'finish';
   const ORDER: Step[] = ['privacy', 'password', 'key', 'verify', 'finish'];
@@ -139,6 +146,11 @@
         <button type="submit" class="ac-btn ac-btn-primary" disabled={!read}>
           {t(locale, 'access.continue')}
         </button>
+        {#if onRestore}
+          <button type="button" class="ac-btn ac-btn-link" disabled={!read} onclick={onRestore}>
+            {t(locale, 'restore.link')}
+          </button>
+        {/if}
       </div>
     </form>
   {:else if step === 'password'}

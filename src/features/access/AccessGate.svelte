@@ -8,6 +8,7 @@
   import { startIdleLock, type IdleLock } from './idle-lock';
   import LoginScreen from './LoginScreen.svelte';
   import RecoverScreen from './RecoverScreen.svelte';
+  import RestoreWizard from './RestoreWizard.svelte';
   import { installSource, lockSession, onLock, type LockReason } from './session';
   import SetupWizard from './SetupWizard.svelte';
 
@@ -25,7 +26,7 @@
     footer?: Snippet;
   } = $props();
 
-  type Screen = 'checking' | 'unavailable' | 'setup' | 'login' | 'recover' | 'ready';
+  type Screen = 'checking' | 'unavailable' | 'setup' | 'restore' | 'login' | 'recover' | 'ready';
   let current = $state<Screen>('checking');
   const screen = $derived<Screen>(bypass ? 'ready' : current);
   let status = $state<SpaceStatus | null>(null);
@@ -147,7 +148,14 @@
             </div>
           </div>
         {:else if screen === 'setup'}
-          <SetupWizard {locale} {client} onDone={unlocked} />
+          <SetupWizard
+            {locale}
+            {client}
+            onDone={unlocked}
+            onRestore={() => (current = 'restore')}
+          />
+        {:else if screen === 'restore'}
+          <RestoreWizard {locale} {client} onDone={unlocked} onCancel={() => void check()} />
         {:else if screen === 'login' && status?.configured}
           <LoginScreen
             {locale}

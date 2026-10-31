@@ -13,7 +13,12 @@
   import { capitalize, formatMonthYear } from '@/lib/dates';
   import { t, type Locale } from '@/lib/i18n';
   import BouquetsView from './BouquetsView.svelte';
-  import { lockGarden, openGardenSource, openSettingsSource } from './garden-data';
+  import {
+    lockGarden,
+    openBackupSource,
+    openGardenSource,
+    openSettingsSource,
+  } from './garden-data';
   import GardenView from './GardenView.svelte';
   import PlaceholderView from './PlaceholderView.svelte';
   import { NAV_LABEL_KEY, PATHS, VIEWS, viewFromPath, type View } from './router';
@@ -190,6 +195,7 @@
           <SettingsView
             {locale}
             openGarden={openGardenSource}
+            openBackup={openBackupSource}
             session={bypassAccess ? undefined : signOut}
             security={bypassAccess ? undefined : security}
           />

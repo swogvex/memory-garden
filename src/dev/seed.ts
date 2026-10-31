@@ -14,6 +14,7 @@ import {
   preparePassword,
   unwrapWithPassword,
 } from '@/lib/crypto';
+import { createBackupSource, type BackupSource } from '@/lib/backup';
 import { createSettingsSource, type SettingsSource } from '@/lib/settings';
 import { createDevMemoryRepository } from '@/lib/storage/dev-memory-adapter';
 import { MAX_PHOTOS, parseMemoryPayload, type MemoryPayload } from '@/lib/validation';
@@ -59,6 +60,7 @@ function createUrlCache(max: number) {
 export interface DevSpace {
   readonly garden: GardenSource;
   readonly settings: SettingsSource;
+  readonly backup: BackupSource;
 }
 
 /** Fuente del Jardín del espacio de pruebas (las pruebas unitarias de la semilla la usan sola). */
@@ -237,5 +239,9 @@ export async function createDevSpace(): Promise<DevSpace> {
       fullPhotos.clear();
     },
   };
-  return { garden, settings: createSettingsSource(repo, keyring) };
+  return {
+    garden,
+    settings: createSettingsSource(repo, keyring),
+    backup: createBackupSource(repo, keyring),
+  };
 }

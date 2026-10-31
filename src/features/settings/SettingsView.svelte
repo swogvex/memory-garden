@@ -1,9 +1,11 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { GardenSource } from '@/features/calendar';
+  import type { BackupSource } from '@/lib/backup';
   import { t, type Locale } from '@/lib/i18n';
   import AvatarSection from './AvatarSection.svelte';
   import CategoriesSection from './CategoriesSection.svelte';
+  import DataSection from './DataSection.svelte';
   import PreferencesSection from './PreferencesSection.svelte';
   import PrivacySection from './PrivacySection.svelte';
   import ProfileSection from './ProfileSection.svelte';
@@ -13,12 +15,15 @@
   let {
     locale,
     openGarden,
+    openBackup,
     session,
     security,
   }: {
     locale: Locale;
     /** Fuente del Jardín: hace falta para cambiar la categoría de los recuerdos al renombrar o eliminar. */
     openGarden: () => Promise<GardenSource>;
+    /** Copia cifrada (H8.3): exportar y continuar una restauración. */
+    openBackup: () => Promise<BackupSource>;
     /** Cierre de sesión (lo pone la capa que conoce el acceso). */
     session?: Snippet;
     /** Contraseña y clave de recuperación (H8.2; las pone la capa que conoce el acceso). */
@@ -52,6 +57,8 @@
   {/if}
 
   {#if security}{@render security()}{/if}
+
+  <DataSection {locale} {openBackup} />
 
   <PrivacySection {locale} />
 
