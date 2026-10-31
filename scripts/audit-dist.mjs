@@ -18,7 +18,8 @@ const showAll = process.argv.includes('--all');
 const BUDGETS = {
   initialJsGzip: 150 * KiB,
   cssGzip: 35 * KiB,
-  firstLoadFonts: 120 * KiB,
+  // H9.3 (D-263): 140 y no 120. Tres familias son decisión de diseño; se guardan en caché un año (solo la 1.ª visita).
+  firstLoadFonts: 140 * KiB,
   accessDecorGzip: 60 * KiB,
   texture: 30 * KiB,
   html: 10 * KiB,

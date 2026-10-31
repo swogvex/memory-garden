@@ -13,7 +13,15 @@ interface ShiftEntry extends PerformanceEntry {
 }
 interface EventEntry extends PerformanceEntry {
   interactionId?: number;
+  target?: Node | null;
 }
+
+/** Descripción corta del elemento de una interacción (para saber cuál fue la más lenta). */
+const describe = (node: Node | null | undefined): string => {
+  if (!(node instanceof Element)) return '?';
+  const cls = (node.getAttribute('class') ?? '').split(' ').filter(Boolean)[0];
+  return `${node.tagName.toLowerCase()}${cls ? `.${cls}` : ''}`;
+};
 
 const ms = (n: number | undefined) => (n === undefined ? '—' : `${Math.round(n)} ms`);
 
@@ -44,6 +52,7 @@ export function startVitalsOverlay(): void {
   let inp: number | undefined;
   let cls: number | undefined;
   const interactions = new Map<number, number>();
+  let worst = { duration: 0, label: '' };
 
   const render = () => {
     box.textContent = [
@@ -55,6 +64,7 @@ export function startVitalsOverlay(): void {
             ? '< 16 ms o sin interacciones' // la API solo informa de las que duran ≥ 16 ms
             : `${ms(inp)} (${interactions.size} lentas)`
       }`,
+      ...(worst.duration ? [`peor: ${ms(worst.duration)} · ${worst.label}`] : []),
       `CLS ${supported.includes('layout-shift') ? (cls ?? 0).toFixed(3) : 'no disponible'}`,
       'solo en este dispositivo',
     ].join('\n');
@@ -75,6 +85,8 @@ export function startVitalsOverlay(): void {
           e.interactionId,
           Math.max(interactions.get(e.interactionId) ?? 0, e.duration),
         );
+        if (e.duration > worst.duration)
+          worst = { duration: e.duration, label: `${e.name} en ${describe(e.target)}` };
       }
       // INP ≈ la interacción más lenta, ignorando una de cada 50 (como el algoritmo de web.dev).
       const sorted = [...interactions.values()].sort((a, b) => b - a);

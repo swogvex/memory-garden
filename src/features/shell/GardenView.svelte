@@ -32,7 +32,7 @@
   import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import AsidePanel from './AsidePanel.svelte';
   import DayPanel from './DayPanel.svelte';
-  import { openGardenSource } from './garden-data';
+  import { cachedMemories, openGardenSource, rememberMemories } from './garden-data';
   import Polaroid from './Polaroid.svelte';
   import type { View } from './router';
   import { viewState } from './view-state.svelte';
@@ -57,6 +57,8 @@
   let sheetEl = $state<HTMLDialogElement>();
   let chipsEl = $state<HTMLDivElement>();
   let source: GardenSource | null = null;
+  // H9.3 (D-262): «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
+  let slowLoad = $state(false);
   let formOpen = $state(false);
   let formDate = $state('');
   let formOpener: HTMLElement | null = null;
@@ -110,14 +112,29 @@
   const monthSummary = $derived(`${capitalize(monthText)}: ${nText(monthMemories.length)}`);
 
   async function start() {
-    load = { status: 'loading' };
+    if (load.status === 'error') load = { status: 'loading' };
+    const timer = window.setTimeout(() => (slowLoad = true), 400);
     try {
       source = await openGardenSource();
-      load = { status: 'ready', memories: await source.list() };
+      const cached = cachedMemories(source);
+      if (cached) load = { status: 'ready', memories: cached };
+      const shown = load.status === 'ready' ? load.memories : null;
+      const fresh = await source.list();
+      // Si mientras tanto se creó, editó o borró algo aquí, lo de la pantalla ya es más nuevo: no se pisa.
+      if (load.status !== 'ready' || load.memories === shown)
+        load = { status: 'ready', memories: fresh };
     } catch {
-      load = { status: 'error' };
+      // Con recuerdos ya en pantalla se siguen viendo (el aviso de sin conexión explica el resto); sin ellos, error.
+      if (load.status !== 'ready') load = { status: 'error' };
+    } finally {
+      window.clearTimeout(timer);
+      slowLoad = false;
     }
   }
+
+  $effect(() => {
+    if (load.status === 'ready' && source) rememberMemories(source, load.memories);
+  });
 
   function setMonth(next: YearMonth, direction: Direction, clearSelection = true) {
     dir = direction;
@@ -370,7 +387,7 @@
 </script>
 
 {#if load.status === 'loading'}
-  <p role="status">{t(locale, 'garden.loading')}</p>
+  {#if slowLoad}<p role="status">{t(locale, 'garden.loading')}</p>{/if}
 {:else if load.status === 'error'}
   <div class="state" role="alert">
     <h2>{t(locale, 'garden.error.title')}</h2>

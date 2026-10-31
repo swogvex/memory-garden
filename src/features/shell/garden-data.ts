@@ -5,7 +5,7 @@ import {
   currentTrashSource,
   lockSession,
 } from '@/features/access';
-import { GardenUnavailableError, type GardenSource } from '@/features/calendar';
+import { GardenUnavailableError, type GardenMemory, type GardenSource } from '@/features/calendar';
 import type { BackupSource } from '@/lib/backup';
 import type { SettingsSource } from '@/lib/settings';
 import type { TrashSource } from '@/lib/trash';
@@ -18,6 +18,25 @@ interface Space {
 }
 
 let pending: Promise<Space> | null = null;
+
+/**
+ * H9.3 (D-262) · Últimos recuerdos descifrados de la sesión, para no volver a mostrar «Abriendo tu jardín…» en cada
+ * cambio de sección: las vistas los enseñan al instante y los refrescan en segundo plano. Solo en memoria, ligados a
+ * la fuente que los descifró (otra sesión = otra fuente = no valen) y se olvidan al bloquear o salir (D-054).
+ */
+let memo: { source: GardenSource; memories: readonly GardenMemory[] } | null = null;
+
+export function cachedMemories(source: GardenSource): readonly GardenMemory[] | null {
+  return memo && memo.source === source ? memo.memories : null;
+}
+
+export function rememberMemories(source: GardenSource, memories: readonly GardenMemory[]): void {
+  memo = { source, memories };
+}
+
+export function forgetMemories(): void {
+  memo = null;
+}
 
 async function load(): Promise<Space> {
   // Solo desarrollo. En producción Vite sustituye DEV por `false` y esta rama (y la semilla) desaparece del bundle.
@@ -69,6 +88,7 @@ export function openTrashSource(): Promise<TrashSource> {
 
 /** Suelta las claves y fuerza a reabrir la próxima vez (D-082). */
 export function lockGarden(): void {
+  forgetMemories();
   const current = pending;
   pending = null;
   lockSession();

@@ -55,8 +55,11 @@
   }
 
   onMount(() => {
+    // Atrás/Adelante entre secciones. Dentro de una misma sección (p. ej. el ramo abierto en Ramos, D-264) la
+    // vista gestiona su propio historial y aquí no se toca el foco.
     const onPopState = () => {
-      void show(viewFromPath(window.location.pathname) ?? 'garden', false);
+      const next = viewFromPath(window.location.pathname) ?? 'garden';
+      if (next !== view) void show(next, false);
     };
     // D-082: volver atrás (bfcache) no debe dejar la aplicación desbloqueada.
     const onPageShow = (event: PageTransitionEvent) => {

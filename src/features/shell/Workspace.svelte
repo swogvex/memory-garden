@@ -5,6 +5,7 @@
   import { t, type Locale } from '@/lib/i18n';
   import BouquetsView from './BouquetsView.svelte';
   import {
+    forgetMemories,
     openBackupSource,
     openGardenSource,
     openSettingsSource,
@@ -51,7 +52,13 @@
   /** Con la sesión abierta (el contenido se monta) se cargan los ajustes; al bloquear (se desmonta), se olvidan. */
   function sessionPrefs() {
     void loadPrefs(openSettingsSource);
-    return { destroy: () => resetPrefs() };
+    // Al bloquear (se desmonta) se olvidan también los recuerdos descifrados que se guardaban para cambiar de sección.
+    return {
+      destroy: () => {
+        resetPrefs();
+        forgetMemories();
+      },
+    };
   }
 </script>
 
