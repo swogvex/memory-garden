@@ -294,7 +294,6 @@ export const es = {
   'bouquets.intro': 'Cada mes se reúne en un ramo: una flor por recuerdo.',
   'bouquets.year.prev': 'Año anterior',
   'bouquets.year.next': 'Año siguiente',
-  'bouquets.month.none': '{month}, sin recuerdos',
   'bouquets.month.one': '{month}, 1 recuerdo',
   'bouquets.month.many': '{month}, {count} recuerdos',
   'bouquets.back': 'Todos los meses',

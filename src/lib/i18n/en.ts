@@ -293,7 +293,6 @@ export const en: Partial<Record<MessageKey, string>> = {
   'bouquets.intro': 'Each month gathers into a bouquet: one flower per memory.',
   'bouquets.year.prev': 'Previous year',
   'bouquets.year.next': 'Next year',
-  'bouquets.month.none': '{month}, no memories',
   'bouquets.month.one': '{month}, 1 memory',
   'bouquets.month.many': '{month}, {count} memories',
   'bouquets.back': 'All months',
