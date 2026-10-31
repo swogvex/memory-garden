@@ -57,6 +57,14 @@ export const HTML_CSP = [
 /** Rutas de HTML prerrenderizado (una por vista de la isla, `VIEW_SLUGS`): se revalidan siempre (D-054, §6). */
 export const HTML_PATHS = ['/', '/jardin*', '/ramos*', '/explorar*', '/configuracion*'] as const;
 
+/**
+ * Adornos y texturas de `public/` (H9.3, D-261). No llevan hash en el nombre (los de `/_astro/*` sí y son inmutables):
+ * caché de un día. Antes (sin regla) Cloudflare los servía con `max-age=0, must-revalidate` y cada visita hacía una
+ * petición por archivo. Si se regeneran, pueden tardar hasta un día en verse en un navegador que ya los tenga.
+ */
+export const STATIC_ASSET_PATHS = ['/decor/*', '/textures/*'] as const;
+export const STATIC_ASSET_CACHE = 'public, max-age=86400';
+
 export function securityHeaders(kind: HeaderKind): Record<string, string> {
   if (kind === 'api')
     return { ...COMMON, 'Content-Security-Policy': API_CSP, 'Cache-Control': 'no-store' };
@@ -84,5 +92,6 @@ export function renderHeadersFile(): string {
     ...Object.entries(securityHeaders('html')).map(([k, v]) => `  ${k}: ${v}`),
   ];
   for (const path of HTML_PATHS) lines.push(path, '  Cache-Control: no-cache');
+  for (const path of STATIC_ASSET_PATHS) lines.push(path, `  Cache-Control: ${STATIC_ASSET_CACHE}`);
   return lines.join('\n') + '\n';
 }

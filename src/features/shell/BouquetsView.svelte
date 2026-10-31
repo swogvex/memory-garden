@@ -32,7 +32,7 @@
   import { flowerKey } from '@/lib/flowers';
   import { t, type Locale, type MessageKey } from '@/lib/i18n';
   import { mountSvg } from '@/lib/svg-mount';
-  import { openGardenSource } from './garden-data';
+  import { cachedMemories, openGardenSource, rememberMemories } from './garden-data';
   import type { View } from './router';
   import { viewState } from './view-state.svelte';
 
@@ -50,6 +50,14 @@
 
   let load = $state<LoadState>({ status: 'loading' });
   let source: GardenSource | null = null;
+  // H9.3 (D-262): «Abriendo tu jardín…» solo si la carga tarda; con recuerdos en memoria no llega a salir.
+  let slowLoad = $state(false);
+  // H9.3 (D-264): el ramo abierto se apunta en el historial; «Atrás» vuelve a la cuadrícula de meses.
+  const HISTORY_KEY = 'mgBouquet';
+  const historyMonth = (): string | null => {
+    const value = (history.state as Record<string, unknown> | null)?.[HISTORY_KEY];
+    return typeof value === 'string' && parseMonthKey(value) ? value : null;
+  };
   let year = $state(viewState.month.year);
   let openKey = $state<string | null>(null);
   let images = $state<Record<string, string>>({});
@@ -185,18 +193,35 @@
   }
 
   async function start() {
-    load = { status: 'loading' };
+    if (load.status === 'error') load = { status: 'loading' };
+    const timer = window.setTimeout(() => (slowLoad = true), 400);
     try {
       source = await openGardenSource();
-      load = { status: 'ready', memories: await source.list() };
+      const cached = cachedMemories(source);
+      if (cached) load = { status: 'ready', memories: cached };
+      const shown = load.status === 'ready' ? load.memories : null;
+      const fresh = await source.list();
+      // Si mientras tanto se editó o borró algo aquí, lo de la pantalla ya es más nuevo: no se pisa.
+      if (load.status !== 'ready' || load.memories === shown)
+        load = { status: 'ready', memories: fresh };
     } catch {
-      load = { status: 'error' };
+      // Con recuerdos ya en pantalla se siguen viendo (el aviso de sin conexión explica el resto); sin ellos, error.
+      if (load.status !== 'ready') load = { status: 'error' };
+    } finally {
+      window.clearTimeout(timer);
+      slowLoad = false;
     }
   }
 
-  async function openMonth(key: string) {
+  $effect(() => {
+    if (load.status === 'ready' && source) rememberMemories(source, load.memories);
+  });
+
+  async function openMonth(key: string, push = true) {
     const ym = parseMonthKey(key);
     if (!ym) return;
+    if (push && openKey !== key)
+      history.pushState({ [HISTORY_KEY]: key }, '', location.pathname + location.search);
     openKey = key;
     exportState = 'idle';
     year = ym.year;
@@ -207,6 +232,15 @@
   }
 
   async function closeMonth() {
+    // Si el ramo abierto está en el historial, se vuelve atrás (lo cierra `popstate`): así Atrás y el botón coinciden.
+    if (openKey !== null && historyMonth() === openKey) {
+      history.back();
+      return;
+    }
+    await closeLocal();
+  }
+
+  async function closeLocal() {
     const key = openKey;
     openKey = null;
     await tick();
@@ -333,19 +367,28 @@
   });
 
   onMount(() => {
-    // Venir desde «Ver el ramo» del Jardín abre directamente el ramo de ese mes.
-    const pending = viewState.bouquetMonth;
+    // Venir desde «Ver el ramo» del Jardín abre directamente el ramo de ese mes; volver con Atrás a un ramo que
+    // estaba abierto (está en el historial) también.
+    const pending = viewState.bouquetMonth ?? historyMonth();
     viewState.bouquetMonth = null;
     if (pending && parseMonthKey(pending)) {
       openKey = pending;
       year = parseMonthKey(pending)?.year ?? year;
     }
     void start();
+    const onPopState = () => {
+      const key = historyMonth();
+      if (key) {
+        if (key !== openKey) void openMonth(key, false);
+      } else if (openKey !== null) void closeLocal();
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   });
 </script>
 
 {#if load.status === 'loading'}
-  <p role="status">{t(locale, 'garden.loading')}</p>
+  {#if slowLoad}<p role="status">{t(locale, 'garden.loading')}</p>{/if}
 {:else if load.status === 'error'}
   <div class="state" role="alert">
     <h2>{t(locale, 'garden.error.title')}</h2>

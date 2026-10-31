@@ -5,6 +5,8 @@ import {
   HTML_CSP,
   HTML_PATHS,
   renderHeadersFile,
+  STATIC_ASSET_CACHE,
+  STATIC_ASSET_PATHS,
   securityHeaders,
 } from '@/server/security-headers';
 import { doSetup, makeHarness } from './_support';
@@ -29,7 +31,14 @@ describe('public/_headers (PS-59)', () => {
     const first = lines.slice(0, lines.indexOf('/'));
     expect(first.join('\n')).not.toMatch(/Cache-Control/i);
     for (const p of HTML_PATHS) expect(FILE).toContain(`${p}\n  Cache-Control: no-cache`);
-    expect(FILE).not.toMatch(/immutable|max-age/i);
+    expect(FILE).not.toMatch(/immutable/i);
+  });
+
+  it('adornos y texturas (sin hash en el nombre): caché de un día, y nada más lleva max-age (D-261)', () => {
+    expect(STATIC_ASSET_CACHE).toBe('public, max-age=86400');
+    for (const p of STATIC_ASSET_PATHS)
+      expect(FILE).toContain(`${p}\n  Cache-Control: ${STATIC_ASSET_CACHE}`);
+    expect(FILE.match(/max-age/g)?.length).toBe(STATIC_ASSET_PATHS.length);
   });
 });
 
