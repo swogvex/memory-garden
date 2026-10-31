@@ -14,6 +14,7 @@ export const es = {
   'nav.settings': 'Configuración',
   'footer.note': 'Un jardín privado, sin rastreadores.',
   'shell.loading': 'Cargando tu jardín…',
+  'shell.loadError': 'No se pudo cargar tu jardín. Comprueba la conexión e inténtalo de nuevo.',
   'shell.avatar': 'Perfil y configuración',
   'shell.eyebrow': 'Tu jardín · {year}',
   'shell.noscript': 'Memory Garden necesita JavaScript para funcionar.',

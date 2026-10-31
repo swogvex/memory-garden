@@ -17,6 +17,7 @@ export const en: Partial<Record<MessageKey, string>> = {
   'nav.settings': 'Settings',
   'footer.note': 'A private garden, with no trackers.',
   'shell.loading': 'Loading your garden…',
+  'shell.loadError': 'Your garden could not be loaded. Check your connection and try again.',
   'shell.avatar': 'Profile and settings',
   'shell.eyebrow': 'Your garden · {year}',
   'shell.noscript': 'Memory Garden needs JavaScript to work.',

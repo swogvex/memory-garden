@@ -99,7 +99,8 @@
 {:else}
   <!-- Pantalla de acceso a página completa: es el contenido principal mientras no hay sesión. -->
   <main id="contenido" class="ac-page" tabindex="-1">
-    <section class="ac" aria-labelledby="ac-brand">
+    <!-- Sin nombre: no es un punto de referencia aparte (el principal es `main`; la tarjeta, si se desplaza, es la región). -->
+    <section class="ac">
       <!-- Marco floral decorativo (H7.5): oculto a lectores de pantalla y sin clics. -->
       <div class="ac-decor" aria-hidden="true">
         <span class="ac-corner ac-c1"
