@@ -601,6 +601,22 @@ export const es = {
   'danger.error.word': 'Escribe la palabra exactamente como se indica.',
   'danger.error.retry':
     'No se pudo completar. Puede que una parte ya se haya borrado: vuelve a intentarlo para terminar.',
+  'shell.offline':
+    'Sin conexión. Lo que ya ves sigue aquí; para guardar cambios hace falta volver a conectarse.',
+  'memory.replaced':
+    'Recuerdo guardado. Se había cambiado en otro dispositivo y se ha guardado tu versión.',
+  'memory.error.offline':
+    'Sin conexión: no se ha podido guardar. No se ha perdido nada de lo escrito; inténtalo cuando vuelva la conexión.',
+  'memory.error.remote':
+    'Este recuerdo se mandó a la papelera o se borró desde otro dispositivo, así que no se ha guardado. Si estaba en la papelera, puedes restaurarlo en Configuración → Papelera.',
+  'memory.error.quota':
+    'No queda espacio o se ha llegado al límite de subidas de hoy. No se ha perdido nada de lo escrito: prueba con menos fotos o inténtalo más tarde.',
+  'key.file.title': 'Memory Garden - clave de recuperación',
+  'key.file.line1': 'Es la única forma de volver a entrar si olvidas tu contraseña.',
+  'key.file.line2': 'Guárdala en papel y en un segundo sitio seguro, separada de tu contraseña.',
+  'key.file.line3':
+    'Quien la tenga puede abrir tus recuerdos. Si pierdes la contraseña y esta clave, nadie puede recuperarlos.',
+  'key.file.name': 'memory-garden-clave-de-recuperacion.txt',
 } as const;
 
 export type MessageKey = keyof typeof es;

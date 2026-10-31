@@ -232,9 +232,11 @@
       notice = {
         key:
           failed === 0
-            ? wasEditing
-              ? 'memory.updated'
-              : 'memory.saved'
+            ? result.replacedRemote
+              ? 'memory.replaced'
+              : wasEditing
+                ? 'memory.updated'
+                : 'memory.saved'
             : failed === 1
               ? 'memory.saved.partial.one'
               : 'memory.saved.partial.many',
