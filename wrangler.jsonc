@@ -18,7 +18,7 @@
     {
       "binding": "DB",
       "database_name": "memory-garden-db",
-      "database_id": "eee88cdc-2abe-4ab9-bc4c-130e80770bec",
+      "database_id": "f22aa9fd-111e-427c-a384-46c62df66670",
       "migrations_dir": "migrations",
     },
   ],
